@@ -1,11 +1,11 @@
 import pygame
 import os
 
-pygame.init
+pygame.init()
 script_dir = os.path.dirname(__file__)
 
-screen_width = 1280
-screen_height = 720
+screen_width = 1200
+screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 click = False
@@ -26,13 +26,13 @@ class button:
         self.fy = self.sy + self.height
 
 
-    def button_update(self):
+    def button_work(self):
         pos = pygame.mouse.get_pos()
         if self.sx < pos[0] < self.fx and self.sy < pos[1] < self.fy:
             self.real_image = self.image_name2
             screen.blit(pygame.image.load(self.real_image),(self.sx,self.sy))
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     return True
                 else:
                     return False

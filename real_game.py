@@ -2,26 +2,31 @@ import pygame
 import math
 
 # 파이게임 초기화
-pygame.init()
-screen = pygame.display.set_mode((1200, 800))
-clock = pygame.time.Clock()
+def reset():
+    global screen_height,screen_width,screen,clock,camera_pos,camera_speed,is_topdown_view,target_camera_pos,cube_size,\
+    cube_pos,floor_points
+    pygame.init()
+    screen_width = 1200
+    screen_height = 800
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    clock = pygame.time.Clock()
 
-# 카메라 및 게임 상태 변수
-camera_pos = [0, 0, -1000]  # 카메라 초기 위치 (플랫포머뷰)
-camera_speed = 10  # 카메라 이동 속도
-is_topdown_view = False  # 시점 전환 플래그 (False: 플랫포머뷰, True: 탑뷰)
-target_camera_pos = camera_pos[:]  # 목표 카메라 위치
+    # 카메라 및 게임 상태 변수
+    camera_pos = [0, 0, -1000]  # 카메라 초기 위치 (플랫포머뷰)
+    camera_speed = 10  # 카메라 이동 속도
+    is_topdown_view = False  # 시점 전환 플래그 (False: 플랫포머뷰, True: 탑뷰)
+    target_camera_pos = camera_pos[:]  # 목표 카메라 위치
 
-# 큐브의 기본 좌표
-cube_size = 50  # 큐브의 크기
-cube_pos = [0, -cube_size, 25]  # 큐브의 위치 (바닥 높이에 맞춰 조정)
+    # 큐브의 기본 좌표
+    cube_size = 50  # 큐브의 크기
+    cube_pos = [0, -cube_size, 25]  # 큐브의 위치 (바닥 높이에 맞춰 조정)
 
 
-# 바닥의 좌표 (길고 넓은 직사각형)
-floor_points = [
-    (-400, 0, -800), (400, 0, -800),
-    (400, 0, -1000), (-400, 0, -1000)
-]
+    # 바닥의 좌표 (길고 넓은 직사각형)
+    floor_points = [
+        (-400, 0, -800), (400, 0, -800),
+        (400, 0, -1000), (-400, 0, -1000)
+    ]
 
 # 큐브의 8개 꼭짓점 좌표 생성 함수
 def get_cube_points(cube_pos, size):
@@ -80,12 +85,22 @@ def draw_floor(camera_pos):
         pygame.draw.polygon(screen, (100, 100, 100), floor_projected)  # 바닥을 그린다
 
 # 메인 루프
-running = True
-while running:
+
+def run(reseted):
+    global is_topdown_view,target_camera_pos,cube_pos,camera_pos
+    condition = "real_game"
+    if reseted == True:
+        pass
+    else:
+        reset()
+        print(2)
+        reseted = True
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:  # 스페이스바를 눌렀을 때
+            condition =  "quit"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                condition =  "quit"  # 스페이스바를 눌렀을 때
             if event.key == pygame.K_SPACE:
                 # 시점 전환 목표 설정
                 is_topdown_view = not is_topdown_view
@@ -137,5 +152,4 @@ while running:
 
     pygame.display.flip()
     clock.tick(60)
-
-pygame.quit()
+    return [condition,reseted]

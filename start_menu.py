@@ -1,14 +1,28 @@
 import pygame
 from pygame.locals import *
+import os
+import button
 
-screen = pygame.display.set_mode((1200, 800))
+pygame.init()
+screen_width = 1200
+screen_height = 800
+screen = pygame.display.set_mode((screen_width, screen_height))
 running = True
+script_dir = os.path.dirname(__file__)
 
-while (running == True):
+start_button = button.button(screen_width/2-181,600,"시작1.png","시작2.png")
+def run():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            return "quit"
         if event.type == KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
+                return "quit"
+
+    screen.blit(pygame.image.load(f"{script_dir}//images//시작배경.png"),(0,0))
+    if start_button.button_work() == True:
+        result = "real_game"
+    else:
+        result = "start_menu"
     pygame.display.update()
+    return result
