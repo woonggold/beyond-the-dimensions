@@ -3,7 +3,7 @@ import real_game #파일 이름임
 
 condition = "start_menu"
 
-while (running = true):
+while (running == True):
     match (condition):
         case "start_menu":
             condition = start_menu.run()

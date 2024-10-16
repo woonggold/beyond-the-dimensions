@@ -3,7 +3,7 @@ import math
 
 # 파이게임 초기화
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((1200, 800))
 clock = pygame.time.Clock()
 
 # 카메라 및 게임 상태 변수
