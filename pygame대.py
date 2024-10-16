@@ -83,6 +83,7 @@ while running:
                     target_camera_pos[0] = 0  # 플랫포머뷰 카메라 위치 설정
                     target_camera_pos[1] = 0
                     target_camera_pos[2] = -1000
+        
 
     # 키 입력 처리 (플랫포머뷰에서만 큐브 이동)
     keys = pygame.key.get_pressed()

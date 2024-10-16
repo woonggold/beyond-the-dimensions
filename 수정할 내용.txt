@@ -1,0 +1,1 @@
+1. real_game 전체화면 : pygame.display.set_mode(screensize, FULLSCREEN)

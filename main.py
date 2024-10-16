@@ -10,4 +10,4 @@ while (running = true):
         case "real_game":
             condition = real_game.run()
         case "quit":
-            running = false
+            running = False
