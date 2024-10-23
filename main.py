@@ -13,9 +13,7 @@ while (running == True):
         case "start_menu":
             condition = start_menu.run()
         case "real_game":
-            results = real_game.run(reseted)
-            condition = results[0]
-            reseted = results[1]
+            condition = real_game.run()
         case "quit":
             running = False
 

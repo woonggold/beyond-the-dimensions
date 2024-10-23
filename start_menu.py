@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 import os
 import button
+import real_game
 
 pygame.init()
 screen_width = 1200
@@ -22,6 +23,7 @@ def run():
     screen.blit(pygame.image.load(f"{script_dir}//images//시작배경.png"),(0,0))
     if start_button.button_work() == True:
         result = "real_game"
+        real_game.reset()
     else:
         result = "start_menu"
     pygame.display.update()

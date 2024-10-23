@@ -28,14 +28,13 @@ class button:
 
     def button_work(self):
         pos = pygame.mouse.get_pos()
-        if self.sx < pos[0] < self.fx and self.sy < pos[1] < self.fy:
+        if self.sx <= pos[0] <= self.fx and self.sy <= pos[1] <= self.fy:
             self.real_image = self.image_name2
             screen.blit(pygame.image.load(self.real_image),(self.sx,self.sy))
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     return True
-                else:
-                    return False
+            return False
         else:
             self.real_image = self.image_name
             screen.blit(pygame.image.load(self.real_image),(self.sx,self.sy))
