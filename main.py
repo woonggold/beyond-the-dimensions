@@ -1,6 +1,7 @@
 import start_menu #파일 이름임
 import real_game #파일 이름임
 import pygame
+from settings import *
 
 pygame.init()
 condition = "start_menu"

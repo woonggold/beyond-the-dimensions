@@ -1,51 +1,10 @@
 import pygame
 import math
 import projection_3D
+from settings import *
 # 파이게임 초기화
-def reset():
-    global screen_height,screen_width,screen,clock,camera_pos,camera_speed,is_3D,target_camera_pos,cube_size,\
-    cube_pos,floor_points,BLOCKS,angle_x,angle_y,mouse_sensitivity
-    pygame.init()
-    screen_width = 1200
-    screen_height = 800
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    clock = pygame.time.Clock()
 
-    # 카메라 및 게임 상태 변수
-    camera_pos = [0, 0, -1000]  # 카메라 초기 위치 (플랫포머뷰)
-    camera_speed = 10  # 카메라 이동 속도
-    is_3D = False  # 시점 전환 플래그 (False: 플랫포머뷰, True: 탑뷰)
-    target_camera_pos = camera_pos # 목표 카메라 위치
 
-    cube_size = 50  # 큐브의 크기
-
-    BLOCKS = []
-    for i in range(10):
-        for j in range(10):
-            BLOCKS.append(Block((i*100-500,500,j*100-500),cube_size))
-
-    angle_x, angle_y = 0, 0
-
-# 마우스 감도 설정
-    mouse_sensitivity = 0.003
-
-# 마우스 중앙 고정
-    pygame.mouse.set_visible(False)
-    pygame.event.set_grab(True)
-
-class Block:
-    def __init__(self, pos, size):
-        self.pos = pos
-        self.x = pos[0]
-        self.y = pos[1]
-        self.z = pos[2]
-        self.size = size
-        self.points = [
-            [self.x - self.size, self.y - self.size, self.z - self.size, self.z - self.size], [self.x + self.size, self.y - self.size, self.z - self.size, self.z - self.size],
-            [self.x + self.size, self.y + self.size, self.z - self.size, self.z - self.size], [self.x - self.size, self.y + self.size, self.z - self.size, self.z - self.size],
-            [self.x - self.size, self.y - self.size, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - self.size, self.z + self.size, self.z + self.size],
-            [self.x + self.size, self.y + self.size, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + self.size, self.z + self.size, self.z + self.size]
-        ]
 # 큐브의 8개 꼭짓점 좌표 생성 함수
 
 
@@ -125,7 +84,7 @@ def camera_move():
 def draw_screen():
     screen.fill((255, 255, 255))
 
-    for block in BLOCKS:
+    for block in map.BLOCKS:
         draw_cube(projection_3D.project_3d_or_2d(block.points,camera_pos,is_3D,angle_x,angle_y))
     pygame.display.flip()
     clock.tick(60)
