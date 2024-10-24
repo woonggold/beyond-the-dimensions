@@ -86,7 +86,6 @@ def event_check():
             if event.key == pygame.K_SPACE:
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
-        
 
         elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
             if event.button == 4:  # 휠을 위로 스크롤
