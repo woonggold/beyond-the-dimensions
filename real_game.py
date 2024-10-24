@@ -10,14 +10,39 @@ from settings import *
 
 def draw_line(one,two):
     if all((one,two)):
-        pygame.draw.line(screen, (0, 0, 0), one, two, 1)
+        pygame.draw.aaline(screen, (0, 0, 0), one, two, 1)
+
+def draw_square(square):
+    checked = True
+    
+    if (checked):
+        draw_line(square[0],square[1])
+        draw_line(square[1],square[2])
+        draw_line(square[2],square[3])
+        draw_line(square[3],square[0])
 # 큐브의 면을 그리는 함수
 def draw_cube(points):
+    squares = [
     # 앞면
-    draw_line(points[0], points[1])
-    draw_line(points[1], points[2])
-    draw_line(points[2], points[3])
-    draw_line(points[3], points[0])
+        [points[0], points[1], points[2], points[3]],
+
+        # 뒷면
+        [points[4], points[5], points[6], points[7]],
+
+        # 왼쪽면
+        [points[0], points[3], points[7], points[4]],
+
+        # 오른쪽면
+        [points[1], points[2], points[6], points[5]],
+
+        # 윗면
+        [points[0], points[1], points[5], points[4]],
+
+        # 아랫면
+        [points[3], points[2], points[6], points[7]]
+    ]
+    for square in squares:
+        draw_square(square)
 
     if is_3D:
         # 뒷면
@@ -45,8 +70,10 @@ def mouse_rotate_check():
     mouse_dx, mouse_dy = pygame.mouse.get_rel()
 
     # 각도 업데이트 (마우스 이동에 따라)
-    angle_y += mouse_dx * mouse_sensitivity
-    angle_x += mouse_dy * mouse_sensitivity
+
+    angle_x += mouse_dx * mouse_sensitivity
+    if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
+        angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
     global condition, is_3D, target_camera_pos

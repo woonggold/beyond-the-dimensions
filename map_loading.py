@@ -11,6 +11,7 @@ class Block:
             [self.x - self.size, self.y - self.size, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - self.size, self.z + self.size, self.z + self.size],
             [self.x + self.size, self.y + self.size, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + self.size, self.z + self.size, self.z + self.size]
         ]
+        #self.squares = []
 
 def load_map(map_name):
     global cube_size

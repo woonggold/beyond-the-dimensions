@@ -4,3 +4,7 @@
 main.py ㅡ> setting.py ㅡ> map_loading.py ㅡ> start_menu.py ㅡ> button.py
                                           ㄴ> real_game.py ㅡ> projection_3D.py
                                                            ㄴ> Player.py
+
+
+
+https://youtu.be/ECqUrT7IdqQ?feature=shared&t=477
