@@ -241,6 +241,32 @@ def event_check():
             elif event.button == 5:  # 휠을 아래로 스크롤
                 target_camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
 
+def gravity():
+    global condition, player_x, player_y, player_z
+    min_x, min_y, min_z = player_x - 50, player_y + 100, player_z - 50
+    max_x, max_y, max_z = player_x + 50, player_y + 100, player_z + 50
+
+    for block in map.BLOCKS:
+        block_min_x = block.x - block.size
+        block_max_x = block.x + block.size
+        block_min_y = block.y - block.size
+        block_max_y = block.y
+        block_min_z = block.z - block.size
+        block_max_z = block.z + block.size
+
+        # 플레이어의 범위가 블록 범위와 겹치는지 확인
+        if (min_x <= block_max_x and max_x >= block_min_x) and \
+           (min_y <= block_max_y and max_y >= block_min_y) and \
+           (min_z <= block_max_z and max_z >= block_min_z):
+            print("안 벗어남")
+            return False
+    go_to_main()
+    return True
+
+# main.py로 이동하는 함수
+def go_to_main():
+    print("범위를 벗어남")
+
 def camera_move():
     # 부드럽게 이동
     global camera_pos
@@ -266,8 +292,9 @@ def run():
     event_check()
     camera_move()
     draw_screen()
-    player_during()  # 플레이어 위치 업데이트 먼저
+    player_during() # 플레이어 위치 업데이트 먼저  
     camera_move()
     draw_screen()
+    gravity()
     
     return condition

@@ -6,10 +6,10 @@ class Block:
         self.z = pos[2]
         self.size = size
         self.points = [
-            [self.x - self.size, self.y - self.size, self.z - self.size, self.z - self.size], [self.x + self.size, self.y - self.size, self.z - self.size, self.z - self.size],
-            [self.x + self.size, self.y + self.size, self.z - self.size, self.z - self.size], [self.x - self.size, self.y + self.size, self.z - self.size, self.z - self.size],
-            [self.x - self.size, self.y - self.size, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - self.size, self.z + self.size, self.z + self.size],
-            [self.x + self.size, self.y + self.size, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + self.size, self.z + self.size, self.z + self.size]
+            [self.x - self.size, self.y - 50, self.z - self.size, self.z - self.size], [self.x + self.size, self.y - 50, self.z - self.size, self.z - self.size],
+            [self.x + self.size, self.y + 50, self.z - self.size, self.z - self.size], [self.x - self.size, self.y + 50, self.z - self.size, self.z - self.size],
+            [self.x - self.size, self.y - 50, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - 50, self.z + self.size, self.z + self.size],
+            [self.x + self.size, self.y + 50, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + 50, self.z + self.size, self.z + self.size]
         ]
         #self.squares = []
 
@@ -20,9 +20,8 @@ def load_map(map_name):
         BLOCKS = []
 
         
-        for i in range(10):
-            for j in range(10):
-                BLOCKS.append(Block((i*100-500,500,j*100-500),50))
+
+        BLOCKS.append(Block((0,500,0),500))
         BLOCKS.append(Block((300,400,-500),50))
         BLOCKS.append(Block((300,300,-500),50))
         
