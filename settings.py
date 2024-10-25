@@ -1,5 +1,4 @@
 import pygame    
-import map_loading
 pygame.init()
 screen_width = 1200
 screen_height = 800
@@ -17,6 +16,11 @@ map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
 
 mouse_sensitivity = 0.003
 
-map = map_loading.Map("test")
+cube_size = 50
 
-print(1)
+class Showing():
+    def __init__(self):
+        self.squares_front = []
+        self.squares = []
+
+showing = Showing()
