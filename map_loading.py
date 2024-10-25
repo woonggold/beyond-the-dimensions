@@ -13,15 +13,20 @@ class Block:
         ]
         #self.squares = []
 
+
 def load_map(map_name):
     global cube_size
     if map_name == "test":
         BLOCKS = []
+
+        
         for i in range(10):
             for j in range(10):
                 BLOCKS.append(Block((i*100-500,500,j*100-500),50))
+        BLOCKS.append(Block((300,400,-500),50))
+        BLOCKS.append(Block((300,300,-500),50))
+        
         return BLOCKS
-
 class Map:
     def __init__(self, map):
         self.BLOCKS = load_map(map)
