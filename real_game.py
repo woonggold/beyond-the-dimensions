@@ -58,25 +58,7 @@ blocks = []
         
 #         player_y = 1/2 * player_mass * player_y_d^2
 
-def player_stop():
-    global player_x_d, player_y_VELOCITY, player_z_d, jump_count, player_moving, Moving_left, player_y_d, x_back, x_go, Y_down, Y_up
-    player_x_d = 0
-    player_y_VELOCITY = 0
-    player_z_d = 0
-    jump_count = 1
-    player_moving = False
-    Moving_left = False
-    player_y_d = 0
-    x_back = False
-    x_go = False
-    Y_down = False
-    Y_up = False
 
-def player_right_go():
-    global player_x_d, x_go
-    player_x_d = 25
-    x_go = True
-    
 def gravity():
     global condition, player_x, player_y, player_z, acceleration, z_key_count
     
@@ -148,6 +130,26 @@ def map_load():
 def go_to_main():
     player_y_go()
 
+def player_stop():
+    global player_x_d, player_y_VELOCITY, player_z_d, jump_count, player_moving, Moving_left, player_y_d, x_back, x_go, Y_down, Y_up
+    player_x_d = 0
+    player_y_VELOCITY = 0
+    player_z_d = 0
+    jump_count = 1
+    player_moving = False
+    Moving_left = False
+    player_y_d = 0
+    x_back = False
+    x_go = False
+    Y_down = False
+    Y_up = False
+
+def player_right_go():
+    global player_x_d, x_go
+    player_x_d = 25
+    x_go = True
+    
+
 def player_left_go():
     global player_x_d, Moving_left, x_back
     player_x_d = -25
@@ -209,7 +211,7 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.BLOCKS.pos(nearestx_100,nearesty_100,nearestz_100))
+    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
     
     # print('블럭설치')
     
@@ -354,7 +356,7 @@ def is_collinear(p1, p2, p3):
 def are_all_points_collinear(points):
     # 4개의 점 중 첫 번째 점과 나머지 세 점의 기울기가 모두 같으면 한 직선 위에 있음
     p1, p2, p3, p4 = points
-    return is_collinear(p1, p2, p3) and is_collinear(p1, p2, p4)
+    return is_collinear(p1, p2, p3) or is_collinear(p1, p2, p4) or is_collinear(p1, p3, p4) or is_collinear(p3, p2, p4)
 
 
 def draw_square(square):
@@ -589,6 +591,5 @@ def run():
     camera_move()
     draw_screen()
     gravity()
-    
     
     return condition
