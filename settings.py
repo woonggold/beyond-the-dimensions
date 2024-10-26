@@ -7,7 +7,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 
 camera_pos = [0, 0, -1000]
-camera_speed = 10  # 카메라 이동 속도
+camera_speed = 25  # 카메라 이동 속도
 is_3D = False
 target_camera_pos = camera_pos # 목표 카메라 위치
 

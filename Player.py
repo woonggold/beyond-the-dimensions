@@ -9,7 +9,7 @@ class Player:
         self.pos = pos
         self.x ,self.y, self.z = pos
         self.image = f"{script_dir}//images//{image}"
-        
+
 class PLAYBlock:
     def __init__(self, pos, size):
         self.pos = pos
