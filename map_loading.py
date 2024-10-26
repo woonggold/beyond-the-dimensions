@@ -15,7 +15,7 @@ class Block:
 
 
 def load_map(map_name):
-    global cube_size
+    global cube_size, BLOCKS
     if map_name == "test":
         BLOCKS = []
 

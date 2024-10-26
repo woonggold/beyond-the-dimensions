@@ -80,18 +80,17 @@ time_elapsed = 0  # 시간 변수
 
 def player_y_go():
     global player_y_VELOCITY, jump_count, time_elapsed, initial_velocity
-    time_elapsed += 0.1  # 시간 증가 (프레임 간격에 맞게 조절 가능)
+    time_elapsed += 0.1 
     player_y_VELOCITY = initial_velocity + 9.8 * time_elapsed  # v = v0 + at
 
-    # 플레이어가 땅에 닿으면 점프 가능하게 초기화
-    if player_y_VELOCITY > 0:  # 속도가 양수가 되면 하강 중
-        jump_count = 2  # 땅에 닿으면 다시 점프 가능하게
+    if player_y_VELOCITY > 0:  
+        jump_count = 2  
 
 def jumping():
     global player_y_VELOCITY, initial_velocity, jump_count, time_elapsed
-    jump_count = 1  # 점프 중 상태로 설정
-    time_elapsed = 0  # 시간 초기화
-    initial_velocity = -15  # 점프 초기 속도 (위로 향하게 음수로 설정)
+    jump_count = 1  
+    time_elapsed = 0 
+    initial_velocity = -15  
     player_y_VELOCITY = initial_velocity  # 초기 속도로 시작
 
 
