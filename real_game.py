@@ -19,6 +19,8 @@ x_back = False
 x_go = False
 Y_down = False
 Y_up = False
+aquire_piece_count = 0
+
 
 #캐릭터 충동 처리
 
@@ -129,13 +131,15 @@ def map_save():
     final_data = {
         "Blocks": separated_data, 
     }
+    mapname = input("저장할 맵 이름을 입력해 주세요")
 
-    with open('data.json', 'w', encoding='utf-8') as json_file:
+    with open(mapname+'json', 'w', encoding='utf-8') as json_file:
         json.dump(final_data, json_file, ensure_ascii=False, indent=4)    
     print("저장됨")
         
 def map_load():
-    with open('data.json', 'r', encoding='utf-8') as json_file:
+    mapname = input("불러올 맵 이름을 입력해 주세요")
+    with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)    
     for i in range(len(data["Blocks"]["x"])):
         map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i])))
@@ -210,6 +214,15 @@ def setblock():
     
     # print('블럭설치')
     
+def aquire_piece():
+    global aquire_piece_count, piece_img
+    
+    if abs(player_x) - abs(piece.pieceblock.x) < 100 or abs(player_x) - abs(piece.pieceblock.x) > -100:
+        if abs(player_y) - abs(piece.pieceblock.y) < 100 or abs(player_y) - abs(piece.pieceblock.y) > -100:
+            modified_img = pygame.transform.scale(piece_img,(0,0))
+            aquire_piece_count += 1
+            screen.blit(modified_img, (0, 0))
+            
 
 def check_wall_collision():
     global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
@@ -235,6 +248,7 @@ def check_wall_collision():
 def player_during():
     global player_x, player_y, player_z, player_moving, z_key_count, Y_down, Y_up, x_go, x_back
     check_wall_collision()
+    aquire_piece()
     player_moving = True
     player_x += player_x_d
     player_y += player_y_d
@@ -312,7 +326,7 @@ def draw_piece(piece):
 
 #     draw_square(piece)
 def draw_real_piece(piece_block):
-    
+    global piece_img
     x, y, z = piece_block.x, piece_block.y, piece_block.z
     # 카메라 위치를 기준으로 좌표 이동
     x -= camera_pos[0]
@@ -335,8 +349,9 @@ def draw_real_piece(piece_block):
     piece_img = pygame.image.load(f"{script_dir}//images//시작배경.png")
     piece_rect = piece_img.get_rect()
     piece_width, piece_height = piece_rect.width, piece_rect.height 
-    modified_img = pygame.transform.scale(piece_img, (piece_width // z, piece_height // z))
+    modified_img = pygame.transform.scale(piece_img, (100*piece_width / z, 100*piece_height / z))
     screen.blit(modified_img, (result[0] - piece_width // 2, result[1] - piece_height // 2))
+
 
     
     
@@ -584,5 +599,6 @@ def run():
     camera_move()
     draw_screen()
     gravity()
+    
     
     return condition
