@@ -12,6 +12,7 @@ class Block:
             [self.x - self.size, self.y - self.size, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - self.size, self.z + self.size, self.z + self.size],
             [self.x + self.size, self.y + self.size, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + self.size, self.z + self.size, self.z + self.size]
         ]
+        self.texture = [(100,100,100),(255,255,255),(255,0,0),(0,0,0)]
 
 
 def load_map(map_name):
