@@ -7,6 +7,7 @@ import piece
 import map_loading
 from Player import *
 import time
+
 # 파이게임 초기화
 
 
@@ -17,18 +18,23 @@ player_z = playerblock.z
 aquire_piece_count = 0
 Front_collision = False
 
+
 #캐릭터 충동 처리
-
-
+collision_check = 5
 
 #플레이어 속도 변화랑
+initial_velocity = 0
 player_x_d = 0
-# player_y_VELOCITY = 0
+time_elapsed = 0
+player_y_VELOCITY = 0
 player_z_d = 0
-jump_count = 1
+jump_count = 0
 acceleration = 0
 #개발자모드 y이동 속도
+player_z_y = 0
 player_y_d = 0
+
+#플레이어 움직임 함수
 
 #색칠 변수
 color = 0
@@ -38,7 +44,6 @@ z_key_count =0
 
 #블록 설치
 blocks = []
-
 # def gravity():
 #     global condition, player_x, player_y, player_z, acceleration, z_key_count
     
@@ -107,18 +112,34 @@ def map_load():
 
     print("로드됨")
    
-# def go_to_main():
-#     player_y_go()
-
 def player_stop():
-    global player_y_VELOCITY, jump_count, player_moving
+    global player_x_d, player_y_VELOCITY, player_z_d, jump_count, player_moving, Moving_left
+    player_x_d = 0
     player_y_VELOCITY = 0
-    
-    
-# def player_y_go():
-#     global player_y_VELOCITY, acceleration
-#     acceleration += 0.05
-#     player_y_VELOCITY = 0.01 + acceleration
+    player_z_d = 0
+    player_moving = False
+    Moving_left = False
+
+
+# 중력 가속도 상수 (m/s^2)
+GRAVITY = 9.8  
+time_elapsed = 0  # 시간 변수
+
+def player_y_go():
+    global player_y_VELOCITY, jump_count, time_elapsed, initial_velocity
+    time_elapsed += 0.1 
+    player_y_VELOCITY = initial_velocity + 9.8 * time_elapsed  # v = v0 + at
+
+    if player_y_VELOCITY > 0:  
+        jump_count = 2  
+
+def jumping():
+    global player_y_VELOCITY, initial_velocity, jump_count, time_elapsed
+    jump_count = 1  
+    time_elapsed = 0 
+    initial_velocity = -15  
+    player_y_VELOCITY = initial_velocity  # 초기 속도로 시작
+
     
 
 def setblock():
@@ -152,7 +173,7 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
+    map_loading.map_test.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
     # print('블럭설치')
     
 def blockremove():
@@ -185,40 +206,121 @@ def aquire_piece():
 def next_stage():
     pass
 
-def check_wall_collision():
-    global player_x_d, player_y_VELOCITY, z_key_count, Front_collision
-    # if player_moving == True:
-    if z_key_count == 0:
-        for block in map_loading.map_test.BLOCKS:
-            if player_x == block.x:
-                pass
-                #x좌표 기준으로 본인 발 밑에 있는 블록 감지
-            if block.y < 500:
-                if block.x - player_x == 100:
-                    if player_x_d > 0:
-                        if is_3D == False:
-                            Front_collision = True
-                        else:
-                            if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
-                                Front_collision = True
+# def check_wall_collision():
+#     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
+#     # if player_moving == True:
+#     if z_key_count == 0:
+#         for block in map_loading.map_test.BLOCKS:
+#             if player_x == block.x:
+#                 pass
+#                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
+#             if block.y < 500:
+#                 if block.x - player_x == 100:
+#                     if player_x_d > 0:
+#                         if is_3D == False:
+#                             Front_collision = True
+#                         else:
+#                             if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
+#                                 Front_collision = True
                         
 
                         
-            if block.y - player_y == 325 and block.x - player_x < 100 and block.x - player_x > -100 and block.z - player_z < 100 and block.z - player_z > -100:
+#             # 플레이어의 밑면과 블록 윗면이 맞닿는 경우 (점프 상태에 따라 조건 변경)
+#             if jump_count == 2:
+#                 if 310 <= block.y - player_y <= 340 and - block.size - 50 < block.x - player_x < block.size + 50 and - block.size - 50 < block.z - player_z < block.size + 50:
+#                     print("나중, 충돌된 거 : ",block.y)
+#                     player_y_VELOCITY = 0
+#                     time_elapsed = 0
+#                     acceleration = 0
+#                     initial_velocity = 0
+#                     player_y = block.y - 325
+#                     jump_count = 0
+#                     is_falling = False
+#                     break  # 충돌이 감지되면 루프 종료
+#             else:
+#                 if block.y - player_y == 325 and - block.size - 50 < block.x - player_x < block.size + 50 and -block.size - 50 < block.z - player_z < block.size + 50 and jump_count != 1:
+#                     print("처음")
+#                     time_elapsed = 0
+#                     player_y_VELOCITY = 0
+#                     initial_velocity = 0
+#                     acceleration = 0
+#                     jump_count = 0
+#                     is_falling = False
+#                     break  # 충돌이 감지되면 루프 종료
+#         # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
+#         if is_falling:
+#             player_y_go()
+
+
+def check_wall_collision():
+    global player_moving, player_x_d, Moving_left, player_y_VELOCITY, is_falling, jump_count, player_y, time_elapsed, acceleration, initial_velocity, collision_check 
+    is_falling = True  # 기본적으로 떨어지는 상태로 설정
+    for block in map_loading.map_test.BLOCKS:
+        if player_x == block.x:
+            pass
+            #x좌표 기준으로 본인 발 밑에 있는 블록 감지
+        if block.y < 500:
+            if block.x - player_x == 100:
+                if player_x_d > 0:
+                    if is_3D == False:
+                        collision_check = 0
+                    else:
+                        if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
+                            collision_check = 0
+            elif block.x - player_x == -100:
+                if player_x_d < 0:
+                    if is_3D == False:
+                        collision_check = 1
+                    else:
+                        if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
+                            collision_check = 1
+            elif block.z - player_z == 100:
+                if player_z_d > 0:
+                    if is_3D == False:
+                        collision_check = 2
+                    else:
+                        if abs(block.x) - abs(player_x)  < 100 and abs(block.x) - abs(player_x) > -100:
+                            collision_check = 2
+            elif block.z - player_z == -100:
+                if player_z_d < 0:
+                    if is_3D == False:
+                        collision_check = 3
+                    else:
+                        if abs(block.x) - abs(player_x)  < 100 and abs(block.x) - abs(player_x) > -100:
+                            collision_check = 3
+        
+        # 플레이어의 밑면과 블록 윗면이 맞닿는 경우 (점프 상태에 따라 조건 변경)
+        if jump_count == 2:
+            if 310 <= block.y - player_y <= 340 and - block.size - 50 < block.x - player_x < block.size + 50 and - block.size - 50 < block.z - player_z < block.size + 50:
                 player_y_VELOCITY = 0
-            
+                time_elapsed = 0
+                acceleration = 0
+                initial_velocity = 0
+                player_y = block.y - 325
+                jump_count = 0
+                is_falling = False
+        else:
+            if block.y - player_y == 325 and - block.size - 50 < block.x - player_x < block.size + 50 and -block.size - 50 < block.z - player_z < block.size + 50 and jump_count != 1:
+                time_elapsed = 0
+                player_y_VELOCITY = 0
+                initial_velocity = 0
+                acceleration = 0
+                jump_count = 0
+                is_falling = False
+
+    # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
+    if is_falling:
+        player_y_go()
+        
+
 
 #플레이어 움직임 실시간 적용
 def player_during():
-    global player_x, player_y, player_z, player_moving, z_key_count, player_x_d, Front_collision
+    global player_x, player_y, player_z, player_moving, z_key_count, player_x_d, collision_check
     check_wall_collision()
     aquire_piece()
     player_moving = True
-    if Front_collision == True:
-        player_x_d = 0
-    
-    if player_x_d <= -50:
-        player_x_d = 0
+    print(player_x)
     
     if z_key_count == 1:
         # player_x += player_x_d * 2
@@ -229,14 +331,40 @@ def player_during():
         
         pass
     else:
-        player_x += player_x_d
-        player_y += player_y_d
-        # if z_key_count == 0:
-        #     player_y += player_y_VELOCITY
-        player_z += player_z_d
+        if jump_count == 2:
+            if player_y_VELOCITY < 2:
+                player_z += player_z_d
+
+                player_x += player_x_d
+                player_y += player_y_d + 2
+        else:
+            
+            if collision_check == 0:
+                player_y += player_y_d
+                player_z += player_z_d
+            elif collision_check == 1:
+                player_y += player_y_d
+                player_z += player_z_d
+                
+            elif collision_check == 2:
+                player_x += player_x_d
+                player_y += player_y_d
+            elif collision_check == 3:
+                player_x += player_x_d
+                player_y += player_y_d
+            else:
+                player_z += player_z_d
+
+                player_x += player_x_d
+                player_y += player_y_d
+            
+        
+        
+        player_y += player_y_VELOCITY
     
-    playerblock.pos = (player_x, player_y, playerblock.z)  
-    playerblock.x = player_x  
+    playerblock.pos = (player_x, player_y, playerblock.z)
+    if Front_collision == False:
+        playerblock.x = player_x
     playerblock.y = player_y
     playerblock.z = player_z
 
@@ -250,10 +378,10 @@ def player_during():
         [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size],
         [playerblock.x + playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size],
         [playerblock.x - playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size]
+
     ]
 
     else:
-        
         playerblock.points = [
             [playerblock.x - playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
             [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
@@ -408,7 +536,7 @@ def mouse_rotate_check():
         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, z_key_count, player_y_VELOCITY, acceleration, player_x_d, player_z_d, player_y_d, player_x, player_y, player_z, Front_collision
+    global condition, is_3D, target_camera_pos, color, collision_check, z_key_count, player_y_VELOCITY, acceleration, player_x_d, player_z_d, player_y_d, player_x, player_y, player_z, Front_collision
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -419,13 +547,12 @@ def event_check():
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
             if event.key == pygame.K_a:
-                if Front_collision == True:
-                    Front_collision = False
-                player_x_d -= 25
                 
-            if event.key == pygame.K_d: 
+                player_x_d -= 25
+            
+            if event.key == pygame.K_d:
                 player_x_d += 25
-                pass
+
             if event.key == pygame.K_w:#z축 앞 이동
                 player_z_d += 25
             if event.key == pygame.K_s: #z축 뒤 이동
@@ -435,8 +562,7 @@ def event_check():
             if event.key == pygame.K_z: #개발자 모드 실행
                 if z_key_count == 0:
                     z_key_count = 1
-                    color = 255
-                    
+                    color = 255                    
                 else:
                     z_key_count = 0
                     color = 0
@@ -452,11 +578,16 @@ def event_check():
             if event.key == pygame.K_SPACE: 
                 if z_key_count == 1:
                     player_y_d -= 25
+                else:
+                    if jump_count == 0:
+                        jumping()
                     
 
-        elif event.type == pygame.KEYUP: 
+        elif event.type == pygame.KEYUP:
+            collision_check = 5
             if event.key == pygame.K_a: 
                 # player_stop()
+                
                 if z_key_count == 0:
                     player_x_d += 25
                 else:
@@ -474,6 +605,7 @@ def event_check():
                 pass
             if event.key == pygame.K_d: 
                 # player_stop()
+
                 if z_key_count == 0:
                     player_x_d -= 25
                 else:
@@ -497,7 +629,6 @@ def event_check():
                 if z_key_count == 1:
                     player_y += 50
                     camera_pos[1] += 100
-
 
 
         elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
@@ -554,9 +685,8 @@ def draw_screen():
     for block in map_loading.map_test.BLOCKS:
         block_3D_transition(block.points)
         check_cube(block.points,block.texture)
-    check_cube(Player.playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
+    check_cube(playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
-
     # 블록 그리기
     # for block in map.BLOCKS:
     #     draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
@@ -584,7 +714,7 @@ def draw_screen():
 
 
 def run():
-    global condition
+    global condition, jump_count, acceleration
     condition = "real_game"
     mouse_rotate_check()
     event_check()

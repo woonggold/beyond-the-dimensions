@@ -9,7 +9,6 @@ class Player:
         self.pos = pos
         self.x ,self.y, self.z = pos
         self.image = f"{script_dir}//images//{image}"
-
 class PLAYBlock:
     def __init__(self, pos, size):
         self.pos = pos
@@ -23,4 +22,4 @@ class PLAYBlock:
             [self.x - self.size, 2*(self.y - self.size), self.z + self.size, self.z + self.size], [self.x + self.size, 2 *(self.y - self.size), self.z + self.size, self.z + self.size],
             [self.x + self.size, 2*(self.y + self.size), self.z + self.size, self.z + self.size], [self.x - self.size, 2 *(self.y + self.size), self.z + self.size, self.z + self.size]
         ]
-playerblock = PLAYBlock((0,175,-500),50)
+playerblock = PLAYBlock((100,175,-500),50)
