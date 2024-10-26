@@ -37,7 +37,7 @@ def project_3d_or_2d(point, camera_pos,angle_y,angle_x):
     camera_distance = 500
     x,y,z = rotate_point((x,y,z),angle_x,angle_y)
 
-    if z <= 0.00001:  # 너무 가까운 z 좌표는 렌더링하지 않음
+    if z <= 10:  # 너무 가까운 z 좌표는 렌더링하지 않음
         return None
     else:
         factor = camera_distance / z

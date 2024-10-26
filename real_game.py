@@ -20,9 +20,20 @@ def draw_square(square):
         temp_square.append(projection_3D.project_3d_or_2d(point, camera_pos, angle_x, angle_y))
     square = temp_square
     
-    if None not in square:
-        pygame.draw.polygon(screen, (255,0,0), square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, (0,0,0), square, 1)  # 테두리 두께 1
+    if (None not in square):
+        out = 0
+        delta = -10
+        for pixel in square:
+            if not (0-delta<pixel[0]<screen_width+delta and 0-delta<pixel[1]<screen_height+delta):
+                out += 1
+        if out == 4:
+            return #함수종료
+        if (abs(square[1][1]-square[2][1]) >= screen_height) or (abs(square[2][1]-square[3][1]) >= screen_height):
+            return
+        if (abs(square[1][0]-square[2][0]) >= screen_width) or (abs(square[2][1]-square[3][1]) >= screen_height):
+            return
+        pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
+        pygame.draw.polygon(screen, (0,0,0), square, 10)  # 테두리 두께 1
     # draw_line(square[0],square[1])
     # draw_line(square[1],square[2])
     # draw_line(square[2],square[3])
@@ -103,17 +114,17 @@ def event_check():
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_r:
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
-                if is_3D:
-                    # target_camera_pos[0] = 0  # 탑뷰 카메라 위치 설정
-                    target_camera_pos[1] -= 250
-                    target_camera_pos[2] -= 250 # 바닥이 보이도록 카메라 높이 조정
-                else:
-                    # target_camera_pos[0] = 0  # 플랫포머뷰 카메라 위치 설정
-                    target_camera_pos[1] += 250
-                    target_camera_pos[2] += 250
+                # if is_3D:
+                #     # target_camera_pos[0] = 0  # 탑뷰 카메라 위치 설정
+                #     target_camera_pos[1] -= 250
+                #     target_camera_pos[2] -= 250 # 바닥이 보이도록 카메라 높이 조정
+                # else:
+                #     # target_camera_pos[0] = 0  # 플랫포머뷰 카메라 위치 설정
+                #     target_camera_pos[1] += 250
+                #     target_camera_pos[2] += 250
         
 
     keys = pygame.key.get_pressed()
@@ -127,9 +138,9 @@ def event_check():
     if keys[pygame.K_d]:  # D 키 -> 오른쪽으로 이동
         camera_pos[0] += camera_speed  # X축 이동 (오른쪽)
     if keys[pygame.K_SPACE]:  # Space 키 -> 위로 이동
-        camera_pos[1] += camera_speed  # Y축 이동 (위로)
+        camera_pos[1] -= camera_speed  # Y축 이동 (위로)
     if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:  # Shift 키 -> 아래로 이동
-        camera_pos[1] -= camera_speed  # Y축 이동 (아래로)
+        camera_pos[1] += camera_speed  # Y축 이동 (아래로)
 def camera_move():
     # 부드럽게 이동
     global camera_pos
