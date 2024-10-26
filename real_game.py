@@ -7,8 +7,8 @@ import piece
 import map_loading
 from Player import *
 import time
+import animation
 
-# 파이게임 초기화
 
 
 #플레이어 세팅
@@ -17,6 +17,7 @@ player_y = playerblock.y
 player_z = playerblock.z
 aquire_piece_count = 0
 Front_collision = False
+texture_num = 0
 
 
 #캐릭터 충동 처리
@@ -83,15 +84,18 @@ def map_save():
     blocks_dict_x = []
     blocks_dict_y = []
     blocks_dict_z = []
+    blocks_dict_texture = []
     for block in map_loading.map_test.BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
         blocks_dict_z.append(block.z)
+        blocks_dict_texture.append(block.texture_num)
     
     separated_data = {
         "x": blocks_dict_x,
         "y": blocks_dict_y,
-        "z": blocks_dict_z,  
+        "z": blocks_dict_z, 
+        "texture": blocks_dict_texture, 
     }
     
     final_data = {
@@ -106,9 +110,12 @@ def map_save():
 def map_load():
     mapname = input("불러올 맵 이름을 입력해 주세요: ")
     with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)    
+        data = json.load(json_file)
+    for block in map_loading.map_test.BLOCKS:
+        map_loading.map_test.BLOCKS.remove(block)
     for i in range(len(data["Blocks"]["x"])):
-        map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i])))
+                
+        map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
 
     print("로드됨")
    
@@ -142,9 +149,7 @@ def jumping():
 
     
 
-def setblock():
-    global player_x, player_z, player_y
-
+def setblock(texture_num):    
     nearestx_100 = round(player_x / 100) * 100
     nearestz_100 = round(player_z / 100) * 100
     
@@ -173,7 +178,7 @@ def setblock():
 
     
   
-    map_loading.map_test.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
+    map_loading.map_test.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
     # print('블럭설치')
     
 def blockremove():
@@ -320,7 +325,6 @@ def player_during():
     check_wall_collision()
     aquire_piece()
     player_moving = True
-    print(player_x)
     
     if z_key_count == 1:
         # player_x += player_x_d * 2
@@ -536,11 +540,15 @@ def mouse_rotate_check():
         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, collision_check, z_key_count, player_y_VELOCITY, acceleration, player_x_d, player_z_d, player_y_d, player_x, player_y, player_z, Front_collision
+    global condition, is_3D, target_camera_pos, color, collision_check, z_key_count, texture_num, player_y_VELOCITY, acceleration, player_x_d, player_z_d, player_y_d, player_x, player_y, player_z, Front_collision
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
         elif event.type == pygame.KEYDOWN:
+            if pygame.K_0 <= event.key <= pygame.K_9:
+                texture_num = event.key - pygame.K_0
+
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
             if event.key == pygame.K_r:
@@ -634,7 +642,7 @@ def event_check():
         elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
             if event.button == 3: # 개발자 블록 설치
                 if z_key_count == 1:    
-                    setblock()
+                    setblock(texture_num)
             elif event.button == 4:  # 휠을 위로 스크롤
                 camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
@@ -685,7 +693,13 @@ def draw_screen():
     for block in map_loading.map_test.BLOCKS:
         block_3D_transition(block.points)
         check_cube(block.points,block.texture)
-    check_cube(playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
+    if is_3D == False:
+        temp = []
+        for point in playerblock.points:
+            temp.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos,angle_x,angle_y))
+        animation.draw_quad("player",temp)
+    else:
+        check_cube(playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
     # 블록 그리기
     # for block in map.BLOCKS:
