@@ -19,6 +19,7 @@ x_back = False
 x_go = False
 Y_down = False
 Y_up = False
+aquire_piece_count = 0
 
 #캐릭터 충동 처리
 
@@ -129,13 +130,15 @@ def map_save():
     final_data = {
         "Blocks": separated_data, 
     }
+    mapname = input("저장할 맵 이름을 입력해 주세요: ")
 
-    with open('data.json', 'w', encoding='utf-8') as json_file:
+    with open(mapname+'.json', 'w', encoding='utf-8') as json_file:
         json.dump(final_data, json_file, ensure_ascii=False, indent=4)    
     print("저장됨")
         
 def map_load():
-    with open('data.json', 'r', encoding='utf-8') as json_file:
+    mapname = input("불러올 맵 이름을 입력해 주세요: ")
+    with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)    
     for i in range(len(data["Blocks"]["x"])):
         map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i])))
@@ -206,10 +209,20 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
+    map_loading.BLOCKS.append(map_loading.BLOCKS.pos(nearestx_100,nearesty_100,nearestz_100))
     
     # print('블럭설치')
     
+def aquire_piece():
+    global aquire_piece_count, piece_img
+    
+    if abs(player_x) - abs(piece.pieceblock.x) < 50 and abs(player_x) - abs(piece.pieceblock.x) > -50:
+        if abs(player_y) - abs(piece.pieceblock.y) < 50 and abs(player_y) - abs(piece.pieceblock.y) > -50:
+            aquire_piece_count += 1
+            
+def next_stage():
+    pass
+
 
 def check_wall_collision():
     global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
@@ -235,6 +248,7 @@ def check_wall_collision():
 def player_during():
     global player_x, player_y, player_z, player_moving, z_key_count, Y_down, Y_up, x_go, x_back
     check_wall_collision()
+    aquire_piece()
     player_moving = True
     player_x += player_x_d
     player_y += player_y_d
@@ -312,8 +326,8 @@ def player_during():
 
 # #     draw_square(piece)
 def draw_real_piece(piece_block):
-    
-    x, y, z = piece_block.x, piece_block.y, piece_block.z
+    global piece_img,aquire_piece_count
+    x, y, z = piece_block.x, piece_block.y, piece_block.z,
     dx = abs(x-camera_pos[0])
     dy = abs(y-camera_pos[1])
     dz = abs(z-camera_pos[2])
@@ -560,7 +574,8 @@ def draw_screen():
     else:
         for square in showing.squares_front:
             draw_square(square[0:4])
-    draw_real_piece(piece.pieceblock)
+    if aquire_piece_count == 0:
+        draw_real_piece(piece.pieceblock)
     pygame.display.flip()
     clock.tick(60)
 
@@ -574,5 +589,6 @@ def run():
     camera_move()
     draw_screen()
     gravity()
+    
     
     return condition
