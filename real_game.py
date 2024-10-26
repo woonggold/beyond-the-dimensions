@@ -209,9 +209,27 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.BLOCKS.pos(nearestx_100,nearesty_100,nearestz_100))
+    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
+    
     
     # print('블럭설치')
+    
+def blockremove():
+    nearestx_100 = round(player_x / 100) * 100
+    nearestz_100 = round(player_z / 100) * 100
+    if player_y > 0:
+        player_cal = player_y / 25
+        player_cal_m = player_cal // 2
+        nearesty_100 = player_cal_m * 100 + 200
+    else:
+        player_cal = abs(player_y) / 25
+        player_cal_m = ((player_cal) // 2) 
+        nearesty_100 = 100 - (player_cal_m * 100)
+    block_to_remove = (nearestx_100, int(nearesty_100), nearestz_100)
+    for block in map_loading.map_test.BLOCKS:
+        print(block.pos)
+        if block_to_remove == block.pos:
+            map_loading.BLOCKS.remove(block)
     
 def aquire_piece():
     global aquire_piece_count, piece_img
@@ -508,6 +526,9 @@ def event_check():
                 camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
                 camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
+            elif event.button == 1:
+                if z_key_count == 1:    
+                    blockremove()
 
 def camera_move():
     # 부드럽게 이동
