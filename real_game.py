@@ -296,6 +296,52 @@ def draw_line(one,two):
     if all((one,two)):
         pygame.draw.aaline(screen, (color, 0, 0), one, two, 1)
 
+def draw_line_piece(one,two):
+    global color
+    
+    if all((one,two)):
+        pygame.draw.aaline(screen, (255, 0, 0), one, two, 1)
+        
+def draw_piece(piece):
+    for i in range(len(piece)):
+        x1, y1 = piece[i]
+        x2, y2 = piece[(i + 1) % len(piece)]  
+
+        draw_line_piece((x1, y1), (x2, y2))
+    
+# def draw_real_piece(points):
+#     piece = [points[0], points[1], points[2], points[3]]
+
+#     draw_square(piece)
+def draw_real_piece(point):
+    x, y, z = point[0], point[1], point[2]
+
+    # 카메라 위치를 기준으로 좌표 이동
+    x -= camera_pos[0]
+    y -= camera_pos[1]
+    z -= camera_pos[2]
+
+    # 원근 투영 적용
+    camera_distance = 500
+    x, y, z = projection_3D.rotate_point((x, y, z), angle_x, angle_y)
+
+    # z 좌표가 너무 가까운 경우 생략
+    if z <= -camera_distance + 0.00001:
+        return None
+    else:
+        factor = camera_distance / (camera_distance + z)
+        x_2d = x * factor + screen_width / 2  # 화면 중앙으로 이동
+        y_2d = y * factor + screen_height / 2  # 화면 중앙으로 이동
+        result = ((int(x_2d), int(y_2d)))
+
+    img = pygame.image.load(f"/images//시작.png"),(0,0)
+    
+    
+
+    
+# 큐브의 면을 그리는 함수
+
+
 def draw_square(square):
     checked = True
     
@@ -307,27 +353,6 @@ def draw_square(square):
 # 큐브의 면을 그리는 함수
 def draw_cube(points):
     squares = [
-    # 앞면
-        [points[0], points[1], points[2], points[3]],
-
-        # 뒷면
-        [points[4], points[5], points[6], points[7]],
-
-        # 왼쪽면
-        [points[0], points[3], points[7], points[4]],
-
-        # 오른쪽면
-        [points[1], points[2], points[6], points[5]],
-
-        # 윗면
-        [points[0], points[1], points[5], points[4]],
-        [points[0], points  [1], points[5], points[4]],
-
-        # 아랫면
-        [points[3], points[2], points[6], points[7]]
-    ]
-    
-    dimension_piece = [
     # 앞면
         [points[0], points[1], points[2], points[3]],
 
@@ -463,11 +488,20 @@ def draw_screen():
     global blocks
     screen.fill((255, 255, 255))
 
+    # 블록 그리기
     for block in map.BLOCKS:
-        draw_cube(projection_3D.project_3d_or_2d(block.points,camera_pos,is_3D,angle_x,angle_y))
+        draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
 
-    draw_cube(projection_3D.project_3d_or_2d(Player.playerblock.points,camera_pos,is_3D,angle_x,angle_y))
-    # draw_cube(piece.pieceblock.points)
+    # 플레이어 그리기
+    draw_cube(projection_3D.project_3d_or_2d(Player.playerblock.points, camera_pos, is_3D, angle_x, angle_y))
+
+    # pieceblock 그리기 (카메라 앵글 반영)
+    piece.pieceblock.update_points(camera_pos, angle_x, angle_y)
+    draw_real_piece(piece.pieceblock.projected_points)
+
+    pygame.display.flip()
+    clock.tick(60)
+
 
 
     pygame.display.flip()

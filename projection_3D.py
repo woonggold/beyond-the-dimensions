@@ -62,3 +62,31 @@ def project_3d_or_2d(points, camera_pos,is_3D,angle_y,angle_x):
                 y_2d = y * factor + screen_height/2  # 화면 중앙으로 이동
                 result.append((int(x_2d), int(y_2d)))
         return result
+    
+    
+def project_3d_or_2d_for_piece(points, camera_pos, angle_y, angle_x):
+    result = []
+
+    for point in points:
+        # 각 점의 초기 좌표
+        x, y, z = point[0], point[1], point[2]
+
+        # 카메라 위치를 기준으로 좌표 이동
+        x -= camera_pos[0]
+        y -= camera_pos[1]
+        z -= camera_pos[2]
+
+        # 원근 투영 적용
+        camera_distance = 500
+        x, y, z = rotate_point((x, y, z), angle_x, angle_y)
+
+        # z 좌표가 너무 가까운 경우 생략
+        if z <= -camera_distance + 0.00001:
+            result.append(None)
+        else:
+            factor = camera_distance / (camera_distance + z)
+            x_2d = x * factor + screen_width / 2  # 화면 중앙으로 이동
+            y_2d = y * factor + screen_height / 2  # 화면 중앙으로 이동
+            result.append((int(x_2d), int(y_2d)))
+
+    return result
