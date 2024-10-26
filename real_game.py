@@ -5,6 +5,7 @@ from settings import *
 import Player
 import json
 import piece
+import map_loading
 # 파이게임 초기화
 
 
@@ -343,15 +344,55 @@ def draw_real_piece(point):
 
 
 def draw_square(square):
-    checked = True
+    temp_square = []
+    for point in square[0:4]:
+        temp_square.append(projection_3D.project_3d_or_2d(point, camera_pos, angle_x, angle_y))
+    square = temp_square
     
-    if (checked):
-        draw_line(square[0],square[1])
-        draw_line(square[1],square[2])
-        draw_line(square[2],square[3])
-        draw_line(square[3],square[0])
+    if (None not in square):
+        out = 0
+        delta = -10
+        for pixel in square:
+            if not (0-delta<pixel[0]<screen_width+delta and 0-delta<pixel[1]<screen_height+delta):
+                out += 1
+        if out == 4:
+            return #함수종료
+        if (abs(square[1][1]-square[2][1]) >= screen_height) or (abs(square[2][1]-square[3][1]) >= screen_height):
+            return
+        if (abs(square[1][0]-square[2][0]) >= screen_width) or (abs(square[2][1]-square[3][1]) >= screen_height):
+            return
+        pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
+        pygame.draw.polygon(screen, (0,0,0), square, 10)  # 테두리 두께 1
+    # draw_line(square[0],square[1])
+    # draw_line(square[1],square[2])
+    # draw_line(square[2],square[3])
+    # draw_line(square[3],square[0])
+
+def cal_square(square,where):
+    if (((where == 'front') and (square not in showing.squares_front)) or (square not in showing.squares)):#중복되는 것이 없는지 확인
+        if (where == 'front'):#2D 계산할 때 쓰일 square은 따로 거리를 계산하지 않고 저장
+            showing.squares_front.append(square)
+
+        # x = (square[0][0] + square[1][0] + square[2][0] + square[3][0])/(cube_size/2-1)
+        # y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])/(cube_size/2-1)
+        # z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])/(cube_size/2-1)
+        x = (square[0][0] + square[1][0] + square[2][0] + square[3][0])//4
+        y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])//4
+        z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])//4
+
+
+
+        dx = x - camera_pos[0]
+        dy = y - camera_pos[1]
+        dz = z - camera_pos[2]
+        range = dx**2 + dy**2 + dz**2
+
+        square.append(range)
+
+        showing.squares.append(square)
+
 # 큐브의 면을 그리는 함수
-def draw_cube(points):
+def check_cube(points):
     squares = [
     # 앞면
         [points[0], points[1], points[2], points[3]],
@@ -372,22 +413,10 @@ def draw_cube(points):
         # 아랫면
         [points[3], points[2], points[6], points[7]]
     ]
-    
-    for square in squares:
-        draw_square(square)
+    cal_square(squares[0],'front')
+    for square in squares[1:6]:
+        cal_square(square,'rest')
 
-    if is_3D:
-        # 뒷면
-        draw_line(points[4], points[5])
-        draw_line(points[5], points[6])
-        draw_line(points[6], points[7])
-        draw_line(points[7], points[4])
-
-        # 앞면과 뒷면을 연결하는 선들
-        draw_line(points[0], points[4])
-        draw_line(points[1], points[5])
-        draw_line(points[2], points[6])
-        draw_line(points[3], points[7])
 
 # 바닥 그리기 함수
 # def draw_floor(camera_pos):
@@ -415,7 +444,7 @@ def event_check():
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_r:
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
             if event.key == pygame.K_LEFT: #뒤 이동
@@ -484,28 +513,65 @@ def camera_move():
         for i in range(3):
             camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
 
+
+def block_3D_transition(points):
+    global camera_pos
+    for point in points:
+    # 부드럽게 이동
+    
+        if is_3D == False:
+            
+            x, y = point[0],point[1]
+            if(abs(100 - point[3])>10):
+                point[3] += (100 - point[3]) * 0.2
+            else:
+                point[3] = 100
+            z = point[3]
+    
+        else:
+            x, y = point[0],point[1]
+            if(abs(point[2] - point[3])>10):
+                point[3] += (point[2] - point[3]) * 0.2
+            else:
+                point[3] = point[2]
+            z = point[3]
+
+        point = x,y,point[2],z
+
+
 def draw_screen():
     global blocks
     screen.fill((255, 255, 255))
+    showing.squares = []
+    showing.squares_front = []
+    for block in map_loading.map_test:
+        block_3D_transition(block.points)
+        check_cube(block.points)
+    showing.squares = sorted(showing.squares, key=lambda square: -square[4])
 
     # 블록 그리기
-    for block in map.BLOCKS:
-        draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
+    # for block in map.BLOCKS:
+    #     draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
 
-    # 플레이어 그리기
-    draw_cube(projection_3D.project_3d_or_2d(Player.playerblock.points, camera_pos, is_3D, angle_x, angle_y))
+    # # 플레이어 그리기
+    # draw_cube(projection_3D.project_3d_or_2d(Player.playerblock.points, camera_pos, is_3D, angle_x, angle_y))
 
-    # pieceblock 그리기 (카메라 앵글 반영)
-    piece.pieceblock.update_points(camera_pos, angle_x, angle_y)
-    draw_real_piece(piece.pieceblock.projected_points)
+    # # pieceblock 그리기 (카메라 앵글 반영)
+    # piece.pieceblock.update_points(camera_pos, angle_x, angle_y)
+    # draw_real_piece(piece.pieceblock.projected_points)
 
+    # pygame.display.flip()
+    # clock.tick(60)
+
+    if (is_3D):
+        for square in showing.squares:
+            draw_square(square[0:4])
+    else:
+        for square in showing.squares_front:
+            draw_square(square[0:4])
     pygame.display.flip()
     clock.tick(60)
 
-
-
-    pygame.display.flip()
-    clock.tick(60)
 
 def run():
     global condition

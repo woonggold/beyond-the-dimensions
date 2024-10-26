@@ -17,6 +17,7 @@ class MakePiece:
             (self.x - self.size, self.y - self.size, self.z), 
             (self.x + self.size, self.y - self.size, self.z), 
         ]
+        
 
     def update_points(self, camera_pos, angle_x, angle_y):
         # 카메라 위치와 앵글을 사용하여 3D 투영 계산
