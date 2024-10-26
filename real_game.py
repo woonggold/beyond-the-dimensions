@@ -2,38 +2,33 @@ import pygame
 import math
 import projection_3D
 from settings import *
-import Player
 import json
 import piece
 import map_loading
+from Player import *
+import time
 # 파이게임 초기화
 
 
 #플레이어 세팅
-player_x = Player.playerblock.x
-player_y = Player.playerblock.y
-player_z = Player.playerblock.z
-player_mass = 1
-Moving_left = False
-x_back = False
-x_go = False
-Y_down = False
-Y_up = False
+player_x = playerblock.x
+player_y = playerblock.y
+player_z = playerblock.z
 aquire_piece_count = 0
+Front_collision = False
 
 #캐릭터 충동 처리
 
 
+
 #플레이어 속도 변화랑
 player_x_d = 0
-player_y_VELOCITY = 0
+# player_y_VELOCITY = 0
 player_z_d = 0
 jump_count = 1
 acceleration = 0
 #개발자모드 y이동 속도
 player_y_d = 0
-
-#플레이어 움직임 함수
 
 #색칠 변수
 color = 0
@@ -44,73 +39,40 @@ z_key_count =0
 #블록 설치
 blocks = []
 
-#블록 list
-
-
-# def player_jump():
-#     global jump_count, player_y
-#     if jump_count == 1:
-#         jump_count = 0
-#         if player_y_VELOCITY > 0:
-#                 F = (0.5 * player_mass * (player_y_VELOCITY * player_y_VELOCITY))
-#         else:
-#             F = -(0.5 * player_mass * (player_y_VELOCITY * player_y_VELOCITY))
-        
-#         player_y = 1/2 * player_mass * player_y_d^2
-
-def player_stop():
-    global player_x_d, player_y_VELOCITY, player_z_d, jump_count, player_moving, Moving_left, player_y_d, x_back, x_go, Y_down, Y_up
-    player_x_d = 0
-    player_y_VELOCITY = 0
-    player_z_d = 0
-    jump_count = 1
-    player_moving = False
-    Moving_left = False
-    player_y_d = 0
-    x_back = False
-    x_go = False
-    Y_down = False
-    Y_up = False
-
-def player_right_go():
-    global player_x_d, x_go
-    player_x_d = 25
-    x_go = True
+# def gravity():
+#     global condition, player_x, player_y, player_z, acceleration, z_key_count
     
-def gravity():
-    global condition, player_x, player_y, player_z, acceleration, z_key_count
-    
-    if z_key_count == 0:
-        min_x, min_y, min_z = player_x - 50, player_y + 100, player_z - 50
-        max_x, max_y, max_z = player_x + 50, player_y + 100, player_z + 50
+#     if z_key_count == 0:
+#         min_x, min_y, min_z = player_x - 50, player_y + 100, player_z - 50
+#         max_x, max_y, max_z = player_x + 50, player_y + 100, player_z + 50
 
-        is_within_bounds = False  # 초기화하여 범위를 벗어났는지 확인
+#         is_within_bounds = False  # 초기화하여 범위를 벗어났는지 확인
 
-        for block in map_loading.map_test.BLOCKS:
-            block_min_x = block.x - block.size
-            block_max_x = block.x + block.size
-            block_min_y = block.y - block.size
-            block_max_y = block.y
-            block_min_z = block.z - block.size
-            block_max_z = block.z + block.size
+#         for block in map_loading.map_test.BLOCKS:
+#             block_min_x = block.x - block.size
+#             block_max_x = block.x + block.size
+#             block_min_y = block.y - block.size
+#             block_max_y = block.y
+#             block_min_z = block.z - block.size
+#             block_max_z = block.z + block.size
 
-            # 플레이어의 범위가 블록 범위와 겹치는지 확인
-            if (min_x <= block_max_x and max_x >= block_min_x) and \
-            (min_y <= block_max_y and max_y >= block_min_y) and \
-            (min_z <= block_max_z and max_z >= block_min_z):
-                print("안 벗어남")
-                acceleration = 0  # 겹치는 경우 가속도 0으로 설정
-                is_within_bounds = True  # 범위 내에 있음을 표시
-                break  # 하나라도 겹치면 더 이상 확인할 필요 없음
+#             # 플레이어의 범위가 블록 범위와 겹치는지 확인
+#             if (min_x <= block_max_x and max_x >= block_min_x) and \
+#             (min_y <= block_max_y and max_y >= block_min_y) and \
+#             (min_z <= block_max_z and max_z >= block_min_z):
+#                 print("안 벗어남")
+#                 acceleration = 0  # 겹치는 경우 가속도 0으로 설정
+#                 is_within_bounds = True  # 범위 내에 있음을 표시
+#                 break  # 하나라도 겹치면 더 이상 확인할 필요 없음
 
-        if not is_within_bounds:
-            go_to_main()
-            return True
-        return False
+#         if not is_within_bounds:
+#             go_to_main()
+#             return True
+#         return False
 
 # 범위를 벗어났을 때 실행할 함수
-def go_to_main():
-    print("범위를 벗어남")
+# def go_to_main():
+#     print("범위를 벗어남")
 
 def map_save():
     blocks_dict_x = []
@@ -145,42 +107,22 @@ def map_load():
 
     print("로드됨")
    
-def go_to_main():
-    player_y_go()
+# def go_to_main():
+#     player_y_go()
 
-def player_left_go():
-    global player_x_d, Moving_left, x_back
-    player_x_d = -25
-    Moving_left = True
-    x_back = True
-
-def player_z_go():
-    global player_z_d
-    player_z_d = 25
-
+def player_stop():
+    global player_y_VELOCITY, jump_count, player_moving
+    player_y_VELOCITY = 0
     
-def player_back_z_go():
-    global player_z_d
-    player_z_d = -25
-
-
-def player_y_go():
-    global player_y_VELOCITY, acceleration
-    acceleration += 0.05
-    player_y_VELOCITY = 0.01 + acceleration
+    
+# def player_y_go():
+#     global player_y_VELOCITY, acceleration
+#     acceleration += 0.05
+#     player_y_VELOCITY = 0.01 + acceleration
     
 
-def develop_y_go_back():
-    global player_y_d, Y_down
-    player_y_d += -25
-    Y_down = True
-
-def develop_y_go():
-    global player_y_d, Y_up
-    player_y_d += 25
-    Y_up = True
-
-def setblock():    
+def setblock():
+    global player_x, player_z, player_y
     nearestx_100 = round(player_x / 100) * 100
     nearestz_100 = round(player_z / 100) * 100
     
@@ -210,8 +152,6 @@ def setblock():
     
   
     map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
-    
-    
     # print('블럭설치')
     
 def blockremove():
@@ -225,11 +165,14 @@ def blockremove():
         player_cal = abs(player_y) / 25
         player_cal_m = ((player_cal) // 2) 
         nearesty_100 = 100 - (player_cal_m * 100)
+        
     block_to_remove = (nearestx_100, int(nearesty_100), nearestz_100)
+    
+    # 블록을 찾고 제거
     for block in map_loading.map_test.BLOCKS:
-        print(block.pos)
-        if block_to_remove == block.pos:
-            map_loading.BLOCKS.remove(block)
+        if block.pos == block_to_remove:
+            map_loading.map_test.BLOCKS.remove(block)
+            break
     
 def aquire_piece():
     global aquire_piece_count, piece_img
@@ -243,7 +186,7 @@ def next_stage():
 
 
 def check_wall_collision():
-    global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
+    global player_x_d, player_y_VELOCITY, z_key_count, Front_collision
     # if player_moving == True:
     if z_key_count == 0:
         for block in map_loading.map_test.BLOCKS:
@@ -252,68 +195,74 @@ def check_wall_collision():
                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
             if block.y < 500:
                 if block.x - player_x == 100:
-                    if Moving_left == False:
+                    if player_x_d > 0:
                         if is_3D == False:
-                            player_x_d = 0
+                            Front_collision = True
                         else:
                             if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
-                                player_x_d = 0
+                                Front_collision = True
+                        
+
+                        
             if block.y - player_y == 325 and block.x - player_x < 100 and block.x - player_x > -100 and block.z - player_z < 100 and block.z - player_z > -100:
                 player_y_VELOCITY = 0
             
 
 #플레이어 움직임 실시간 적용
 def player_during():
-    global player_x, player_y, player_z, player_moving, z_key_count, Y_down, Y_up, x_go, x_back
+    global player_x, player_y, player_z, player_moving, z_key_count, player_x_d, Front_collision
     check_wall_collision()
     aquire_piece()
     player_moving = True
-    player_x += player_x_d
-    player_y += player_y_d
-    if z_key_count == 0:
-        player_y += player_y_VELOCITY
-    player_z += player_z_d
+    if Front_collision == True:
+        player_x_d = 0
     
+    if player_x_d <= -50:
+        player_x_d = 0
     
     if z_key_count == 1:
-
-        if Y_down == True:
-            camera_pos[1] -= camera_speed
-        if Y_up == True:
-            camera_pos[1] += camera_speed
-        if x_go == True:
-            camera_pos[0] += camera_speed
-        if x_back == True:
-            camera_pos[0] -= camera_speed
+        # player_x += player_x_d * 2
+        # player_y += player_y_d * 2
+        # # if z_key_count == 0:
+        # #     player_y += player_y_VELOCITY
+        # player_z += player_z_d * 2
+        
+        pass
+    else:
+        player_x += player_x_d
+        player_y += player_y_d
+        # if z_key_count == 0:
+        #     player_y += player_y_VELOCITY
+        player_z += player_z_d
     
-    Player.playerblock.pos = (player_x, player_y, Player.playerblock.z)  
-    Player.playerblock.x = player_x  
-    Player.playerblock.y = player_y
-    Player.playerblock.z = player_z
+    playerblock.pos = (player_x, player_y, playerblock.z)  
+    playerblock.x = player_x  
+    playerblock.y = player_y
+    playerblock.z = player_z
 
     if is_3D:
-        Player.playerblock.points = [
-        [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), Player.playerblock.z - Player.playerblock.size, Player.playerblock.z - Player.playerblock.size],
-        [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), Player.playerblock.z - Player.playerblock.size, Player.playerblock.z - Player.playerblock.size],
-        [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), Player.playerblock.z - Player.playerblock.size, Player.playerblock.z - Player.playerblock.size],
-        [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), Player.playerblock.z - Player.playerblock.size, Player.playerblock.z - Player.playerblock.size],
-        [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), Player.playerblock.z + Player.playerblock.size, Player.playerblock.z + Player.playerblock.size],
-        [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), Player.playerblock.z + Player.playerblock.size, Player.playerblock.z + Player.playerblock.size],
-        [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), Player.playerblock.z + Player.playerblock.size, Player.playerblock.z + Player.playerblock.size],
-        [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), Player.playerblock.z + Player.playerblock.size, Player.playerblock.z + Player.playerblock.size]
+        playerblock.points = [
+        [playerblock.x - playerblock.size, 2 * (playerblock.y - playerblock.size), playerblock.z - playerblock.size, playerblock.z - playerblock.size],
+        [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), playerblock.z - playerblock.size, playerblock.z - playerblock.size],
+        [playerblock.x + playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z - playerblock.size, playerblock.z - playerblock.size],
+        [playerblock.x - playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z - playerblock.size, playerblock.z - playerblock.size],
+        [playerblock.x - playerblock.size, 2 * (playerblock.y - playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size],
+        [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size],
+        [playerblock.x + playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size],
+        [playerblock.x - playerblock.size, 2 * (playerblock.y + playerblock.size), playerblock.z + playerblock.size, playerblock.z + playerblock.size]
     ]
 
     else:
         
-        Player.playerblock.points = [
-            [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), 100, 100],
-            [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), 100, 100],
-            [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), 100, 100],
-            [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), 100, 100],
-            [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), 100, 100],
-            [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y - Player.playerblock.size), 100, 100],
-            [Player.playerblock.x + Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), 100, 100],
-            [Player.playerblock.x - Player.playerblock.size, 2 * (Player.playerblock.y + Player.playerblock.size), 100, 100]
+        playerblock.points = [
+            [playerblock.x - playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
+            [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
+            [playerblock.x + playerblock.size, 2 * (playerblock.y + playerblock.size), 100, 100],
+            [playerblock.x - playerblock.size, 2 * (playerblock.y + playerblock.size), 100, 100],
+            [playerblock.x - playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
+            [playerblock.x + playerblock.size, 2 * (playerblock.y - playerblock.size), 100, 100],
+            [playerblock.x + playerblock.size, 2 * (playerblock.y + playerblock.size), 100, 100],
+            [playerblock.x - playerblock.size, 2 * (playerblock.y + playerblock.size), 100, 100]
         ]
         
 # 큐브의 8개 꼭짓점 좌표 생성 함수
@@ -372,7 +321,7 @@ def is_collinear(p1, p2, p3):
 def are_all_points_collinear(points):
     # 4개의 점 중 첫 번째 점과 나머지 세 점의 기울기가 모두 같으면 한 직선 위에 있음
     p1, p2, p3, p4 = points
-    return is_collinear(p1, p2, p3) and is_collinear(p1, p2, p4)
+    return is_collinear(p1, p2, p3) or is_collinear(p1, p2, p4) or is_collinear(p1, p3, p4) or is_collinear(p3, p2, p4)
 
 
 def draw_square(square):
@@ -459,7 +408,7 @@ def mouse_rotate_check():
         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, z_key_count, player_y_VELOCITY, acceleration
+    global condition, is_3D, target_camera_pos, color, z_key_count, player_y_VELOCITY, acceleration, player_x_d, player_z_d, player_y_d, player_x, player_y, player_z, Front_collision
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -470,15 +419,17 @@ def event_check():
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
             if event.key == pygame.K_a:
-                player_left_go()
+                if Front_collision == True:
+                    Front_collision = False
+                player_x_d -= 25
                 
             if event.key == pygame.K_d: 
-                player_right_go()
+                player_x_d += 25
                 pass
             if event.key == pygame.K_w:#z축 앞 이동
-                player_z_go()
+                player_z_d += 25
             if event.key == pygame.K_s: #z축 뒤 이동
-                player_back_z_go() 
+                player_z_d -= 25
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -497,25 +448,56 @@ def event_check():
                     map_load()
             if event.key == pygame.K_LSHIFT:
                 if z_key_count == 1:
-                    develop_y_go()
+                    player_y_d += 25
             if event.key == pygame.K_SPACE: 
                 if z_key_count == 1:
-                    develop_y_go_back()
+                    player_y_d -= 25
+                    
+
         elif event.type == pygame.KEYUP: 
             if event.key == pygame.K_a: 
-                player_stop()
-                pass
+                # player_stop()
+                if z_key_count == 0:
+                    player_x_d += 25
+                else:
+                    player_x -= 100
+                    camera_pos[0] -= 100
             if event.key == pygame.K_w:
-                player_stop()
+                # player_stop()
+                if z_key_count == 0:
+                    player_z_d -= 25
+                else:
+                    player_z += 100
+                    camera_pos[2] += 100
+                    
+
                 pass
             if event.key == pygame.K_d: 
-                player_stop()
+                # player_stop()
+                if z_key_count == 0:
+                    player_x_d -= 25
+                else:
+                    player_x += 100
+                    camera_pos[0] += 100
             if event.key == pygame.K_s: 
-                player_stop()
+                # player_stop()
+                if z_key_count == 0:
+                    player_z_d += 25
+                else:
+                    player_z -= 100
+                    camera_pos[2] -= 100
+
             if event.key == pygame.K_SPACE: 
-                player_stop()
+                # player_stop()
+                if z_key_count == 1:
+                    player_y -= 50
+                    camera_pos[1] -= 100
+
             if event.key == pygame.K_LSHIFT: 
-                player_stop()
+                if z_key_count == 1:
+                    player_y += 50
+                    camera_pos[1] += 100
+
 
 
         elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
@@ -572,7 +554,7 @@ def draw_screen():
     for block in map_loading.map_test.BLOCKS:
         block_3D_transition(block.points)
         check_cube(block.points)
-    check_cube(Player.playerblock.points)
+    check_cube(playerblock.points)
     showing.squares = sorted(showing.squares, key=lambda square: -square[4])
 
     # 블록 그리기
@@ -580,7 +562,7 @@ def draw_screen():
     #     draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
 
     # # 플레이어 그리기
-    # draw_cube(projection_3D.project_3d_or_2d(Player.playerblock.points, camera_pos, is_3D, angle_x, angle_y))
+    # draw_cube(projection_3D.project_3d_or_2d(playerblock.points, camera_pos, is_3D, angle_x, angle_y))
 
     # # pieceblock 그리기 (카메라 앵글 반영)
     # piece.pieceblock.update_points(camera_pos, angle_x, angle_y)
@@ -609,7 +591,6 @@ def run():
     player_during()  # 플레이어 위치 업데이트 먼저
     camera_move()
     draw_screen()
-    gravity()
-    
+    # gravity()
     
     return condition

@@ -26,6 +26,7 @@ def run():
         result = "real_game"
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
+        pygame.mouse.get_rel()
     else:
         result = "start_menu"
     pygame.display.update()
