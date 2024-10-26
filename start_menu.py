@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-import os
+from settings import *
 import button
 import real_game
 import map_loading
@@ -10,7 +10,7 @@ screen_width = 1200
 screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 running = True
-script_dir = os.path.dirname(__file__)
+
 
 start_button = button.button(screen_width/2-181,600,"시작1.png","시작2.png")
 def run():

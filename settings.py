@@ -1,4 +1,5 @@
-import pygame    
+import pygame   
+import os 
 pygame.init()
 screen_width = 1200
 screen_height = 800
@@ -9,6 +10,7 @@ camera_pos = [0, 0, -1000]
 camera_speed = 25  # 카메라 이동 속도
 is_3D = False
 target_camera_pos = camera_pos # 목표 카메라 위치
+script_dir = os.path.dirname(__file__)
 
 angle_x, angle_y = 0, 0
 

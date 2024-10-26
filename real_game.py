@@ -85,7 +85,7 @@ def gravity():
 
         is_within_bounds = False  # 초기화하여 범위를 벗어났는지 확인
 
-        for block in map.BLOCKS:
+        for block in map_loading.map_test.BLOCKS:
             block_min_x = block.x - block.size
             block_max_x = block.x + block.size
             block_min_y = block.y - block.size
@@ -115,18 +115,15 @@ def map_save():
     blocks_dict_x = []
     blocks_dict_y = []
     blocks_dict_z = []
-    blocks_dict_size = []
-    for block in map.BLOCKS:
+    for block in map_loading.map_test.BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
         blocks_dict_z.append(block.z)
-        blocks_dict_size.append(block.size)
     
     separated_data = {
         "x": blocks_dict_x,
         "y": blocks_dict_y,
-        "z": blocks_dict_z,
-        "size": blocks_dict_size        
+        "z": blocks_dict_z,  
     }
     
     final_data = {
@@ -141,7 +138,7 @@ def map_load():
     with open('data.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)    
     for i in range(len(data["Blocks"]["x"])):
-        map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["size"][i]))
+        map_loading.BLOCKS.append(map_loading.Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i])))
 
     print("로드됨")
    
@@ -209,7 +206,7 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),50))
+    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
     
     # print('블럭설치')
     
@@ -218,7 +215,7 @@ def check_wall_collision():
     global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
     # if player_moving == True:
     if z_key_count == 0:
-        for block in map.BLOCKS:
+        for block in map_loading.map_test.BLOCKS:
             if player_x == block.x:
                 pass
                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
@@ -314,9 +311,9 @@ def draw_piece(piece):
 #     piece = [points[0], points[1], points[2], points[3]]
 
 #     draw_square(piece)
-def draw_real_piece(point):
-    x, y, z = point[0], point[1], point[2]
-
+def draw_real_piece(piece_block):
+    
+    x, y, z = piece_block.x, piece_block.y, piece_block.z
     # 카메라 위치를 기준으로 좌표 이동
     x -= camera_pos[0]
     y -= camera_pos[1]
@@ -327,18 +324,21 @@ def draw_real_piece(point):
     x, y, z = projection_3D.rotate_point((x, y, z), angle_x, angle_y)
 
     # z 좌표가 너무 가까운 경우 생략
-    if z <= -camera_distance + 0.00001:
+    if z <= 0.00001:
         return None
     else:
-        factor = camera_distance / (camera_distance + z)
+        factor = camera_distance / z
         x_2d = x * factor + screen_width / 2  # 화면 중앙으로 이동
         y_2d = y * factor + screen_height / 2  # 화면 중앙으로 이동
         result = ((int(x_2d), int(y_2d)))
 
-    img = pygame.image.load(f"/images//시작.png"),(0,0)
-    
-    
+    piece_img = pygame.image.load(f"{script_dir}//images//시작배경.png")
+    piece_rect = piece_img.get_rect()
+    piece_width, piece_height = piece_rect.width, piece_rect.height 
+    modified_img = pygame.transform.scale(piece_img, (piece_width // z, piece_height // z))
+    screen.blit(modified_img, (result[0] - piece_width // 2, result[1] - piece_height // 2))
 
+    
     
 # 큐브의 면을 그리는 함수
 
@@ -362,7 +362,7 @@ def draw_square(square):
         if (abs(square[1][0]-square[2][0]) >= screen_width) or (abs(square[2][1]-square[3][1]) >= screen_height):
             return
         pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, (0,0,0), square, 10)  # 테두리 두께 1
+        pygame.draw.polygon(screen, (color,0,0), square, 4)  # 테두리 두께 4
     # draw_line(square[0],square[1])
     # draw_line(square[1],square[2])
     # draw_line(square[2],square[3])
@@ -544,9 +544,11 @@ def draw_screen():
     screen.fill((255, 255, 255))
     showing.squares = []
     showing.squares_front = []
-    for block in map_loading.map_test:
+    for block in map_loading.map_test.BLOCKS:
         block_3D_transition(block.points)
         check_cube(block.points)
+    check_cube(Player.playerblock.points)
+    draw_real_piece(piece.pieceblock)
     showing.squares = sorted(showing.squares, key=lambda square: -square[4])
 
     # 블록 그리기
@@ -578,8 +580,6 @@ def run():
     condition = "real_game"
     mouse_rotate_check()
     event_check()
-    camera_move()
-    draw_screen()
     player_during()  # 플레이어 위치 업데이트 먼저
     camera_move()
     draw_screen()
