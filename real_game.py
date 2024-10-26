@@ -19,9 +19,10 @@ def draw_square(square):
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d(point, camera_pos, angle_x, angle_y))
     square = temp_square
-
-    pygame.draw.polygon(screen, (255,0,0), square, 0)  # 내부를 채운 다각형
-    pygame.draw.polygon(screen, (0,0,0), square, 1)  # 테두리 두께 1
+    
+    if None not in square:
+        pygame.draw.polygon(screen, (255,0,0), square, 0)  # 내부를 채운 다각형
+        pygame.draw.polygon(screen, (0,0,0), square, 1)  # 테두리 두께 1
     # draw_line(square[0],square[1])
     # draw_line(square[1],square[2])
     # draw_line(square[2],square[3])
@@ -32,13 +33,18 @@ def cal_square(square,where):
         if (where == 'front'):#2D 계산할 때 쓰일 square은 따로 거리를 계산하지 않고 저장
             showing.squares_front.append(square)
 
-        x = (square[0][0] + square[1][0] + square[2][0] + square[3][0])/(cube_size/2-1)
-        y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])/(cube_size/2-1)
-        z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])/(cube_size/2-1)
+        # x = (square[0][0] + square[1][0] + square[2][0] + square[3][0])/(cube_size/2-1)
+        # y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])/(cube_size/2-1)
+        # z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])/(cube_size/2-1)
+        x = (square[0][0] + square[1][0] + square[2][0] + square[3][0])//4
+        y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])//4
+        z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])//4
 
-        dx = abs(x - camera_pos[0])
-        dy = abs(y - camera_pos[1])
-        dz = abs(z - camera_pos[2])
+
+
+        dx = x - camera_pos[0]
+        dy = y - camera_pos[1]
+        dz = z - camera_pos[2]
         range = dx**2 + dy**2 + dz**2
 
         square.append(range)
@@ -67,7 +73,7 @@ def check_cube(points):
         [points[3], points[2], points[6], points[7]]
     ]
     cal_square(squares[0],'front')
-    for square in squares[1:5]:
+    for square in squares[1:6]:
         cal_square(square,'rest')
 
 
@@ -110,12 +116,20 @@ def event_check():
                     target_camera_pos[2] += 250
         
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
-            if event.button == 4:  # 휠을 위로 스크롤
-                target_camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
-            elif event.button == 5:  # 휠을 아래로 스크롤
-                target_camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
+    keys = pygame.key.get_pressed()
 
+    if keys[pygame.K_w]:  # W 키 -> 앞으로 이동
+        camera_pos[2] += camera_speed  # Z축 이동 (앞으로)
+    if keys[pygame.K_s]:  # S 키 -> 뒤로 이동
+        camera_pos[2] -= camera_speed  # Z축 이동 (뒤로)
+    if keys[pygame.K_a]:  # A 키 -> 왼쪽으로 이동
+        camera_pos[0] -= camera_speed  # X축 이동 (왼쪽)
+    if keys[pygame.K_d]:  # D 키 -> 오른쪽으로 이동
+        camera_pos[0] += camera_speed  # X축 이동 (오른쪽)
+    if keys[pygame.K_SPACE]:  # Space 키 -> 위로 이동
+        camera_pos[1] += camera_speed  # Y축 이동 (위로)
+    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:  # Shift 키 -> 아래로 이동
+        camera_pos[1] -= camera_speed  # Y축 이동 (아래로)
 def camera_move():
     # 부드럽게 이동
     global camera_pos
@@ -128,13 +142,9 @@ def block_3D_transition(points):
     for point in points:
     # 부드럽게 이동
     
-        for i in range(3):
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
-
         if is_3D == False:
             
             x, y = point[0],point[1]
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
             if(abs(100 - point[3])>10):
                 point[3] += (100 - point[3]) * 0.2
             else:
@@ -159,14 +169,14 @@ def draw_screen():
     for block in map_loading.map_test:
         block_3D_transition(block.points)
         check_cube(block.points)
-    showing.squares = sorted(showing.squares, key=lambda square: square[4],reverse=True)
+    showing.squares = sorted(showing.squares, key=lambda square: -square[4])
 
     if (is_3D):
         for square in showing.squares:
-            draw_square(square)
+            draw_square(square[0:4])
     else:
         for square in showing.squares_front:
-            draw_square(square)
+            draw_square(square[0:4])
     pygame.display.flip()
     clock.tick(60)
 

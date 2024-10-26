@@ -37,10 +37,10 @@ def project_3d_or_2d(point, camera_pos,angle_y,angle_x):
     camera_distance = 500
     x,y,z = rotate_point((x,y,z),angle_x,angle_y)
 
-    if z <= -camera_distance+0.00001:  # 너무 가까운 z 좌표는 렌더링하지 않음
+    if z <= 0.00001:  # 너무 가까운 z 좌표는 렌더링하지 않음
         return None
     else:
-        factor = camera_distance / (camera_distance + z)
-        x_2d = x * factor + screen_width/2 # 화면 중앙으로 이동
-        y_2d = y * factor + screen_height/2  # 화면 중앙으로 이동
+        factor = camera_distance / z
+        x_2d = x * factor + screen_width/2
+        y_2d = y * factor + screen_height/2
         return (int(x_2d), int(y_2d))

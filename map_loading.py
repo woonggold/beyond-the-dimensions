@@ -16,11 +16,12 @@ class Block:
 def load_map(map_name):
     if map_name == "test":
         BLOCKS = []
-        for i in range(10):
-            for j in range(10):
-                BLOCKS.append(Block((i*100-500,500,j*100-500)))
+        for i in range(7):
+            for j in range(7):
+                for k in range(7):
+                    BLOCKS.append(Block((i*200,j*200,k*200)))
         return BLOCKS
-
+            
 class Map:
     def __init__(self, map):
         self.BLOCKS = load_map(map)
