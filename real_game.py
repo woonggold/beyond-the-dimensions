@@ -21,7 +21,6 @@ Y_down = False
 Y_up = False
 aquire_piece_count = 0
 
-
 #캐릭터 충동 처리
 
 
@@ -131,14 +130,14 @@ def map_save():
     final_data = {
         "Blocks": separated_data, 
     }
-    mapname = input("저장할 맵 이름을 입력해 주세요")
+    mapname = input("저장할 맵 이름을 입력해 주세요: ")
 
-    with open(mapname+'json', 'w', encoding='utf-8') as json_file:
+    with open(mapname+'.json', 'w', encoding='utf-8') as json_file:
         json.dump(final_data, json_file, ensure_ascii=False, indent=4)    
     print("저장됨")
         
 def map_load():
-    mapname = input("불러올 맵 이름을 입력해 주세요")
+    mapname = input("불러올 맵 이름을 입력해 주세요: ")
     with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)    
     for i in range(len(data["Blocks"]["x"])):
@@ -210,19 +209,20 @@ def setblock():
 
     
   
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
+    map_loading.BLOCKS.append(map_loading.BLOCKS.pos(nearestx_100,nearesty_100,nearestz_100))
     
     # print('블럭설치')
     
 def aquire_piece():
     global aquire_piece_count, piece_img
     
-    if abs(player_x) - abs(piece.pieceblock.x) < 100 or abs(player_x) - abs(piece.pieceblock.x) > -100:
-        if abs(player_y) - abs(piece.pieceblock.y) < 100 or abs(player_y) - abs(piece.pieceblock.y) > -100:
-            modified_img = pygame.transform.scale(piece_img,(0,0))
+    if abs(player_x) - abs(piece.pieceblock.x) < 50 and abs(player_x) - abs(piece.pieceblock.x) > -50:
+        if abs(player_y) - abs(piece.pieceblock.y) < 50 and abs(player_y) - abs(piece.pieceblock.y) > -50:
             aquire_piece_count += 1
-            screen.blit(modified_img, (0, 0))
             
+def next_stage():
+    pass
+
 
 def check_wall_collision():
     global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
@@ -308,51 +308,40 @@ def draw_line(one,two):
     if all((one,two)):
         pygame.draw.aaline(screen, (color, 0, 0), one, two, 1)
 
-def draw_line_piece(one,two):
-    global color
+# def draw_line_piece(one,two):
+#     global color
     
-    if all((one,two)):
-        pygame.draw.aaline(screen, (255, 0, 0), one, two, 1)
+#     if all((one,two)):
+#         pygame.draw.aaline(screen, (255, 0, 0), one, two, 1)
         
-def draw_piece(piece):
-    for i in range(len(piece)):
-        x1, y1 = piece[i]
-        x2, y2 = piece[(i + 1) % len(piece)]  
+# def draw_piece(piece):
+#     for i in range(len(piece)):
+#         x1, y1 = piece[i]
+#         x2, y2 = piece[(i + 1) % len(piece)]  
 
-        draw_line_piece((x1, y1), (x2, y2))
+#         draw_line_piece((x1, y1), (x2, y2))
     
-# def draw_real_piece(points):
-#     piece = [points[0], points[1], points[2], points[3]]
+# # def draw_real_piece(points):
+# #     piece = [points[0], points[1], points[2], points[3]]
 
-#     draw_square(piece)
+# #     draw_square(piece)
 def draw_real_piece(piece_block):
-    global piece_img
-    x, y, z = piece_block.x, piece_block.y, piece_block.z
-    # 카메라 위치를 기준으로 좌표 이동
-    x -= camera_pos[0]
-    y -= camera_pos[1]
-    z -= camera_pos[2]
+    global piece_img,aquire_piece_count
+    x, y, z = piece_block.x, piece_block.y, piece_block.z,
+    dx = abs(x-camera_pos[0])
+    dy = abs(y-camera_pos[1])
+    dz = abs(z-camera_pos[2])
+    piece_range = (dx**2+dy**2+dz**2)**(1/2)
+    result = projection_3D.project_3d_or_2d((x,y,z), camera_pos,angle_x,angle_y)
 
-    # 원근 투영 적용
-    camera_distance = 500
-    x, y, z = projection_3D.rotate_point((x, y, z), angle_x, angle_y)
-
-    # z 좌표가 너무 가까운 경우 생략
-    if z <= 0.00001:
-        return None
-    else:
-        factor = camera_distance / z
-        x_2d = x * factor + screen_width / 2  # 화면 중앙으로 이동
-        y_2d = y * factor + screen_height / 2  # 화면 중앙으로 이동
-        result = ((int(x_2d), int(y_2d)))
-
-    piece_img = pygame.image.load(f"{script_dir}//images//시작배경.png")
+    piece_img = pygame.image.load(f"{script_dir}//images//차원조각.png").convert_alpha()
     piece_rect = piece_img.get_rect()
     piece_width, piece_height = piece_rect.width, piece_rect.height 
-    modified_img = pygame.transform.scale(piece_img, (100*piece_width / z, 100*piece_height / z))
-    screen.blit(modified_img, (result[0] - piece_width // 2, result[1] - piece_height // 2))
-
-
+    modified_img = pygame.transform.scale(piece_img, (200*piece_width / piece_range, 200*piece_height / piece_range))
+    modified_rect = modified_img.get_rect()
+    modified_width, modified_height = modified_rect.width, modified_rect.height 
+    if result != None:
+        screen.blit(modified_img, (result[0] - (modified_width / 2), result[1] - (modified_height / 2)))
     
     
 # 큐브의 면을 그리는 함수
@@ -361,7 +350,7 @@ def draw_real_piece(piece_block):
 def draw_square(square):
     temp_square = []
     for point in square[0:4]:
-        temp_square.append(projection_3D.project_3d_or_2d(point, camera_pos, angle_x, angle_y))
+        temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
     square = temp_square
     
     if (None not in square):
@@ -563,7 +552,6 @@ def draw_screen():
         block_3D_transition(block.points)
         check_cube(block.points)
     check_cube(Player.playerblock.points)
-    draw_real_piece(piece.pieceblock)
     showing.squares = sorted(showing.squares, key=lambda square: -square[4])
 
     # 블록 그리기
@@ -586,6 +574,8 @@ def draw_screen():
     else:
         for square in showing.squares_front:
             draw_square(square[0:4])
+    if aquire_piece_count == 0:
+        draw_real_piece(piece.pieceblock)
     pygame.display.flip()
     clock.tick(60)
 

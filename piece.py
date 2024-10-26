@@ -23,4 +23,4 @@ class MakePiece:
     #     # 카메라 위치와 앵글을 사용하여 3D 투영 계산
     #     self.projected_points = projection_3D.project_3d_or_2d_for_piece(self.points, camera_pos, angle_x, angle_y)
 
-pieceblock = MakePiece((200, 400, 100), 50)
+pieceblock = MakePiece((300,175,-500), 50)
