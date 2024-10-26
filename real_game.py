@@ -149,7 +149,6 @@ def player_right_go():
     player_x_d = 25
     x_go = True
     
-
 def player_left_go():
     global player_x_d, Moving_left, x_back
     player_x_d = -25
@@ -160,17 +159,14 @@ def player_z_go():
     global player_z_d
     player_z_d = 25
 
-    
 def player_back_z_go():
     global player_z_d
     player_z_d = -25
-
 
 def player_y_go():
     global player_y_VELOCITY, acceleration
     acceleration += 0.05
     player_y_VELOCITY = 0.01 + acceleration
-    
 
 def develop_y_go_back():
     global player_y_d, Y_down
@@ -212,8 +208,24 @@ def setblock():
     
   
     map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100)))
-    
     # print('블럭설치')
+    
+def blockremove():
+    nearestx_100 = round(player_x / 100) * 100
+    nearestz_100 = round(player_z / 100) * 100
+    if player_y > 0:
+        player_cal = player_y / 25
+        player_cal_m = player_cal // 2
+        nearesty_100 = player_cal_m * 100 + 200
+    else:
+        player_cal = abs(player_y) / 25
+        player_cal_m = ((player_cal) // 2) 
+        nearesty_100 = 100 - (player_cal_m * 100)
+    block_to_remove = (nearestx_100, int(nearesty_100), nearestz_100)
+    for block in map_loading.map_test.BLOCKS:
+        print(block.pos)
+        if block_to_remove == block.pos:
+            map_loading.BLOCKS.remove(block)
     
 def aquire_piece():
     global aquire_piece_count, piece_img
@@ -224,7 +236,6 @@ def aquire_piece():
             
 def next_stage():
     pass
-
 
 def check_wall_collision():
     global player_moving, player_x_d, Moving_left, player_y_VELOCITY, z_key_count
@@ -359,7 +370,7 @@ def are_all_points_collinear(points):
     return is_collinear(p1, p2, p3) or is_collinear(p1, p2, p4) or is_collinear(p1, p3, p4) or is_collinear(p3, p2, p4)
 
 
-def draw_square(square):
+def draw_square(square,color_set):
     temp_square = []
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
@@ -367,8 +378,8 @@ def draw_square(square):
     if (None not in square):
         if (not are_all_points_collinear(square)):
             # 좌표가 한 직선 위에 있지 않으면 그리기
-            pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
-            pygame.draw.polygon(screen, (color,0,0), square, 4)  # 테두리 두께 4
+            pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
+            pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
 
     # draw_line(square[0],square[1])
     # draw_line(square[1],square[2])
@@ -399,25 +410,25 @@ def cal_square(square,where):
         showing.squares.append(square)
 
 # 큐브의 면을 그리는 함수
-def check_cube(points):
+def check_cube(points,texture):
     squares = [
     # 앞면
-        [points[0], points[1], points[2], points[3]],
+        [points[0], points[1], points[2], points[3], [texture[1],texture[3]]],
 
         # 뒷면
-        [points[4], points[5], points[6], points[7]],
+        [points[4], points[5], points[6], points[7], [texture[1],texture[3]]],
 
         # 왼쪽면
-        [points[0], points[3], points[7], points[4]],
+        [points[0], points[3], points[7], points[4], [texture[1],texture[3]]],
 
         # 오른쪽면
-        [points[1], points[2], points[6], points[5]],
+        [points[1], points[2], points[6], points[5], [texture[1],texture[3]]],
 
         # 윗면
-        [points[0], points[1], points[5], points[4]],
+        [points[0], points[1], points[5], points[4], [texture[0],texture[3]]],
 
         # 아랫면
-        [points[3], points[2], points[6], points[7]]
+        [points[3], points[2], points[6], points[7], [texture[2],texture[3]]]
     ]
     cal_square(squares[0],'front')
     for square in squares[1:6]:
@@ -510,6 +521,9 @@ def event_check():
                 camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
                 camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
+            elif event.button == 1:
+                if z_key_count == 1:    
+                    blockremove()
 
 def camera_move():
     # 부드럽게 이동
@@ -552,9 +566,9 @@ def draw_screen():
     showing.squares_front = []
     for block in map_loading.map_test.BLOCKS:
         block_3D_transition(block.points)
-        check_cube(block.points)
-    check_cube(Player.playerblock.points)
-    showing.squares = sorted(showing.squares, key=lambda square: -square[4])
+        check_cube(block.points,block.texture)
+    check_cube(Player.playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
+    showing.squares = sorted(showing.squares, key=lambda square: -square[5])
 
     # 블록 그리기
     # for block in map.BLOCKS:
@@ -572,10 +586,10 @@ def draw_screen():
 
     if (is_3D):
         for square in showing.squares:
-            draw_square(square[0:4])
+            draw_square(square[0:4],square[4])
     else:
         for square in showing.squares_front:
-            draw_square(square[0:4])
+            draw_square(square[0:4],square[4])
     if aquire_piece_count == 0:
         draw_real_piece(piece.pieceblock)
     pygame.display.flip()
