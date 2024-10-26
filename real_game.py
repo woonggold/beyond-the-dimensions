@@ -302,11 +302,11 @@ def player_during():
 
 
 
-def draw_line(one,two):
-    global color
+# def draw_line(one,two):
+#     global color
     
-    if all((one,two)):
-        pygame.draw.aaline(screen, (color, 0, 0), one, two, 1)
+#     if all((one,two)):
+#         pygame.draw.aaline(screen, (color, 0, 0), one, two, 1)
 
 # def draw_line_piece(one,two):
 #     global color
@@ -346,27 +346,28 @@ def draw_real_piece(piece_block):
     
 # 큐브의 면을 그리는 함수
 
+def is_collinear(p1, p2, p3):
+    # 기울기: (y2 - y1) / (x2 - x1) = (y3 - y1) / (x3 - x1)
+    # 두 직선의 기울기가 같으면 한 직선 위에 있다.
+    return (p3[1] - p1[1]) * (p2[0] - p1[0]) == (p2[1] - p1[1]) * (p3[0] - p1[0])
+
+def are_all_points_collinear(points):
+    # 4개의 점 중 첫 번째 점과 나머지 세 점의 기울기가 모두 같으면 한 직선 위에 있음
+    p1, p2, p3, p4 = points
+    return is_collinear(p1, p2, p3) and is_collinear(p1, p2, p4)
+
 
 def draw_square(square):
     temp_square = []
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
     square = temp_square
-    
     if (None not in square):
-        out = 0
-        delta = -10
-        for pixel in square:
-            if not (0-delta<pixel[0]<screen_width+delta and 0-delta<pixel[1]<screen_height+delta):
-                out += 1
-        if out == 4:
-            return #함수종료
-        if (abs(square[1][1]-square[2][1]) >= screen_height) or (abs(square[2][1]-square[3][1]) >= screen_height):
-            return
-        if (abs(square[1][0]-square[2][0]) >= screen_width) or (abs(square[2][1]-square[3][1]) >= screen_height):
-            return
-        pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, (color,0,0), square, 4)  # 테두리 두께 4
+        if (not are_all_points_collinear(square)):
+            # 좌표가 한 직선 위에 있지 않으면 그리기
+            pygame.draw.polygon(screen, (255,255,255), square, 0)  # 내부를 채운 다각형
+            pygame.draw.polygon(screen, (color,0,0), square, 4)  # 테두리 두께 4
+
     # draw_line(square[0],square[1])
     # draw_line(square[1],square[2])
     # draw_line(square[2],square[3])
@@ -412,7 +413,6 @@ def check_cube(points):
 
         # 윗면
         [points[0], points[1], points[5], points[4]],
-        [points[0], points  [1], points[5], points[4]],
 
         # 아랫면
         [points[3], points[2], points[6], points[7]]
@@ -451,21 +451,18 @@ def event_check():
             if event.key == pygame.K_r:
                 # 시점 전환 목표 설정
                 is_3D = not is_3D
-            if event.key == pygame.K_LEFT: #뒤 이동
+            if event.key == pygame.K_a:
                 player_left_go()
                 
-            if event.key == pygame.K_RIGHT: #앞이동
+            if event.key == pygame.K_d: 
                 player_right_go()
                 pass
-            if event.key == pygame.K_UP:#z축 앞 이동
+            if event.key == pygame.K_w:#z축 앞 이동
                 player_z_go()
-            if event.key == pygame.K_DOWN: #z축 뒤 이동
+            if event.key == pygame.K_s: #z축 뒤 이동
                 player_back_z_go() 
             
-            if event.key == pygame.K_w: # 개발자 블록 설치
-                if z_key_count == 1:
-                    
-                    setblock()
+
             if event.key == pygame.K_z: #개발자 모드 실행
                 if z_key_count == 0:
                     z_key_count = 1
@@ -474,37 +471,40 @@ def event_check():
                 else:
                     z_key_count = 0
                     color = 0
-            if event.key == pygame.K_s: # 맵 세이브
+            if event.key == pygame.K_p: # 맵 세이브
                 if z_key_count == 1:
                     map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
                     map_load()
-            if event.key == pygame.K_x:
+            if event.key == pygame.K_LSHIFT:
                 if z_key_count == 1:
                     develop_y_go()
-            if event.key == pygame.K_c: 
+            if event.key == pygame.K_SPACE: 
                 if z_key_count == 1:
                     develop_y_go_back()
         elif event.type == pygame.KEYUP: 
-            if event.key == pygame.K_LEFT: 
+            if event.key == pygame.K_a: 
                 player_stop()
                 pass
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_w:
                 player_stop()
                 pass
-            if event.key == pygame.K_UP: 
+            if event.key == pygame.K_d: 
                 player_stop()
-            if event.key == pygame.K_DOWN: 
+            if event.key == pygame.K_s: 
                 player_stop()
-            if event.key == pygame.K_x: 
+            if event.key == pygame.K_SPACE: 
                 player_stop()
-            if event.key == pygame.K_c: 
+            if event.key == pygame.K_LSHIFT: 
                 player_stop()
 
 
         elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
-            if event.button == 4:  # 휠을 위로 스크롤
+            if event.button == 3: # 개발자 블록 설치
+                if z_key_count == 1:    
+                    setblock()
+            elif event.button == 4:  # 휠을 위로 스크롤
                 camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
                 camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
