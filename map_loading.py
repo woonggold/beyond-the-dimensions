@@ -1,6 +1,6 @@
 import settings
 class Block:
-    def __init__(self, pos):
+    def __init__(self, pos, texture):
         self.pos = pos
         self.x = pos[0]
         self.y = pos[1]
@@ -12,7 +12,7 @@ class Block:
             [self.x - self.size, self.y - self.size, self.z + self.size, self.z + self.size], [self.x + self.size, self.y - self.size, self.z + self.size, self.z + self.size],
             [self.x + self.size, self.y + self.size, self.z + self.size, self.z + self.size], [self.x - self.size, self.y + self.size, self.z + self.size, self.z + self.size]
         ]
-        self.texture = [(100,100,100),(255,255,255),(255,0,0),(0,0,0)]
+        self.texture = settings.block_textures[texture]
 
 
 def load_map(map_name):
@@ -23,9 +23,9 @@ def load_map(map_name):
 
         for i in range(10):
             for j in range(10):
-                BLOCKS.append(Block((i*100-500,500,j*100-500)))
-        BLOCKS.append(Block((300,400,-500)))
-        BLOCKS.append(Block((300,300,-500)))
+                BLOCKS.append(Block((i*100-500,500,j*100-500),0))
+        BLOCKS.append(Block((300,400,-500),0))
+        BLOCKS.append(Block((300,300,-500),0))
         
         return BLOCKS
 
