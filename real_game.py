@@ -208,8 +208,9 @@ def aquire_piece():
         if abs(player_y) - abs(piece.pieceblock.y) < 50 and abs(player_y) - abs(piece.pieceblock.y) > -50:
             aquire_piece_count += 1
             
-def next_stage():
-    pass
+# def warp():
+#     for block in map_loading.map_test.BLOCKS:
+#         player_x - block.x
 
 # def check_wall_collision():
 #     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
@@ -324,8 +325,7 @@ def player_during():
     global player_x, player_y, player_z, player_moving, z_key_count, player_x_d, collision_check
     check_wall_collision()
     aquire_piece()
-    player_moving = True
-    
+    player_moving = True    
     if z_key_count == 1:
         # player_x += player_x_d * 2
         # player_y += player_y_d * 2
@@ -335,7 +335,7 @@ def player_during():
         
         pass
     else:
-        if jump_count == 2:
+        if jump_count == 1:
             if player_y_VELOCITY < 2:
                 player_z += player_z_d
 
@@ -694,10 +694,11 @@ def draw_screen():
         block_3D_transition(block.points)
         check_cube(block.points,block.texture)
     if is_3D == False:
-        temp = []
-        for point in playerblock.points:
-            temp.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos,angle_x,angle_y))
-        animation.draw_quad("player",temp)
+        animation.anime()
+        # temp = []
+        # for point in playerblock.points:
+        #     temp.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos,angle_x,angle_y))
+        # animation.draw_quad("player",temp)
     else:
         check_cube(playerblock.points,[(color,255-color,0),(color,255-color,0),(color,255-color,0),(0,0,0)])
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
@@ -734,6 +735,7 @@ def run():
     event_check()
     player_during()  # 플레이어 위치 업데이트 먼저
     camera_move()
+    
     draw_screen()
     # gravity()
     
