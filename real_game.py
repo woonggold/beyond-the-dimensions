@@ -25,10 +25,6 @@ z_key_count =0
 blocks = []
 
 
-def jumping():
-    player.dy = -1.5  # 초기 속도로 시작
-
-
 def setblock(texture_num):    
     nearestx_100 = round(player.x / 100) * 100
     nearesty_100 = round(player.y / 100) * 100 + 100
@@ -104,55 +100,83 @@ def aquire_piece():
 #         # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
 #         if is_falling:
 #             player_y_go()
-
+def check_overlap(block_min, block_max, player_min, player_max):
+    return block_min < player_max and block_max > player_min
 
 def check_collision():
+
+    #check_collision[n][0] 은 +쪽, [n][1]은 -쪽
     xyz = [player.x,player.y,player.z]
     dxyz = [player.dx,player.dy,player.dz]
+    print (xyz, dxyz)
     result = []
     
     for block in map_loading.BLOCKS:
-        block_xyz = (block.x,block.y,block.z)
-        for i in [0,2]:
-            if (abs(block_xyz[i] - (xyz[i] + dxyz[i]))<100) and (abs(block_xyz[(i+1)%3] - (xyz[(i+1)%3]))<100) and (abs(block_xyz[(i+2)%3] - (xyz[(i+2)%3]))<100):
-                result.append(i)
-                # print (block_xyz)
-                # print (i)
-                # print(xyz,dxyz)
-        if (100<(player.y + player.dy)-block.y < 200) and (abs(block_xyz[2] - (xyz[2]))<100) and (abs(block_xyz[0] - (xyz[0]))<100):
-            result.append(3)
-        result.append(1)
+        bxyz = (block.x, block.y, block.z)
 
-    result2 = [0,0,0,0]
-    for i in range(4):
-        if i not in result:
-            result2[i] = True
-        else:
-            result2[i] = False
-    # print(result2)
+        for i in range(3):
+            # 플레이어 경계
+            # plus_border = (player.border[i][0], player.border[(i + 1) % 3][0], player.border[(i + 2) % 3][0])
+            # minus_border = (player.border[i][1], player.border[(i + 1) % 3][1], player.border[(i + 2) % 3][1])
+
+            # 플레이어의 현재 위치에서 경계 값을 더한 값
+            play_plus = (xyz[i] + player.border[i][0], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][0], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][0])
+            play_minus = (xyz[i] + player.border[i][1], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][1], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][1])
+
+            # 예측된 플레이어의 위치
+            predict_plus = play_plus[0] + dxyz[i]
+            predict_minus = play_minus[0] + dxyz[i]
+
+            # 블록의 경계
+            block_plus = (bxyz[i] + 50, bxyz[(i + 1) % 3] + 50, bxyz[(i + 2) % 3] + 50)
+            block_minus = (bxyz[i] - 50, bxyz[(i + 1) % 3] - 50, bxyz[(i + 2) % 3] - 50)
+
+            # 충돌 감지
+            if check_overlap(block_minus[1], block_plus[1], play_minus[1], play_plus[1]) and \
+               check_overlap(block_minus[2], block_plus[2], play_minus[2], play_plus[2]):
+                if block_minus[0] < predict_plus < block_plus[0]:
+                    result.append((i, 0))  # 양의 방향 충돌
+                if block_minus[0] < predict_minus < block_plus[0]:
+                    result.append((i, 1))  # 음의 방향 충돌
+
+
+            
+
+    result2 = [[0,0],[0,0],[0,0]]
+    for i in range(3):
+        for j in range(2):
+            if (i,j) in result:
+                result2[i][j] = True
+            else:
+                result2[i][j] = False
     return result2
     
 
 #플레이어 움직임 실시간 적용
 def player_during():
-    x_OK,y_OK,z_OK,head = check_collision()
-    if x_OK:
-        player.x += player.dx
-    if y_OK:
-        player.dy += GRAVITY
-        player.y += player.dy
-        player.jump_OK = False
-    else:
-        player.dy = 0
-        if not head:
-            player.jump_OK = True
-    if z_OK and is_3D:
-        player.z += player.dz
-    elif z_OK and not is_3D:
-        player.z = 100
+    if z_key_count == 0:
+        x_col,y_col,z_col = check_collision()
+        if True not in x_col:
+            player.x += player.dx
+        if True not in y_col:
+            player.y += player.dy
+            player.dy += GRAVITY
+            player.jump_OK = False
+        else:
+            player.dy = 0
+            player.jump_OK = False
+            if y_col[0]:
+                player.jump_OK = True
+        if True not in z_col and is_3D:
+            player.z += player.dz
+        elif not is_3D:
+            player.z = 100
     
-    player.fake_z += 0.2 * (player.z - player.fake_z)
-    player.fake_x += 0.2 * (player.x - player.fake_x)
+        player.fake_z += 0.2 * (player.z - player.fake_z)
+        player.fake_x += 0.2 * (player.x - player.fake_x)
+    elif z_key_count == 1:
+        player.fake_z = player.z
+        player.fake_x = player.x
 
     # print (player.x,player.y,player.z,player.dx,player.dy,player.dz)
     player.points = [
@@ -276,16 +300,16 @@ def event_check():
                 is_3D = not is_3D
 
             if event.key == pygame.K_a:
-                player.dx -= 25
+                    player.dx -= 25
             
             if event.key == pygame.K_d:
-                player.dx += 25
+                    player.dx += 25
 
             if event.key == pygame.K_w:#z축 앞 이동
-                player.dz += 25
+                    player.dz += 25
                 
             if event.key == pygame.K_s: #z축 뒤 이동
-                player.dz -= 25
+                    player.dz -= 25
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -302,43 +326,37 @@ def event_check():
                 if z_key_count == 1:
                     map_loading.map_load()
             if event.key == pygame.K_SPACE: 
-                if z_key_count != 1:
+                if z_key_count == 0:
                     if player.jump_OK:
-                        jumping()
+                        player.dy = player.jump_power
                     
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a: 
-                if z_key_count == 0:
-                    player.dx += 25
-                else:
+                player.dx += 25
+                if z_key_count == 1:
                     player.x -= 100
                     camera_pos[0] -= 100
             if event.key == pygame.K_w:
-                if z_key_count == 0:
-                    player.dz -= 25
-                else:
+                player.dz -= 25
+                if z_key_count == 1:
                     player.z += 100
                     camera_pos[2] += 100
                     
 
                 pass
             if event.key == pygame.K_d: 
-                if z_key_count == 0:
-                    player.dx -= 25
-                else:
+                player.dx -= 25
+                if z_key_count == 1:
                     player.x += 100
                     camera_pos[0] += 100
             if event.key == pygame.K_s: 
-                # player_stop()
-                if z_key_count == 0:
-                    player.dz += 25
-                else:
+                player.dz += 25
+                if z_key_count == 1:
                     player.z -= 100
                     camera_pos[2] -= 100
 
             if event.key == pygame.K_SPACE: 
-                # player_stop()
                 if z_key_count == 1:
                     player.y -= 100
                     camera_pos[1] -= 100

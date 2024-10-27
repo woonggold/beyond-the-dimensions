@@ -18,9 +18,11 @@ class Player:
             [self.x - self.size, self.y - 3*self.size], [self.x + self.size, self.y - 3*self.size],
             [self.x + self.size, self.y + self.size], [self.x - self.size, self.y + self.size],
         ]
+        self.border = [[50,-50],[50,-150],[0,0]]
         self.image = f"{script_dir}//images//{image}"
         self.dx, self.dy, self.dz = [0,0,0]
         self.jump_OK = False
         self.range = 0
-player = Player((100,300,-500),"player.png")
+        self.jump_power = -15
+player = Player((100,0,-500),"player.png")
 

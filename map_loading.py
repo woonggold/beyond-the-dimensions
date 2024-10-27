@@ -26,8 +26,8 @@ def load_map(map_name):
         for i in range(12):
             for j in range(10):
                 BLOCKS.append(Block((i*100-500,500,j*100-500),0))
-        BLOCKS.append(Block((300,400,-500),0))
-        BLOCKS.append(Block((300,300,-500),0))
+        BLOCKS.append(Block((100,400,100),0))
+
         
         return BLOCKS
 class Map:
