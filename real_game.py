@@ -108,7 +108,6 @@ def check_collision():
     #check_collision[n][0] 은 +쪽, [n][1]은 -쪽
     xyz = [player.x,player.y,player.z]
     dxyz = [player.dx,player.dy,player.dz]
-    print (xyz, dxyz)
     result = []
     
     for block in map_loading.BLOCKS:
@@ -163,8 +162,7 @@ def player_during():
             player.dy += GRAVITY
             player.jump_OK = False
         else:
-            player.dy = 0
-            player.jump_OK = False
+            player.dy = 1
             if y_col[0]:
                 player.jump_OK = True
         if True not in z_col and is_3D:
@@ -178,7 +176,7 @@ def player_during():
         player.fake_z = player.z
         player.fake_x = player.x
 
-    # print (player.x,player.y,player.z,player.dx,player.dy,player.dz)
+
     player.points = [
         [player.fake_x - player.size, player.y - 3*player.size], [player.fake_x + player.size, player.y - 3*player.size],
         [player.fake_x + player.size, player.y + player.size], [player.fake_x - player.size, player.y + player.size],
