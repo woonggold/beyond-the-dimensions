@@ -1,5 +1,61 @@
 from settings import *
+from player import *
 
+import pygame
+import os
+
+# 이미지 폴더에서 이미지들을 불러옴
+walk_images = [f"walkanime/walk_{i}" for i in range(1, 4)]
+jump_images = [f"jumpanime/jump_{i}" for i in range(1, 4)]
+standing_images = ["standinganime//player"]
+
+# 애니메이션 상태 변수 초기화
+last_update = 0
+current_frame = 0
+img = standing_images  # 처음 상태는 idle 상태로 초기화
+
+
+def anime():
+    import real_game
+    import projection_3D
+    global last_update, current_frame, img
+    
+    temp = []
+    for point in player.points:
+        temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,real_game.angle_x,real_game.angle_y))
+    if None in temp:
+        return
+    
+    now = pygame.time.get_ticks()
+
+    # 캐릭터의 상태에 따른 애니메이션 설정
+    if player.dx != 0 or player.dz != 0:
+        walking = True
+        jumping = False
+    elif player.dy != 0:
+        walking = False
+        jumping = True
+    else:
+        walking = False
+        jumping = False
+
+    # 상태에 따른 이미지 변경
+    if walking:
+        if now - last_update > 200:  # 200ms마다 이미지 변경
+            last_update = now
+            current_frame = (current_frame + 1) % len(walk_images)
+            player.image = walk_images[current_frame]
+    elif jumping:
+        if now - last_update > 200:  # 200ms마다 이미지 변경
+            last_update = now
+            current_frame = (current_frame + 1) % len(jump_images)
+            player.image = jump_images[current_frame]
+            
+    else:
+        if now - last_update > 50:  # 350ms마다 이미지 변경 (idle 상태)
+            player.image = standing_images[0]
+    draw_quad(player.image, temp)
+            
 #이중 적분 느낌? 선형 보간
 def lerp( p1, p2, f ):
     return p1 + f * (p2 - p1)

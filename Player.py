@@ -23,3 +23,4 @@ class Player:
         self.jump_OK = False
         self.range = 0
 player = Player((100,300,-500),"player.png")
+

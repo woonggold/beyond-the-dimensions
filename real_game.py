@@ -14,6 +14,7 @@ import bisect
 aquire_piece_count = 0
 texture_num = 0
 
+
 #색칠 변수
 color = 0
 
@@ -23,8 +24,10 @@ z_key_count =0
 #블록 설치
 blocks = []
 
+
 def jumping():
     player.dy = -1.5  # 초기 속도로 시작
+
 
 def setblock(texture_num):    
     nearestx_100 = round(player.x / 100) * 100
@@ -53,8 +56,55 @@ def aquire_piece():
             if abs(player.z) - abs(piece.pieceblock.y) < 50 and abs(player.y) - abs(piece.pieceblock.y) > -50:
                 aquire_piece_count += 1
             
-def next_stage():
-    pass
+# def warp():
+#     for block in map_loading.map_test.BLOCKS:
+#         player_x - block.x
+
+# def check_wall_collision():
+#     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
+#     # if player_moving == True:
+#     if z_key_count == 0:
+#         for block in map_loading.map_test.BLOCKS:
+#             if player_x == block.x:
+#                 pass
+#                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
+#             if block.y < 500:
+#                 if block.x - player_x == 100:
+#                     if player_x_d > 0:
+#                         if is_3D == False:
+#                             Front_collision = True
+#                         else:
+#                             if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
+#                                 Front_collision = True
+                        
+
+                        
+#             # 플레이어의 밑면과 블록 윗면이 맞닿는 경우 (점프 상태에 따라 조건 변경)
+#             if jump_count == 2:
+#                 if 310 <= block.y - player_y <= 340 and - block.size - 50 < block.x - player_x < block.size + 50 and - block.size - 50 < block.z - player_z < block.size + 50:
+#                     print("나중, 충돌된 거 : ",block.y)
+#                     player_y_VELOCITY = 0
+#                     time_elapsed = 0
+#                     acceleration = 0
+#                     initial_velocity = 0
+#                     player_y = block.y - 325
+#                     jump_count = 0
+#                     is_falling = False
+#                     break  # 충돌이 감지되면 루프 종료
+#             else:
+#                 if block.y - player_y == 325 and - block.size - 50 < block.x - player_x < block.size + 50 and -block.size - 50 < block.z - player_z < block.size + 50 and jump_count != 1:
+#                     print("처음")
+#                     time_elapsed = 0
+#                     player_y_VELOCITY = 0
+#                     initial_velocity = 0
+#                     acceleration = 0
+#                     jump_count = 0
+#                     is_falling = False
+#                     break  # 충돌이 감지되면 루프 종료
+#         # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
+#         if is_falling:
+#             player_y_go()
+
 
 def check_collision():
     xyz = [player.x,player.y,player.z]
@@ -212,7 +262,6 @@ def mouse_rotate_check():
 
 def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -345,12 +394,12 @@ def block_3D_transition(points):
 
         point = x,y,point[2],z
 
-def draw_player():
-    temp = []
-    for point in player.points:
-        temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,angle_x,angle_y))
-    if None not in temp:
-        animation.draw_quad("player",temp)
+# def draw_player():
+#     temp = []
+#     for point in player.points:
+#         temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,angle_x,angle_y))
+#     if None not in temp:
+#         animation.draw_quad("player",temp)
 
 def draw_screen():
     global blocks
@@ -386,14 +435,14 @@ def draw_screen():
         for i in range(actual_position):
             if actual_position != 0:
                 draw_square(showing.squares[i][0:4],showing.squares[i][4])
-        draw_player()
+        animation.anime()
         for i in range(actual_position,len(showing.squares)):
             # if actual_position != len(showing.squares):
             draw_square(showing.squares[i][0:4],showing.squares[i][4])
     else:
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
-        draw_player()
+        animation.anime()
     if aquire_piece_count == 0:
         draw_real_piece(piece.pieceblock)
     pygame.display.flip()
@@ -401,12 +450,13 @@ def draw_screen():
 
 
 def run():
-    global condition
+    global condition, jump_count, acceleration
     condition = "real_game"
     mouse_rotate_check()
     event_check()
     player_during()  # 플레이어 위치 업데이트 먼저
     camera_move()
+    
     draw_screen()
     
     return condition
