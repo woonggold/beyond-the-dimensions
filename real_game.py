@@ -219,27 +219,20 @@ def draw_real_piece(piece_block):
     
 # 큐브의 면을 그리는 함수
 
-def is_collinear(p1, p2, p3):
-    # 기울기: (y2 - y1) / (x2 - x1) = (y3 - y1) / (x3 - x1)
-    # 두 직선의 기울기가 같으면 한 직선 위에 있다.
-    return (p3[1] - p1[1]) * (p2[0] - p1[0]) == (p2[1] - p1[1]) * (p3[0] - p1[0])
-
-def are_all_points_collinear(points):
-    # 4개의 점 중 첫 번째 점과 나머지 세 점의 기울기가 모두 같으면 한 직선 위에 있음
-    p1, p2, p3, p4 = points
-    return is_collinear(p1, p2, p3) or is_collinear(p1, p2, p4) or is_collinear(p1, p3, p4) or is_collinear(p3, p2, p4)
-
-
 def draw_square(square,color_set):
     temp_square = []
+    temp = 0
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
     square = temp_square
     if (None not in square):
-        if (not are_all_points_collinear(square)):
-            # 좌표가 한 직선 위에 있지 않으면 그리기
-            pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
-            pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
+        for point in square:
+            if not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
+                temp += 1
+            if temp == 4:
+                return
+        pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
+        pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
 
 def cal_square(square,where):
     if (((where == 'front') and (square not in showing.squares_front)) or (square not in showing.squares)):#중복되는 것이 없는지 확인
@@ -402,24 +395,32 @@ def camera_move():
     
     if z_key_count == 0:
         for i in range(3):
+            target_camera_pos = player.x,(player.y-300),(player.z - 800)
             camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
 
 
-def block_3D_transition(points):
+def block_3D_transition(blockk):
     global camera_pos
-    for point in points:
+    
     # 부드럽게 이동
     
-        if is_3D == False:
-            
+    if is_3D == False:
+        blockk.z = 100
+        for point in blockk.points:
+        
             x, y = point[0],point[1]
             if(abs(100 - point[3])>10):
                 point[3] += (100 - point[3]) * 0.2
             else:
                 point[3] = 100
             z = point[3]
-    
-        else:
+
+            point = x,y,point[2],z
+
+
+    else:
+        blockk.z = blockk.original_z
+        for point in blockk.points:
             x, y = point[0],point[1]
             if(abs(point[2] - point[3])>10):
                 point[3] += (point[2] - point[3]) * 0.2
@@ -427,7 +428,7 @@ def block_3D_transition(points):
                 point[3] = point[2]
             z = point[3]
 
-        point = x,y,point[2],z
+            point = x,y,point[2],z
 
 # def draw_player():
 #     temp = []
@@ -442,7 +443,7 @@ def draw_screen():
     showing.squares = []
     showing.squares_front = []
     for block in map_loading.map_test.BLOCKS:
-        block_3D_transition(block.points)
+        block_3D_transition(block)
         check_cube(block.points,block.texture)
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
     square_5ths = [squares[5] for squares in showing.squares]

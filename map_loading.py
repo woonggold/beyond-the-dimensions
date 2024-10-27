@@ -6,6 +6,7 @@ class Block:
         self.x = pos[0]
         self.y = pos[1]
         self.z = pos[2]
+        self.original_z = self.z
         self.size = 50 #settings.py의 cube_size와 일치시켜야 됨.
         self.points = [
             [self.x - self.size, self.y - 50, self.z - self.size, self.z - self.size], [self.x + self.size, self.y - 50, self.z - self.size, self.z - self.size],
