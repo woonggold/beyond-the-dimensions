@@ -28,30 +28,22 @@ def anime():
     
     now = pygame.time.get_ticks()
 
-    # 캐릭터의 상태에 따른 애니메이션 설정
-    if player.dx != 0 or player.dz != 0:
-        walking = True
-        jumping = False
-    elif player.dy != 0:
-        walking = False
-        jumping = True
-    else:
-        walking = False
-        jumping = False
+
+
 
     # 상태에 따른 이미지 변경
-    if walking:
+    if player.ani == "walk":
         if now - last_update > 200:  # 200ms마다 이미지 변경
             last_update = now
             current_frame = (current_frame + 1) % len(walk_images)
             player.image = walk_images[current_frame]
-    elif jumping:
+    elif player.ani == "jump":
         if now - last_update > 200:  # 200ms마다 이미지 변경
             last_update = now
             current_frame = (current_frame + 1) % len(jump_images)
             player.image = jump_images[current_frame]
             
-    else:
+    elif player.ani == "stand":
         if now - last_update > 50:  # 350ms마다 이미지 변경 (idle 상태)
             player.image = standing_images[0]
     draw_quad(player.image, temp)

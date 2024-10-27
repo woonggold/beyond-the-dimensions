@@ -23,6 +23,9 @@ class Player:
         self.dx, self.dy, self.dz = [0,0,0]
         self.jump_OK = False
         self.range = 0
-        self.jump_power = -25
+        self.jump_power = -17
+        self.ani = "stand"
+        self.speed = 12.5
+        self.jump_pressed = False
 player = Player((100,0,-500),"player.png")
 

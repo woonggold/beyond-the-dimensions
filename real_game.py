@@ -153,11 +153,13 @@ def check_collision():
 
 #플레이어 움직임 실시간 적용
 def player_during():
+    player.ani = "stand"
     if z_key_count == 0:
         x_col,y_col,z_col = check_collision()
         if True not in x_col:
             player.x += player.dx
         if True not in y_col:
+            player.ani = "jump"
             player.y += player.dy
             player.dy += GRAVITY
             player.jump_OK = False
@@ -170,8 +172,20 @@ def player_during():
         elif not is_3D:
             player.z = 100
     
-        player.fake_z += 0.2 * (player.z - player.fake_z)
-        player.fake_x += 0.2 * (player.x - player.fake_x)
+        if abs(player.z - player.fake_z) >= 5:
+            if player.ani != "jump":
+                player.ani = "walk"
+            player.fake_z += 0.3 * (player.z - player.fake_z)
+        else:
+            player.fake_z = player.z
+        if abs(player.x - player.fake_x) >= 5:
+            if player.ani != "jump":
+                player.ani = "walk"
+            player.fake_x += 0.3 * (player.x - player.fake_x)
+        else:
+            player.fake_x = player.x
+        
+        
     elif z_key_count == 1:
         player.fake_z = player.z
         player.fake_x = player.x
@@ -270,6 +284,11 @@ def check_cube(points,texture):
     for square in squares[1:6]:
         cal_square(square,'rest')
 
+def jump(pressed):
+    if pressed == True:
+        if z_key_count == 0:
+            if player.jump_OK:
+                player.dy = player.jump_power
 
 # 메인 루프
 def mouse_rotate_check():
@@ -298,16 +317,16 @@ def event_check():
                 is_3D = not is_3D
 
             if event.key == pygame.K_a:
-                    player.dx -= 25
+                    player.dx -= player.speed
             
             if event.key == pygame.K_d:
-                    player.dx += 25
+                    player.dx += player.speed
 
             if event.key == pygame.K_w:#z축 앞 이동
-                    player.dz += 25
+                    player.dz += player.speed
                 
             if event.key == pygame.K_s: #z축 뒤 이동
-                    player.dz -= 25
+                    player.dz -= player.speed
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -323,20 +342,19 @@ def event_check():
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
                     map_loading.map_load()
-            if event.key == pygame.K_SPACE: 
-                if z_key_count == 0:
-                    if player.jump_OK:
-                        player.dy = player.jump_power
+            if event.key == pygame.K_SPACE:
+                player.jump_pressed = True 
+
                     
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a: 
-                player.dx += 25
+                player.dx += player.speed
                 if z_key_count == 1:
                     player.x -= 100
                     camera_pos[0] -= 100
             if event.key == pygame.K_w:
-                player.dz -= 25
+                player.dz -= player.speed
                 if z_key_count == 1:
                     player.z += 100
                     camera_pos[2] += 100
@@ -344,17 +362,18 @@ def event_check():
 
                 pass
             if event.key == pygame.K_d: 
-                player.dx -= 25
+                player.dx -= player.speed
                 if z_key_count == 1:
                     player.x += 100
                     camera_pos[0] += 100
             if event.key == pygame.K_s: 
-                player.dz += 25
+                player.dz += player.speed
                 if z_key_count == 1:
                     player.z -= 100
                     camera_pos[2] -= 100
 
             if event.key == pygame.K_SPACE: 
+                player.jump_pressed = False
                 if z_key_count == 1:
                     player.y -= 100
                     camera_pos[1] -= 100
@@ -376,7 +395,7 @@ def event_check():
             elif event.button == 1:
                 if z_key_count == 1:    
                     blockremove()
-
+    jump(player.jump_pressed)
 def camera_move():
     # 부드럽게 이동
     global camera_pos, z_key_count
