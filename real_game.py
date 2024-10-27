@@ -11,26 +11,20 @@ import bisect
 
 #플레이어 세팅
 
-aquire_piece_count = 0
-texture_num = 0
-
-
-#색칠 변수
-color = 0
-
-#키 누름 카운트
-z_key_count =0
-
-#블록 설치
-blocks = []
 
 
 def setblock(texture_num):    
     nearestx_100 = round(player.x / 100) * 100
     nearesty_100 = round(player.y / 100) * 100 + 100
     nearestz_100 = round(player.z / 100) * 100
-  
+    if texture_num == 9:
+        warpname = input("워프 이름을 작성해 주세요: ")
+        warp_name_list.append(warpname)
+        warp_block_x_list.append(nearestx_100)
+        warp_block_y_list.append(nearesty_100)
+        warp_block_z_list.append(nearestz_100)
     map_loading.map_test.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+
 
 def blockremove():
     nearestx_100 = round(player.x / 100) * 100
@@ -149,13 +143,48 @@ def check_collision():
             else:
                 result2[i][j] = False
     return result2
+def check_warp():
+    global warp_working_count
+    warp_block_list = map_loading.warp_block_list
+    xyz = [player.x,player.y,player.z]
     
+    if warp_working_count == 0:
+        for block in map_loading.map_test.BLOCKS:
+            if abs(xyz[0]) - abs(block.x) < 100 and abs(xyz[0]) - abs(block.x) > -100:
+                if abs(xyz[2]) - abs(block.z) < 100 and abs(xyz[2]) - abs(block.z) > -100:
+                    if block.texture_num == 9:
+                        if warp_working_count == 0:
+                            for i in range(0, len(warp_block_list)):
+                                if block.x == warp_block_list[i][0] and block.y == warp_block_list[i][1] and block.z == warp_block_list[i][2]:
+                                    if warp_working_count == 0:
+                                        for j in range(0, len(warp_block_list)):
+                                            if warp_block_list[j][3] == warp_block_list[i][3]:
+                                                if j != i:
+                                                    warp_working_count = 1
+                                                    player.x = warp_block_list[j][0]
+                                                    player.y = warp_block_list[j][1] - 100
+                                                    player.z = warp_block_list[j][2]
+                                                    camera_pos[0] = warp_block_list[j][0]
+                                                    camera_pos[1] = warp_block_list[j][1]
+                                                    break
+                                    else:
+                                        break
+                        else:
+                            break
+    else:
+        for i in range(0, len(warp_block_list)):
+            
+            if xyz[0] == warp_block_list[i][0] and xyz[1] == warp_block_list[i][1] - 100 and xyz[2] == warp_block_list[i][2]:
+                break
+        else:
+            warp_working_count = 0
 
 #플레이어 움직임 실시간 적용
 def player_during():
     player.ani = "stand"
     if z_key_count == 0:
         x_col,y_col,z_col = check_collision()
+        check_warp()
         if True not in x_col:
             player.x += player.dx
         if True not in y_col:
@@ -187,6 +216,7 @@ def player_during():
         
         
     elif z_key_count == 1:
+        check_warp()
         player.fake_z = player.z
         player.fake_x = player.x
 

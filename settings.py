@@ -39,3 +39,28 @@ block_textures = [[(100,100,100),(255,255,255),(0,0,0),(0,0,0)],\
                   [(0,0,0),(0,0,0),(0,0,0),(0,0,0)]] # 각각 0번부터 9번까지의 윗면, 옆면, 아랫면, 테두리의 색
 
 GRAVITY = 1
+
+warp_name_list = []
+warp_block_x_list = []
+warp_block_y_list = []
+warp_block_z_list = []
+
+warp_block_data = {
+    "x": warp_block_x_list,
+    "y": warp_block_y_list,
+    "z": warp_block_z_list, 
+    "warp_name": warp_name_list, 
+}
+
+aquire_piece_count = 0
+texture_num = 0
+warp_working_count = 0
+
+#색칠 변수
+color = 0
+
+#키 누름 카운트
+z_key_count =0
+
+#블록 설치
+blocks = []

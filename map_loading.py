@@ -18,6 +18,7 @@ class Block:
         self.texture = settings.block_textures[texture_num]
 
 BLOCKS = []
+warp_block_list = []
 
 def load_map(map_name):
     global BLOCKS
@@ -38,10 +39,12 @@ class Map:
 map_test = Map(settings.map_name)
 
 def map_save():
+    import real_game
     blocks_dict_x = []
     blocks_dict_y = []
     blocks_dict_z = []
     blocks_dict_texture = []
+    blocks_dict_warp_name = real_game.warp_block_data
     for block in map_test.BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
@@ -52,11 +55,12 @@ def map_save():
         "x": blocks_dict_x,
         "y": blocks_dict_y,
         "z": blocks_dict_z, 
-        "texture": blocks_dict_texture, 
+        "texture": blocks_dict_texture,
     }
     
     final_data = {
         "Blocks": separated_data, 
+        "warp_blocks": blocks_dict_warp_name
     }
     mapname = input("저장할 맵 이름을 입력해 주세요: ")
 
@@ -65,6 +69,7 @@ def map_save():
     print("저장됨")
         
 def map_load():
+    
     mapname = input("불러올 맵 이름을 입력해 주세요: ")
     with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
@@ -73,5 +78,9 @@ def map_load():
     for i in range(len(data["Blocks"]["x"])):
                 
         BLOCKS.append(Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
+    for i in range(0, len(data["warp_blocks"]["x"])):
+
+        tuple1= (data["warp_blocks"]["x"][i], data["warp_blocks"]["y"][i], data["warp_blocks"]["z"][i], data["warp_blocks"]["warp_name"][i])
+        warp_block_list.append(tuple1)
 
     print("로드됨")
