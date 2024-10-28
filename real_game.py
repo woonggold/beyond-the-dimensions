@@ -46,54 +46,7 @@ def aquire_piece():
             if abs(player.z) - abs(piece.pieceblock.y) < 50 and abs(player.y) - abs(piece.pieceblock.y) > -50:
                 aquire_piece_count += 1
             
-# def warp():
-#     for block in map_loading.map_test.BLOCKS:
-#         player_x - block.x
 
-# def check_wall_collision():
-#     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
-#     # if player_moving == True:
-#     if z_key_count == 0:
-#         for block in map_loading.map_test.BLOCKS:
-#             if player_x == block.x:
-#                 pass
-#                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
-#             if block.y < 500:
-#                 if block.x - player_x == 100:
-#                     if player_x_d > 0:
-#                         if is_3D == False:
-#                             Front_collision = True
-#                         else:
-#                             if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
-#                                 Front_collision = True
-                        
-
-                        
-#             # 플레이어의 밑면과 블록 윗면이 맞닿는 경우 (점프 상태에 따라 조건 변경)
-#             if jump_count == 2:
-#                 if 310 <= block.y - player_y <= 340 and - block.size - 50 < block.x - player_x < block.size + 50 and - block.size - 50 < block.z - player_z < block.size + 50:
-#                     print("나중, 충돌된 거 : ",block.y)
-#                     player_y_VELOCITY = 0
-#                     time_elapsed = 0
-#                     acceleration = 0
-#                     initial_velocity = 0
-#                     player_y = block.y - 325
-#                     jump_count = 0
-#                     is_falling = False
-#                     break  # 충돌이 감지되면 루프 종료
-#             else:
-#                 if block.y - player_y == 325 and - block.size - 50 < block.x - player_x < block.size + 50 and -block.size - 50 < block.z - player_z < block.size + 50 and jump_count != 1:
-#                     print("처음")
-#                     time_elapsed = 0
-#                     player_y_VELOCITY = 0
-#                     initial_velocity = 0
-#                     acceleration = 0
-#                     jump_count = 0
-#                     is_falling = False
-#                     break  # 충돌이 감지되면 루프 종료
-#         # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
-#         if is_falling:
-#             player_y_go()
 def check_overlap(block_min, block_max, player_min, player_max):
     return block_min < player_max and block_max > player_min
 
@@ -109,20 +62,9 @@ def check_collision():
         bxyz = (block.x, block.y, block.z)
 
         for i in range(3):
-            # 플레이어 경계
-            # plus_border = (player.border[i][0], player.border[(i + 1) % 3][0], player.border[(i + 2) % 3][0])
-            # minus_border = (player.border[i][1], player.border[(i + 1) % 3][1], player.border[(i + 2) % 3][1])
-
             # 플레이어의 현재 위치에서 경계 값을 더한 값
             play_plus = (xyz[i] + player.border[i][0], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][0], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][0])
             play_minus = (xyz[i] + player.border[i][1], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][1], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][1])
-            # if i == 2:
-            #     print (player.border[i][0],player.border[0][0],player.border[1][0],player.border[2][0])
-            #     print (player.border[i][1],player.border[0][1],player.border[1][1],player.border[2][1])
-            #     print (play_plus[0])
-            #     print (play_minus[0])
-            #     print (xyz[i])
-            #     print ("**************")
 
             # 예측된 플레이어의 위치
             predict_plus = play_plus[0] + dxyz[i]
@@ -131,7 +73,6 @@ def check_collision():
             # 블록의 경계
             block_plus = (bxyz[i] + 50, bxyz[(i + 1) % 3] + 50, bxyz[(i + 2) % 3] + 50)
             block_minus = (bxyz[i] - 50, bxyz[(i + 1) % 3] - 50, bxyz[(i + 2) % 3] - 50)
-
 
             # 충돌 감지
             if check_overlap(block_minus[1], block_plus[1], play_minus[1], play_plus[1]) and \
@@ -151,11 +92,6 @@ def check_collision():
                         if player.dz < 0:
                             result.append((i, 1)) #플레이어의 음의 방향 충돌
                             k[2][1] = abs(player.z - block_plus[0])
-                        
-
-
-
-            
 
     result2 = [[0,0],[0,0],[0,0]]
     for i in range(3):
@@ -218,28 +154,9 @@ def adjust(k, i):
         elif i == 2:
             player.z -= k[i][1] -1
 
-def check_error(x_col,y_col,z_col,k):
-    return
-    if True in x_col and True in y_col:
-        adjust(k,0)
-        adjust(k,1)
-        return True
-    if True in y_col and True in z_col:
-        adjust(k,1)
-        adjust(k,2)
-        return True
-    if True in z_col and True in x_col:
-        adjust(k,2)
-        adjust(k,0)
-        return True
-    if True in z_col and True in x_col and True in y_col:
-        adjust(k,2)
-        adjust(k,1)
-        adjust(k,0)
-        return True
 #플레이어 움직임 실시간 적용
 def player_during():
-    print("\n\n\n\n\n\n\ns")
+    print("\n\n\n\n\n\n\n")
     print (player.x,player.y,player.z)
     global delta_time
     player.ani = "stand"
@@ -247,15 +164,12 @@ def player_during():
     delta_time = clock.tick(FPS) / 2
     if z_key_count == 0:
         x_col,y_col,z_col,k = check_collision()
-        if check_error(x_col,y_col,z_col,k):
-            player.ani = "jump"
-            return
-        print(x_col,y_col,z_col,k)
         check_warp()
         if True not in x_col:
             player.x += player.dx * delta_time
         elif abs(player.dx) > 0:
             adjust(k, 0)
+        x_col,y_col,z_col,k = check_collision()
         if True not in y_col:
             player.ani = "jump"
             player.y += player.dy * delta_time
@@ -266,6 +180,7 @@ def player_during():
             player.dy = 1
             if y_col[0]:
                 player.jump_OK = True
+        x_col,y_col,z_col,k = check_collision()
         if True not in z_col and is_3D:
             player.z += player.dz * delta_time
         elif is_3D:
