@@ -101,8 +101,9 @@ def check_collision():
 
     #check_collision[n][0] 은 +쪽, [n][1]은 -쪽
     xyz = [player.x,player.y,player.z]
-    dxyz = [player.dx,player.dy,player.dz]
+    dxyz = [player.dx * delta_time,player.dy * delta_time,player.dz * delta_time]
     result = []
+    k = [[0,0],[0,0],[0,0]]
     
     for block in map_loading.BLOCKS:
         bxyz = (block.x, block.y, block.z)
@@ -129,8 +130,10 @@ def check_collision():
                check_overlap(block_minus[2], block_plus[2], play_minus[2], play_plus[2]):
                 if block_minus[0] < predict_plus < block_plus[0]:
                     result.append((i, 0))  # 양의 방향 충돌
+                    k[i][0] = predict_plus - block_minus[0]
                 if block_minus[0] < predict_minus < block_plus[0]:
                     result.append((i, 1))  # 음의 방향 충돌
+                    k[i][0] = predict_minus - block_plus[0]
 
 
             
@@ -142,6 +145,7 @@ def check_collision():
                 result2[i][j] = True
             else:
                 result2[i][j] = False
+    result2.append(k)
     return result2
 def check_warp():
     global warp_working_count
@@ -150,8 +154,8 @@ def check_warp():
     
     if warp_working_count == 0:
         for block in map_loading.map_test.BLOCKS:
-            if abs(xyz[0]) - abs(block.x) < 100 and abs(xyz[0]) - abs(block.x) > -100:
-                if abs(xyz[2]) - abs(block.z) < 100 and abs(xyz[2]) - abs(block.z) > -100:
+            if abs(xyz[0] - block.x) < 100:
+                if abs(xyz[2] - block.z) < 100:
                     if block.texture_num == 9:
                         if warp_working_count == 0:
                             for i in range(0, len(warp_block_list)):
@@ -179,38 +183,63 @@ def check_warp():
         else:
             warp_working_count = 0
 
+def adjust(k, i):
+    if abs(k[i][0]) < abs(k[i][1]):
+        if i == 0:
+            player.x += k[i][0]
+        elif i == 1:
+            player.y += k[i][0]
+        elif i == 2:
+            player.z += k[i][0]
+    elif abs(k[i][0]) > abs(k[i][1]):
+        if i == 0:
+            player.x += k[i][1]
+        elif i == 1:
+            player.y += k[i][1]
+        elif i == 2:
+            player.z += k[i][1]
+
 #플레이어 움직임 실시간 적용
 def player_during():
+    print (player.dy)
+    global delta_time
     player.ani = "stand"
+    FPS = 1000
+    delta_time = clock.tick(FPS) / 2
     if z_key_count == 0:
-        x_col,y_col,z_col = check_collision()
+        x_col,y_col,z_col,k = check_collision()
         check_warp()
         if True not in x_col:
-            player.x += player.dx
+            player.x += player.dx * delta_time
+        else:
+            adjust(k, 0)
         if True not in y_col:
             player.ani = "jump"
-            player.y += player.dy
+            player.y += player.dy * delta_time
             player.dy += GRAVITY
             player.jump_OK = False
         else:
-            player.dy = 1
+            player.dy = 0
+            adjust(k, 1)
             if y_col[0]:
                 player.jump_OK = True
         if True not in z_col and is_3D:
-            player.z += player.dz
+            player.z += player.dz * delta_time
+        elif is_3D:
+            adjust(k, 2)
         elif not is_3D:
             player.z = 100
     
         if abs(player.z - player.fake_z) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
-            player.fake_z += 0.3 * (player.z - player.fake_z)
+            player.fake_z += 0.3 * delta_time * (player.z - player.fake_z)
         else:
             player.fake_z = player.z
         if abs(player.x - player.fake_x) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
-            player.fake_x += 0.3 * (player.x - player.fake_x)
+            player.fake_x += 0.3 * delta_time * (player.x - player.fake_x)
         else:
             player.fake_x = player.x
         
@@ -226,7 +255,7 @@ def player_during():
         [player.fake_x + player.size, player.y + player.size], [player.fake_x - player.size, player.y + player.size],
     ]
 
-    player.range = (player.x-camera_pos[0])**2 + (player.y-50-camera_pos[1])**2 + (player.z-camera_pos[2])**2
+    player.range = (player.fake_x-camera_pos[0])**2 + (player.y-50-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
 
 def draw_real_piece(piece_block):
     global piece_img,aquire_piece_count
@@ -426,7 +455,7 @@ def camera_move():
     if z_key_count == 0:
         for i in range(3):
             target_camera_pos = player.x,(player.y-300),(player.z - 800)
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
+            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * delta_time * 0.1
 
 
 def block_3D_transition(blockk):
