@@ -116,6 +116,13 @@ def check_collision():
             # 플레이어의 현재 위치에서 경계 값을 더한 값
             play_plus = (xyz[i] + player.border[i][0], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][0], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][0])
             play_minus = (xyz[i] + player.border[i][1], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][1], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][1])
+            # if i == 2:
+            #     print (player.border[i][0],player.border[0][0],player.border[1][0],player.border[2][0])
+            #     print (player.border[i][1],player.border[0][1],player.border[1][1],player.border[2][1])
+            #     print (play_plus[0])
+            #     print (play_minus[0])
+            #     print (xyz[i])
+            #     print ("**************")
 
             # 예측된 플레이어의 위치
             predict_plus = play_plus[0] + dxyz[i]
@@ -125,15 +132,27 @@ def check_collision():
             block_plus = (bxyz[i] + 50, bxyz[(i + 1) % 3] + 50, bxyz[(i + 2) % 3] + 50)
             block_minus = (bxyz[i] - 50, bxyz[(i + 1) % 3] - 50, bxyz[(i + 2) % 3] - 50)
 
+
             # 충돌 감지
             if check_overlap(block_minus[1], block_plus[1], play_minus[1], play_plus[1]) and \
                check_overlap(block_minus[2], block_plus[2], play_minus[2], play_plus[2]):
-                if block_minus[0] < predict_plus < block_plus[0]:
-                    result.append((i, 0))  # 양의 방향 충돌
-                    k[i][0] = predict_plus - block_minus[0]
-                if block_minus[0] < predict_minus < block_plus[0]:
-                    result.append((i, 1))  # 음의 방향 충돌
-                    k[i][0] = predict_minus - block_plus[0]
+                if i in [0,1]:
+                    if block_minus[0] < predict_plus < block_plus[0]:
+                        result.append((i, 0))  # 양의 방향 충돌
+                        k[i][0] = play_plus[0] - block_minus[0]
+                    if block_minus[0] < predict_minus < block_plus[0]:
+                        result.append((i, 1))  # 음의 방향 충돌
+                        k[i][0] = play_minus[0] - block_plus[0]
+                if i == 2:
+                    if block_minus[0] < predict_plus < block_plus[0] or block_minus[0] < predict_minus < block_plus[0]:
+                        if player.dz > 0:
+                            result.append((i, 0)) #플레이어의 양의 방향 충돌
+                            k[2][0] = abs(player.z - block_minus[0])
+                        if player.dz < 0:
+                            result.append((i, 1)) #플레이어의 음의 방향 충돌
+                            k[2][1] = abs(player.z - block_plus[0])
+                        
+
 
 
             
@@ -184,34 +203,58 @@ def check_warp():
             warp_working_count = 0
 
 def adjust(k, i):
-    if abs(k[i][0]) < abs(k[i][1]):
+    if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0):
         if i == 0:
-            player.x += k[i][0]
+            player.x -= k[i][0]
         elif i == 1:
-            player.y += k[i][0]
+            player.y -= k[i][0]
         elif i == 2:
-            player.z += k[i][0]
-    elif abs(k[i][0]) > abs(k[i][1]):
+            player.z += k[i][0] -1
+    elif (abs(k[i][0]) > abs(k[i][1]) > 0) or (abs(k[i][0])==0):
         if i == 0:
-            player.x += k[i][1]
+            player.x -= k[i][1]
         elif i == 1:
-            player.y += k[i][1]
+            player.y -= k[i][1]
         elif i == 2:
-            player.z += k[i][1]
+            player.z -= k[i][1] -1
 
+def check_error(x_col,y_col,z_col,k):
+    return
+    if True in x_col and True in y_col:
+        adjust(k,0)
+        adjust(k,1)
+        return True
+    if True in y_col and True in z_col:
+        adjust(k,1)
+        adjust(k,2)
+        return True
+    if True in z_col and True in x_col:
+        adjust(k,2)
+        adjust(k,0)
+        return True
+    if True in z_col and True in x_col and True in y_col:
+        adjust(k,2)
+        adjust(k,1)
+        adjust(k,0)
+        return True
 #플레이어 움직임 실시간 적용
 def player_during():
-    print (player.dy)
+    print("\n\n\n\n\n\n\ns")
+    print (player.x,player.y,player.z)
     global delta_time
     player.ani = "stand"
     FPS = 1000
     delta_time = clock.tick(FPS) / 2
     if z_key_count == 0:
         x_col,y_col,z_col,k = check_collision()
+        if check_error(x_col,y_col,z_col,k):
+            player.ani = "jump"
+            return
+        print(x_col,y_col,z_col,k)
         check_warp()
         if True not in x_col:
             player.x += player.dx * delta_time
-        else:
+        elif abs(player.dx) > 0:
             adjust(k, 0)
         if True not in y_col:
             player.ani = "jump"
@@ -219,8 +262,8 @@ def player_during():
             player.dy += GRAVITY
             player.jump_OK = False
         else:
-            player.dy = 0
             adjust(k, 1)
+            player.dy = 1
             if y_col[0]:
                 player.jump_OK = True
         if True not in z_col and is_3D:
@@ -229,7 +272,9 @@ def player_during():
             adjust(k, 2)
         elif not is_3D:
             player.z = 100
-    
+        elif False not in z_col:
+            adjust(k, 0)
+            adjust(k, 1)
         if abs(player.z - player.fake_z) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
@@ -242,6 +287,9 @@ def player_during():
             player.fake_x += 0.3 * delta_time * (player.x - player.fake_x)
         else:
             player.fake_x = player.x
+
+
+        
         
         
     elif z_key_count == 1:
