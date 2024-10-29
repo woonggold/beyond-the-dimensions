@@ -3,11 +3,11 @@ import json
 class Block:
     def __init__(self, pos, texture_num):
         self.pos = pos
-        self.x = pos[0]
-        self.y = pos[1]
-        self.z = pos[2]
+        self.x = int(pos[0])
+        self.y = int(pos[1])
+        self.z = int(pos[2])
         self.original_z = self.z
-        self.size = 50 #settings.py의 cube_size와 일치시켜야 됨.
+        self.size = settings.cube_size
         self.points = [
             [self.x - self.size, self.y - 50, self.z - self.size, self.z - self.size], [self.x + self.size, self.y - 50, self.z - self.size, self.z - self.size],
             [self.x + self.size, self.y + 50, self.z - self.size, self.z - self.size], [self.x - self.size, self.y + 50, self.z - self.size, self.z - self.size],
@@ -39,12 +39,11 @@ class Map:
 map_test = Map(settings.map_name)
 
 def map_save():
-    import real_game
     blocks_dict_x = []
     blocks_dict_y = []
     blocks_dict_z = []
     blocks_dict_texture = []
-    blocks_dict_warp_name = real_game.warp_block_data
+    blocks_dict_warp_name = settings.warp_block_data
     for block in map_test.BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
