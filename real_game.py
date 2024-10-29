@@ -105,45 +105,36 @@ def check_collision():
 def check_warp():
     global warp_working_count
     warp_block_list = map_loading.warp_block_list
-    xyz = [player.x, player.y, player.z]
-
+    xyz = [player.x,player.y,player.z]
+    
     if warp_working_count == 0:
         for block in map_loading.map_test.BLOCKS:
             if abs(xyz[0] - block.x) < 100:
                 if abs(xyz[2] - block.z) < 100:
                     if block.texture_num == 9:
-                        for i in range(0, len(warp_block_list)):
-                            if (
-                                block.x == warp_block_list[i][0]
-                                and block.y == warp_block_list[i][1]
-                                and block.z == warp_block_list[i][2]
-                            ):
-                                for j in range(0, len(warp_block_list)):
-                                    if warp_block_list[j][3] == warp_block_list[i][3]:
-                                        if j != i:
-                                            warp_working_count = 1
-                                            player.x = warp_block_list[j][0]
-                                            player.y = warp_block_list[j][1] - 100
-                                            player.z = warp_block_list[j][2]
-                                            camera_pos[0] = warp_block_list[j][0]
-                                            camera_pos[1] = warp_block_list[j][1]
-                                            break
-                                break
-                        break
+                        if warp_working_count == 0:
+                            for i in range(0, len(warp_block_list)):
+                                if block.x == warp_block_list[i][0] and block.y == warp_block_list[i][1] and block.z == warp_block_list[i][2]:
+                                    if warp_working_count == 0:
+                                        for j in range(0, len(warp_block_list)):
+                                            if warp_block_list[j][3] == warp_block_list[i][3]:
+                                                if j != i:
+                                                    warp_working_count = 1
+                                                    player.x = warp_block_list[j][0]
+                                                    player.y = warp_block_list[j][1] - 100
+                                                    player.z = warp_block_list[j][2]
+                                                    camera_pos[0] = warp_block_list[j][0]
+                                                    camera_pos[1] = warp_block_list[j][1]
+                                                    break
+                                    else:
+                                        break
+                        else:
+                            break
     else:
-        
         for i in range(0, len(warp_block_list)):
-            print(abs(xyz[0] - warp_block_list[i][0]))
-            print(abs((xyz[1] - warp_block_list[i][1]) - 100))
-            print(abs(xyz[2] - warp_block_list[i][2]))
-            if (
-                abs(xyz[0] - warp_block_list[i][0]) < 100
-                and abs((xyz[1] - warp_block_list[i][1])) <= 350
-                and abs(xyz[2] - warp_block_list[i][2]) < 100
-            ):
-                warp_working_count = 1
+            
+            if xyz[0] == warp_block_list[i][0] and xyz[1] == warp_block_list[i][1] - 100 and xyz[2] == warp_block_list[i][2]:
                 break
-                
         else:
             warp_working_count = 0
 
@@ -227,7 +218,7 @@ def player_during():
         [player.fake_x + player.size, player.y + player.size], [player.fake_x - player.size, player.y + player.size],
     ]
 
-    player.range = (player.fake_x-camera_pos[0])**2 + (player.y-50-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
+    player.range = (player.fake_x-camera_pos[0])**2 + (player.y-150-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
 
 def draw_real_piece(piece_block):
     global piece_img,aquire_piece_count
@@ -254,14 +245,14 @@ def draw_square(square,color_set):
     temp_square = []
     temp = 0
     for point in square[0:4]:
-        temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), (camera_pos), angle_x, angle_y))
+        temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
     square = temp_square
     if (None not in square):
         for point in square:
-            if point is None or not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
+            if not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
                 temp += 1
             if temp == 4:
-                return  # 모든 점이 화면 밖에 있으면 그리지 않음
+                return
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
         pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
 
@@ -274,10 +265,10 @@ def cal_square(square,where):
         y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])//4
         z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])//4
 
-        dx = int(x - camera_pos[0])
-        dy = int(y - camera_pos[1])
-        dz = int(z - camera_pos[2])
-        range = int(dx**2 + dy**2 + dz**2)
+        dx = x - camera_pos[0]
+        dy = y - camera_pos[1]
+        dz = z - camera_pos[2]
+        range = dx**2 + dy**2 + dz**2
 
         square.append(range)
 
@@ -369,8 +360,10 @@ def event_check():
             if event.key == pygame.K_SPACE:
                 player.jump_pressed = True 
 
+                    
+
         elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_a: 
                 player.dx += player.speed
                 if z_key_count == 1:
                     player.x -= 100
@@ -411,9 +404,9 @@ def event_check():
                 if z_key_count == 1:    
                     setblock(texture_num)
             elif event.button == 4:  # 휠을 위로 스크롤
-                camera_pos[2] += int(camera_speed * 2)  # 카메라를 앞으로 이동
+                camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
-                camera_pos[2] -= int(camera_speed * 2)  # 카메라를 뒤로 이동
+                camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
             elif event.button == 1:
                 if z_key_count == 1:    
                     blockremove()
@@ -465,6 +458,20 @@ def block_3D_transition(blockk):
 #         temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,angle_x,angle_y))
 #     if None not in temp:
 #         animation.draw_quad("player",temp)
+
+    # if (is_3D):
+    #     for i in range(len(showing.squares)):
+    #         if actual_position[0] > i:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #         elif actual_position[0]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #             animation.anime(0)
+    #         elif actual_position[1] > i > actual_position[0]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #         elif actual_position[1]:
+    #             animation.anime(1)
+    #         elif i > actual_position[1]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
 
 def draw_screen():
     global blocks
