@@ -196,10 +196,10 @@ def player_during():
         x_col,y_col,z_col = check_collision()
         check_warp()
         if True not in x_col:
-            player.x += player.dx
+            player.x += player.dx * delta_time
         if True not in y_col:
             player.ani = "jump"
-            player.y += player.dy
+            player.y += player.dy * delta_time
             player.dy += GRAVITY
             player.jump_OK = False
         else:
@@ -207,7 +207,7 @@ def player_during():
             if y_col[0]:
                 player.jump_OK = True
         if True not in z_col and is_3D:
-            player.z += player.dz
+            player.z += player.dz  * delta_time
         elif not is_3D:
             player.z = 100
     
@@ -269,7 +269,7 @@ def draw_square(square,color_set):
         for point in square:
             if point is None or not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
                 temp += 1
-            if temp == 4:
+            if temp == 1:
                 return  # 모든 점이 화면 밖에 있으면 그리지 않음
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
         pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
