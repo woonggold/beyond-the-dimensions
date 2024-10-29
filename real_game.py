@@ -156,12 +156,10 @@ def adjust(k, i):
 
 #플레이어 움직임 실시간 적용
 def player_during():
-    print("\n\n\n\n\n\n\n")
-    print (player.x,player.y,player.z)
     global delta_time
     player.ani = "stand"
-    FPS = 1000
-    delta_time = clock.tick(FPS) / 2
+    FPS = 60
+    delta_time = clock.tick(FPS)/10
     if z_key_count == 0:
         x_col,y_col,z_col,k = check_collision()
         check_warp()
@@ -209,6 +207,7 @@ def player_during():
         
     elif z_key_count == 1:
         check_warp()
+        player.dy = 1
         player.fake_z = player.z
         player.fake_x = player.x
 
@@ -251,10 +250,11 @@ def draw_square(square,color_set):
         for point in square:
             if not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
                 temp += 1
-            if temp == 4:
+            if temp > 0:
                 return
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
         pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
+       
 
 def cal_square(square,where):
     if (((where == 'front') and (square not in showing.squares_front)) or (square not in showing.squares)):#중복되는 것이 없는지 확인
@@ -329,7 +329,29 @@ def event_check():
                 condition =  "quit"
             if event.key == pygame.K_r:
                 # 시점 전환 목표 설정
-                is_3D = not is_3D
+                if is_3D:
+                    temp = 0
+                    for block in map_loading.map_test.BLOCKS:
+                        if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
+                            temp += 1
+                    if temp == 0:
+                        is_3D = False
+                    else :
+                        print ("겹치는 블럭 있음")
+                elif not is_3D:
+                    temp = []
+                    for block in map_loading.map_test.BLOCKS:
+                        if abs(block.x - player.x) < 100:
+                            temp.append(block.original_z)
+                            print (temp)
+                    if not temp:
+                        player.z = 100
+                    else: 
+                        player.z = min(temp)
+                    
+                    is_3D = True
+
+
 
             if event.key == pygame.K_a:
                     player.dx -= player.speed

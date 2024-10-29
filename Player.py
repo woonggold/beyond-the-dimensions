@@ -23,8 +23,6 @@ class Player:
         self.dx, self.dy, self.dz = [0,0,0]
         self.jump_OK = False
         self.range = 0
-        self.range1 = 0
-        self.range2 = 0
         self.jump_power = -20
         self.ani = "stand"
         self.speed = 18
