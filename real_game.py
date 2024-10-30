@@ -8,6 +8,7 @@ from player import *
 import time
 import animation
 import bisect
+import dead
 
 #플레이어 세팅
 
@@ -250,10 +251,12 @@ def draw_square(square,color_set):
         for point in square:
             if not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
                 temp += 1
-            if temp > 0:
+            if temp == 4:
                 return
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
+        pygame.draw.aalines(screen, color_set[1], True, square, True)
+        # pygame.draw.lines(screen, color_set[1], True, square, 4)
+        # pygame.draw.polygon(screen, color_set[1], square, 1)  # 테두리 두께 4
        
 
 def cal_square(square,where):
@@ -307,6 +310,8 @@ def jump(pressed):
 
 # 메인 루프
 def mouse_rotate_check():
+    if prevent == True:
+        return
     global angle_x, angle_y
     mouse_dx, mouse_dy = pygame.mouse.get_rel()
 
@@ -343,7 +348,6 @@ def event_check():
                     for block in map_loading.map_test.BLOCKS:
                         if abs(block.x - player.x) < 100:
                             temp.append(block.original_z)
-                            print (temp)
                     if not temp:
                         player.z = 100
                     else: 
@@ -378,7 +382,7 @@ def event_check():
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
-                    map_loading.map_load()
+                    map_loading.map_load(0)
             if event.key == pygame.K_SPACE:
                 player.jump_pressed = True 
 
@@ -434,6 +438,8 @@ def event_check():
                     blockremove()
     jump(player.jump_pressed)
 def camera_move():
+    if prevent == True:
+        return
     # 부드럽게 이동
     global camera_pos, z_key_count
     
@@ -539,18 +545,17 @@ def draw_screen():
         animation.anime()
     if aquire_piece_count == 0:
         draw_real_piece(piece.pieceblock)
+    dead.player_dead_check() 
     pygame.display.flip()
     clock.tick(60)
-
+        
 
 def run():
-    global condition, jump_count, acceleration
+    global condition
     condition = "real_game"
-    mouse_rotate_check()
     event_check()
-    player_during()  # 플레이어 위치 업데이트 먼저
-    camera_move()
-    
+    player_during()  # 플레이어 위치 업데이트 먼저   
     draw_screen()
-    
+    mouse_rotate_check()
+    camera_move()
     return condition

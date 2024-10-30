@@ -67,9 +67,11 @@ def map_save():
         json.dump(final_data, json_file, ensure_ascii=False, indent=4)    
     print("저장됨")
         
-def map_load():
-    
-    mapname = input("불러올 맵 이름을 입력해 주세요: ")
+def map_load(map_name):
+    if map_name == 0:
+        mapname = input("불러올 맵 이름을 입력해 주세요: ")
+    else:
+        mapname = map_name
     with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
     for block in map_test.BLOCKS:

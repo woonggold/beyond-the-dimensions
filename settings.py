@@ -6,7 +6,7 @@ screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 
-camera_pos = [0, 0, -1000]
+camera_pos = [100, 0, -700]
 camera_speed = 25  # 카메라 이동 속도
 is_3D = False
 target_camera_pos = camera_pos # 목표 카메라 위치
@@ -65,3 +65,4 @@ z_key_count =0
 #블록 설치
 blocks = []
 
+prevent = False
