@@ -66,7 +66,8 @@ def map_save():
     print("저장됨")
         
 def map_load(mapname):
-    global BLOCKS, warp_block_list
+    global BLOCKS, warp_block_list, stagename
+    stagename = mapname
     if mapname == "":
         mapname = input("불러올 맵 이름을 입력해 주세요: ")
     else:

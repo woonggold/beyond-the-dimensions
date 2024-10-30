@@ -1,40 +1,52 @@
-import numpy as np
-import matplotlib.pyplot as plt
 
-m_a = 5.972 * (10 ** 24)
-m_b = 1.989 * (10 ** 30)
-g = 6.674 * (10 ** -11)
+import pygame
+import sys
 
-cor_a = np.array([-1.5 * (10 ** 8), 0, 0])
-cor_b = np.array([0, 0, 0])
-v_a = np.array([0, -1.1 * 10 ** 6, 0])
-v_b = np.array([0, 0, 0])
+# Pygame 초기화
+pygame.init()
 
-r = np.linalg.norm(cor_a - cor_b)
-f = g * (m_a * m_b) / (r ** 2)
+# 화면 크기 설정
+width, height = 800, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Polygon with Shadow Effect")
 
-dt = 1
+# 색상 설정
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+SHADOW_COLOR = (50, 50, 50)
 
-positions_a = [cor_a]
-positions_b = [cor_b]
+# 주 게임 루프
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-while np.linalg.norm(cor_a) < (10 ** 10) and r > (10 ** 6):
-    r = np.linalg.norm(cor_a - cor_b)
-    f = g * (m_a * m_b) / (r ** 2)
-    a_a = (cor_b - cor_a) / r * f / m_a
-    v_a += a_a * dt
-    cor_a = cor_a + v_a * dt
-    positions_a.append(cor_a)
-# convert positions to arrays for plotting
-positions_a = np.array(positions_a)
-positions_b = np.array(positions_b)
+    # 화면 지우기
+    screen.fill(WHITE)
 
-# plot the trajectory
-plt.plot(positions_a[:, 0], positions_a[:, 1], label='Object A', color='white')
-plt.scatter(positions_b[:, 0], positions_b[:, 1], color='yellow', label='Object B')
-plt.xlabel('x position (m)')
-plt.ylabel('y position (m)')
-plt.title('Trajectory of Object A around Object B')
-plt.legend()
-plt.grid()
-plt.show()
+    # 그림자 효과: 테두리 그리기
+    pygame.draw.rect(screen, SHADOW_COLOR, (0, 0, width, height), border_radius=40)  # 그림자
+
+
+    # 마우스 위치 가져오기
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+
+    # 다각형의 꼭짓점 설정 (정사각형)
+    size = 50  # 정사각형 크기
+    polygon_points = [
+        (mouse_x - size // 2, mouse_y - size // 2),
+        (mouse_x + size // 2, mouse_y - size // 2),
+        (mouse_x + size // 2, mouse_y + size // 2),
+        (mouse_x - size // 2, mouse_y + size // 2),
+    ]
+
+    # 다각형 그리기
+    pygame.draw.polygon(screen, RED, polygon_points)
+
+    # 화면 업데이트
+    pygame.display.flip()
+
+# Pygame 종료
+pygame.quit()

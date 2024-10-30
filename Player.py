@@ -27,5 +27,6 @@ class Player:
         self.ani = "stand"
         self.speed = 25
         self.jump_pressed = False
+        self.dead_line = 300
 player = Player((100,0,-500),"player.png")
 

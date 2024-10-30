@@ -8,6 +8,7 @@ from player import *
 import time
 import animation
 import bisect
+import dead
 
 #플레이어 세팅
 
@@ -44,54 +45,6 @@ def aquire_piece():
             if abs(player.z) - abs(piece.pieceblock.y) < 50 and abs(player.y) - abs(piece.pieceblock.y) > -50:
                 aquire_piece_count += 1
             
-# def warp():
-#     for block in map_loading.BLOCKS:
-#         player_x - block.x
-
-# def check_wall_collision():
-#     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
-#     # if player_moving == True:
-#     if z_key_count == 0:
-#         for block in map_loading.BLOCKS:
-#             if player_x == block.x:
-#                 pass
-#                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
-#             if block.y < 500:
-#                 if block.x - player_x == 100:
-#                     if player_x_d > 0:
-#                         if is_3D == False:
-#                             Front_collision = True
-#                         else:
-#                             if abs(block.z) - abs(player_z)  < 100 and abs(block.z) - abs(player_z) > -100:
-#                                 Front_collision = True
-                        
-
-                        
-#             # 플레이어의 밑면과 블록 윗면이 맞닿는 경우 (점프 상태에 따라 조건 변경)
-#             if jump_count == 2:
-#                 if 310 <= block.y - player_y <= 340 and - block.size - 50 < block.x - player_x < block.size + 50 and - block.size - 50 < block.z - player_z < block.size + 50:
-#                     print("나중, 충돌된 거 : ",block.y)
-#                     player_y_VELOCITY = 0
-#                     time_elapsed = 0
-#                     acceleration = 0
-#                     initial_velocity = 0
-#                     player_y = block.y - 325
-#                     jump_count = 0
-#                     is_falling = False
-#                     break  # 충돌이 감지되면 루프 종료
-#             else:
-#                 if block.y - player_y == 325 and - block.size - 50 < block.x - player_x < block.size + 50 and -block.size - 50 < block.z - player_z < block.size + 50 and jump_count != 1:
-#                     print("처음")
-#                     time_elapsed = 0
-#                     player_y_VELOCITY = 0
-#                     initial_velocity = 0
-#                     acceleration = 0
-#                     jump_count = 0
-#                     is_falling = False
-#                     break  # 충돌이 감지되면 루프 종료
-#         # 모든 블록을 검사한 후에도 충돌이 없으면 떨어짐 처리
-#         if is_falling:
-#             player_y_go()
 def check_overlap(block_min, block_max, player_min, player_max):
     return block_min < player_max and block_max > player_min
 
@@ -99,17 +52,14 @@ def check_collision():
 
     #check_collision[n][0] 은 +쪽, [n][1]은 -쪽
     xyz = [player.x,player.y,player.z]
-    dxyz = [player.dx,player.dy,player.dz]
+    dxyz = [player.dx * delta_time,player.dy * delta_time,player.dz * delta_time]
     result = []
-
+    k = [[0,0],[0,0],[0,0]]
+    
     for block in map_loading.BLOCKS:
         bxyz = (block.x, block.y, block.z)
 
         for i in range(3):
-            # 플레이어 경계
-            # plus_border = (player.border[i][0], player.border[(i + 1) % 3][0], player.border[(i + 2) % 3][0])
-            # minus_border = (player.border[i][1], player.border[(i + 1) % 3][1], player.border[(i + 2) % 3][1])
-
             # 플레이어의 현재 위치에서 경계 값을 더한 값
             play_plus = (xyz[i] + player.border[i][0], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][0], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][0])
             play_minus = (xyz[i] + player.border[i][1], xyz[(i + 1) % 3] + player.border[(i + 1) % 3][1], xyz[(i + 2) % 3] + player.border[(i + 2) % 3][1])
@@ -125,13 +75,21 @@ def check_collision():
             # 충돌 감지
             if check_overlap(block_minus[1], block_plus[1], play_minus[1], play_plus[1]) and \
                check_overlap(block_minus[2], block_plus[2], play_minus[2], play_plus[2]):
-                if block_minus[0] < predict_plus < block_plus[0]:
-                    result.append((i, 0))  # 양의 방향 충돌
-                if block_minus[0] < predict_minus < block_plus[0]:
-                    result.append((i, 1))  # 음의 방향 충돌
-
-
-            
+                if i in [0,1]:
+                    if block_minus[0] < predict_plus < block_plus[0]:
+                        result.append((i, 0))  # 양의 방향 충돌
+                        k[i][0] = play_plus[0] - block_minus[0]
+                    if block_minus[0] < predict_minus < block_plus[0]:
+                        result.append((i, 1))  # 음의 방향 충돌
+                        k[i][0] = play_minus[0] - block_plus[0]
+                if i == 2:
+                    if block_minus[0] < predict_plus < block_plus[0] or block_minus[0] < predict_minus < block_plus[0]:
+                        if player.dz > 0:
+                            result.append((i, 0)) #플레이어의 양의 방향 충돌
+                            k[2][0] = abs(player.z - block_minus[0])
+                        if player.dz < 0:
+                            result.append((i, 1)) #플레이어의 음의 방향 충돌
+                            k[2][1] = abs(player.z - block_plus[0])
 
     result2 = [[0,0],[0,0],[0,0]]
     for i in range(3):
@@ -140,12 +98,13 @@ def check_collision():
                 result2[i][j] = True
             else:
                 result2[i][j] = False
+    result2.append(k)
     return result2
 def check_warp():
     global warp_working_count, map_loading_count
     warp_block_list = map_loading.warp_block_list
-    xyz = [player.x, player.y, player.z]
-
+    xyz = [player.x,player.y,player.z]
+    
     if warp_working_count == 0:
         if map_loading_count == 1:
             for j in range(0, len(warp_block_list)):
@@ -153,7 +112,7 @@ def check_warp():
                     warp_working_count = 1
                     map_loading_count = 0
                     player.x = warp_block_list[j][0]
-                    player.y = warp_block_list[j][1] - 103
+                    player.y = warp_block_list[j][1] - 100
                     player.z = warp_block_list[j][2]
                     camera_pos[0] = warp_block_list[j][0]
                     camera_pos[1] = warp_block_list[j][1]
@@ -200,47 +159,77 @@ def check_warp():
                 else:
                     warp_working_count = 0
 
+def adjust(k, i):
+    if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0):
+        if i == 0:
+            player.x -= k[i][0]
+        elif i == 1:
+            player.y -= k[i][0]
+        elif i == 2:
+            player.z += k[i][0] -1
+    elif (abs(k[i][0]) > abs(k[i][1]) > 0) or (abs(k[i][0])==0):
+        if i == 0:
+            player.x -= k[i][1]
+        elif i == 1:
+            player.y -= k[i][1]
+        elif i == 2:
+            player.z -= k[i][1] -1
 
 #플레이어 움직임 실시간 적용
 
 def player_during():
-    # if clock
+    global delta_time
     player.ani = "stand"
+    FPS = 60
+    delta_time = clock.tick(FPS)/10
     if z_key_count == 0:
-        x_col,y_col,z_col = check_collision()
+        x_col,y_col,z_col,k = check_collision()
         check_warp()
         if True not in x_col:
             player.x += player.dx * delta_time
+        elif abs(player.dx) > 0:
+            adjust(k, 0)
+        x_col,y_col,z_col,k = check_collision()
         if True not in y_col:
             player.ani = "jump"
             player.y += player.dy * delta_time
             player.dy += GRAVITY
             player.jump_OK = False
         else:
+            adjust(k, 1)
             player.dy = 1
             if y_col[0]:
                 player.jump_OK = True
+        x_col,y_col,z_col,k = check_collision()
         if True not in z_col and is_3D:
-            player.z += player.dz  * delta_time
+            player.z += player.dz * delta_time
+        elif is_3D:
+            adjust(k, 2)
         elif not is_3D:
             player.z = 100
-    
+        elif False not in z_col:
+            adjust(k, 0)
+            adjust(k, 1)
         if abs(player.z - player.fake_z) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
-            player.fake_z += 0.3 * (player.z - player.fake_z)
+            player.fake_z += 0.3 * delta_time * (player.z - player.fake_z)
         else:
             player.fake_z = player.z
         if abs(player.x - player.fake_x) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
-            player.fake_x += 0.3 * (player.x - player.fake_x)
+            player.fake_x += 0.3 * delta_time * (player.x - player.fake_x)
         else:
             player.fake_x = player.x
+
+
+        
         
         
     elif z_key_count == 1:
         check_warp()
+        player.dy = 1
         player.fake_z = player.z
         player.fake_x = player.x
 
@@ -250,7 +239,7 @@ def player_during():
         [player.fake_x + player.size, player.y + player.size], [player.fake_x - player.size, player.y + player.size],
     ]
 
-    player.range = (player.x-camera_pos[0])**2 + (player.y-50-camera_pos[1])**2 + (player.z-camera_pos[2])**2
+    player.range = (player.fake_x-camera_pos[0])**2 + (player.y-150-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
 
 def draw_real_piece(piece_block):
     global piece_img,aquire_piece_count
@@ -283,17 +272,19 @@ def draw_square(square,color_set):
 
 
     for point in square[0:4]:
-        temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), (camera_pos), angle_x, angle_y))
+        temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
     square = temp_square
     if (None not in square):
         for point in square:
-            if point is None or not (0 <= point[0] <= screen_width + 0 and 0 <= point[1] <= screen_height + 0):
+            if not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
                 temp += 1
-            if temp == 1:
-                
-                return  # 모든 점이 화면 밖에 있으면 그리지 않음
+            if temp == 4:
+                return
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, color_set[1], square, 4)
+        pygame.draw.aalines(screen, color_set[1], True, square, True)
+        # pygame.draw.lines(screen, color_set[1], True, square, 4)
+        # pygame.draw.polygon(screen, color_set[1], square, 1)  # 테두리 두께 4
+       
 
 def cal_square(square,where):
     if (((where == 'front') and (square not in showing.squares_front)) or (square not in showing.squares)):#중복되는 것이 없는지 확인
@@ -304,10 +295,10 @@ def cal_square(square,where):
         y = (square[0][1] + square[1][1] + square[2][1] + square[3][1])//4
         z = (square[0][3] + square[1][3] + square[2][3] + square[3][3])//4
 
-        dx = int(x - camera_pos[0])
-        dy = int(y - camera_pos[1])
-        dz = int(z - camera_pos[2])
-        range = int(dx**2 + dy**2 + dz**2)
+        dx = x - camera_pos[0]
+        dy = y - camera_pos[1]
+        dz = z - camera_pos[2]
+        range = dx**2 + dy**2 + dz**2
 
         square.append(range)
 
@@ -346,6 +337,8 @@ def jump(pressed):
 
 # 메인 루프
 def mouse_rotate_check():
+    if prevent == True:
+        return
     global angle_x, angle_y
     mouse_dx, mouse_dy = pygame.mouse.get_rel()
 
@@ -368,7 +361,28 @@ def event_check():
                 condition =  "quit"
             if event.key == pygame.K_r:
                 # 시점 전환 목표 설정
-                is_3D = not is_3D
+                if is_3D:
+                    temp = 0
+                    for block in map_loading.map_test.BLOCKS:
+                        if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
+                            temp += 1
+                    if temp == 0:
+                        is_3D = False
+                    else :
+                        print ("겹치는 블럭 있음")
+                elif not is_3D:
+                    temp = []
+                    for block in map_loading.map_test.BLOCKS:
+                        if abs(block.x - player.x) < 100:
+                            temp.append(block.original_z)
+                    if not temp:
+                        player.z = 100
+                    else: 
+                        player.z = min(temp)
+                    
+                    is_3D = True
+
+
 
             if event.key == pygame.K_a:
                     player.dx -= player.speed
@@ -399,8 +413,10 @@ def event_check():
             if event.key == pygame.K_SPACE:
                 player.jump_pressed = True 
 
+                    
+
         elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_a: 
                 player.dx += player.speed
                 if z_key_count == 1:
                     player.x -= 100
@@ -441,22 +457,23 @@ def event_check():
                 if z_key_count == 1:    
                     setblock(texture_num)
             elif event.button == 4:  # 휠을 위로 스크롤
-                camera_pos[2] += int(camera_speed * 2)  # 카메라를 앞으로 이동
+                camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
             elif event.button == 5:  # 휠을 아래로 스크롤
-                camera_pos[2] -= int(camera_speed * 2)  # 카메라를 뒤로 이동
+                camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
             elif event.button == 1:
                 if z_key_count == 1:    
                     blockremove()
     jump(player.jump_pressed)
 def camera_move():
+    if prevent == True:
+        return
     # 부드럽게 이동
     global camera_pos, z_key_count
 
     if z_key_count == 0:
         for i in range(3):
-            target_camera_pos = player.x, (player.y - 300), (player.z - 800)
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.1
-            camera_pos[i] = int(camera_pos[i])  # 정수화하여 이동 시 부동 소수점 문제 해결
+            target_camera_pos = player.x,(player.y-300),(player.z - 800)
+            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * delta_time * 0.1
 
 
 def block_3D_transition(blockk):
@@ -496,6 +513,20 @@ def block_3D_transition(blockk):
 #         temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,angle_x,angle_y))
 #     if None not in temp:
 #         animation.draw_quad("player",temp)
+
+    # if (is_3D):
+    #     for i in range(len(showing.squares)):
+    #         if actual_position[0] > i:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #         elif actual_position[0]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #             animation.anime(0)
+    #         elif actual_position[1] > i > actual_position[0]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+    #         elif actual_position[1]:
+    #             animation.anime(1)
+    #         elif i > actual_position[1]:
+    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
 
 def draw_screen():
     global blocks
@@ -541,18 +572,17 @@ def draw_screen():
         animation.anime()
     if aquire_piece_count == 0:
         draw_real_piece(piece.pieceblock)
+    dead.player_dead_check() 
     pygame.display.flip()
     clock.tick(60)
-
+        
 
 def run():
-    global condition, jump_count, acceleration
+    global condition
     condition = "real_game"
-    mouse_rotate_check()
     event_check()
-    player_during()  # 플레이어 위치 업데이트 먼저
-    camera_move()
-    
+    player_during()  # 플레이어 위치 업데이트 먼저   
     draw_screen()
-    
+    mouse_rotate_check()
+    camera_move()
     return condition

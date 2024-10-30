@@ -6,13 +6,13 @@ screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 
-camera_pos = [0, 0, -1000]
+camera_pos = [100, 0, -700]
 camera_speed = 25  # 카메라 이동 속도
 is_3D = False
 target_camera_pos = camera_pos # 목표 카메라 위치
 script_dir = os.path.dirname(__file__)
 
-delta_time = clock.tick(40) / 50
+delta_time = clock.tick(40) / 100
 angle_x, angle_y = 0, 0
 
 map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
@@ -39,7 +39,7 @@ block_textures = [[(100,100,100),(255,255,255),(0,0,0),(0,0,0)],\
                   [(255,0,0),(0,0,255),(0,255,0),(0,0,0)],\
                   [(0,255,0),(0,255,0),(0,255,0),(0,0,0)],\
                   [(0,0,255),(255,0,0),(0,255,0),(0,0,0)],\
-                  [(0,0,0),(0,0,0),(0,0,0),(0,0,0)]] # 각각 0번부터 9번까지의 윗면, 옆면, 아랫면, 테두리의 색
+                  [(255,255,255),(255,255,255),(255,255,255),(255,255,255)]] # 각각 0번부터 9번까지의 윗면, 옆면, 아랫면, 테두리의 색
 
 GRAVITY = 2.35
 
@@ -68,3 +68,4 @@ z_key_count =0
 #블록 설치
 blocks = []
 
+prevent = False
