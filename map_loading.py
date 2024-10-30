@@ -23,14 +23,12 @@ warp_block_list = []
 def load_map(map_name):
     global BLOCKS
     if map_name == "test":
-        
 
-        for i in range(12):
-            for j in range(10):
+        for i in range(1):
+            for j in range(1):
                 BLOCKS.append(Block((i*100-500,500,j*100-500),0))
         BLOCKS.append(Block((100,400,100),0))
 
-        
         return BLOCKS
 class Map:
     def __init__(self, map):
@@ -67,19 +65,31 @@ def map_save():
         json.dump(final_data, json_file, ensure_ascii=False, indent=4)    
     print("저장됨")
         
-def map_load():
-    
-    mapname = input("불러올 맵 이름을 입력해 주세요: ")
+def map_load(mapname):
+    global BLOCKS, warp_block_list
+    if mapname == "":
+        mapname = input("불러올 맵 이름을 입력해 주세요: ")
+    else:
+        pass
     with open(mapname+'.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
-    for block in map_test.BLOCKS:
-        map_test.BLOCKS.remove(block)
+    BLOCKS = []
+    warp_block_list = []
     for i in range(len(data["Blocks"]["x"])):
                 
         BLOCKS.append(Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
-    for i in range(0, len(data["warp_blocks"]["x"])):
+        
+    try:
+        for i in range(0, len(data["warp_blocks"]["x"])):
 
-        tuple1= (data["warp_blocks"]["x"][i], data["warp_blocks"]["y"][i], data["warp_blocks"]["z"][i], data["warp_blocks"]["warp_name"][i])
-        warp_block_list.append(tuple1)
+            tuple1= (data["warp_blocks"]["x"][i], data["warp_blocks"]["y"][i], data["warp_blocks"]["z"][i], data["warp_blocks"]["warp_name"][i])
+            warp_block_list.append(tuple1)
+            BLOCKS.append(Block((data["warp_blocks"]["x"][i],data["warp_blocks"]["y"][i],data["warp_blocks"]["z"][i]),9))
+    except:
+        pass
+
 
     print("로드됨")
+    
+    
+    

@@ -11,8 +11,6 @@ import bisect
 
 #플레이어 세팅
 
-
-
 def setblock(texture_num):    
     nearestx_100 = round(player.x / 100) * 100
     nearesty_100 = round(player.y / 100) * 100 + 100
@@ -23,7 +21,7 @@ def setblock(texture_num):
         warp_block_x_list.append(nearestx_100)
         warp_block_y_list.append(nearesty_100)
         warp_block_z_list.append(nearestz_100)
-    map_loading.map_test.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
 
 
 def blockremove():
@@ -33,9 +31,9 @@ def blockremove():
         
     block_to_remove = (nearestx_100, nearesty_100, nearestz_100)
     
-    for block in map_loading.map_test.BLOCKS:
+    for block in map_loading.BLOCKS:
         if block.pos == block_to_remove:
-            map_loading.map_test.BLOCKS.remove(block)
+            map_loading.BLOCKS.remove(block)
             break
     
 def aquire_piece():
@@ -47,14 +45,14 @@ def aquire_piece():
                 aquire_piece_count += 1
             
 # def warp():
-#     for block in map_loading.map_test.BLOCKS:
+#     for block in map_loading.BLOCKS:
 #         player_x - block.x
 
 # def check_wall_collision():
 #     global player_x_d, player_y_VELOCITY, z_key_count, Front_collision, jump_count, time_elapsed, acceleration, initial_velocity, is_falling, player_y, player_x, player_z
 #     # if player_moving == True:
 #     if z_key_count == 0:
-#         for block in map_loading.map_test.BLOCKS:
+#         for block in map_loading.BLOCKS:
 #             if player_x == block.x:
 #                 pass
 #                 #x좌표 기준으로 본인 발 밑에 있는 블록 감지
@@ -103,7 +101,7 @@ def check_collision():
     xyz = [player.x,player.y,player.z]
     dxyz = [player.dx,player.dy,player.dz]
     result = []
-    
+
     for block in map_loading.BLOCKS:
         bxyz = (block.x, block.y, block.z)
 
@@ -144,16 +142,32 @@ def check_collision():
                 result2[i][j] = False
     return result2
 def check_warp():
-    global warp_working_count
+    global warp_working_count, map_loading_count
     warp_block_list = map_loading.warp_block_list
     xyz = [player.x, player.y, player.z]
 
     if warp_working_count == 0:
-        for block in map_loading.map_test.BLOCKS:
-            if abs(xyz[0] - block.x) < 100:
-                if abs(xyz[2] - block.z) < 100:
-                    if block.texture_num == 9:
-                        for i in range(0, len(warp_block_list)):
+        if map_loading_count == 1:
+            for j in range(0, len(warp_block_list)):
+                if warp_block_list[j][3] == "stage2":
+                    warp_working_count = 1
+                    map_loading_count = 0
+                    player.x = warp_block_list[j][0]
+                    player.y = warp_block_list[j][1] - 103
+                    player.z = warp_block_list[j][2]
+                    camera_pos[0] = warp_block_list[j][0]
+                    camera_pos[1] = warp_block_list[j][1]
+                else:
+                    pass
+        else:
+            for block in map_loading.BLOCKS:
+                
+                if abs(xyz[0] - block.x) < 100 and abs(xyz[2] - block.z) < 100 and block.texture_num == 9:
+                    for i in range(0, len(warp_block_list)):
+                        if warp_block_list[i][3] == "stage2":
+                            map_loading.map_load("stage2")
+                            map_loading_count = 1
+                        else:
                             if (
                                 block.x == warp_block_list[i][0]
                                 and block.y == warp_block_list[i][1]
@@ -163,34 +177,34 @@ def check_warp():
                                     if warp_block_list[j][3] == warp_block_list[i][3]:
                                         if j != i:
                                             warp_working_count = 1
+
                                             player.x = warp_block_list[j][0]
                                             player.y = warp_block_list[j][1] - 100
                                             player.z = warp_block_list[j][2]
                                             camera_pos[0] = warp_block_list[j][0]
                                             camera_pos[1] = warp_block_list[j][1]
+                                            print("aaaaa")
                                             break
                                 break
+                    break
+            else:    
+                for i in range(0, len(warp_block_list)):
+                    if (
+                        abs(xyz[0] - warp_block_list[i][0]) < 100
+                        and abs((xyz[1] - warp_block_list[i][1])) <= 150
+                        and abs(xyz[2] - warp_block_list[i][2]) < 100
+                    ):
+                        warp_working_count = 1
                         break
-    else:
-        
-        for i in range(0, len(warp_block_list)):
-            print(abs(xyz[0] - warp_block_list[i][0]))
-            print(abs((xyz[1] - warp_block_list[i][1]) - 100))
-            print(abs(xyz[2] - warp_block_list[i][2]))
-            if (
-                abs(xyz[0] - warp_block_list[i][0]) < 100
-                and abs((xyz[1] - warp_block_list[i][1])) <= 150
-                and abs(xyz[2] - warp_block_list[i][2]) < 100
-            ):
-                warp_working_count = 1
-                break
-                
-        else:
-            warp_working_count = 0
+                        
+                else:
+                    warp_working_count = 0
 
 
 #플레이어 움직임 실시간 적용
+
 def player_during():
+    # if clock
     player.ani = "stand"
     if z_key_count == 0:
         x_col,y_col,z_col = check_collision()
@@ -258,21 +272,28 @@ def draw_real_piece(piece_block):
     
     
 # 큐브의 면을 그리는 함수
+last_update = 0
+
+now = pygame.time.get_ticks()
 
 def draw_square(square,color_set):
+    global last_update, now
     temp_square = []
     temp = 0
+
+
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), (camera_pos), angle_x, angle_y))
     square = temp_square
     if (None not in square):
         for point in square:
-            if point is None or not (0 <= point[0] <= screen_width and 0 <= point[1] <= screen_height):
+            if point is None or not (0 <= point[0] <= screen_width + 0 and 0 <= point[1] <= screen_height + 0):
                 temp += 1
             if temp == 1:
+                
                 return  # 모든 점이 화면 밖에 있으면 그리지 않음
         pygame.draw.polygon(screen, color_set[0], square, 0)  # 내부를 채운 다각형
-        pygame.draw.polygon(screen, color_set[1], square, 4)  # 테두리 두께 4
+        pygame.draw.polygon(screen, color_set[1], square, 4)
 
 def cal_square(square,where):
     if (((where == 'front') and (square not in showing.squares_front)) or (square not in showing.squares)):#중복되는 것이 없는지 확인
@@ -374,7 +395,7 @@ def event_check():
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
-                    map_loading.map_load()
+                    map_loading.map_load("")
             if event.key == pygame.K_SPACE:
                 player.jump_pressed = True 
 
@@ -430,7 +451,7 @@ def event_check():
 def camera_move():
     # 부드럽게 이동
     global camera_pos, z_key_count
-    
+
     if z_key_count == 0:
         for i in range(3):
             target_camera_pos = player.x, (player.y - 300), (player.z - 800)
@@ -481,7 +502,7 @@ def draw_screen():
     screen.fill((255, 255, 255))
     showing.squares = []
     showing.squares_front = []
-    for block in map_loading.map_test.BLOCKS:
+    for block in map_loading.BLOCKS:
         block_3D_transition(block)
         check_cube(block.points,block.texture)
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])

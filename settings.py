@@ -19,6 +19,8 @@ map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
 
 mouse_sensitivity = 0.003
 
+map_loading_count  =0
+
 cube_size = 50
 
 class Showing():
@@ -39,7 +41,7 @@ block_textures = [[(100,100,100),(255,255,255),(0,0,0),(0,0,0)],\
                   [(0,0,255),(255,0,0),(0,255,0),(0,0,0)],\
                   [(0,0,0),(0,0,0),(0,0,0),(0,0,0)]] # 각각 0번부터 9번까지의 윗면, 옆면, 아랫면, 테두리의 색
 
-GRAVITY = 1.8
+GRAVITY = 2.35
 
 warp_name_list = []
 warp_block_x_list = []
