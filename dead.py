@@ -45,13 +45,14 @@ def player_dead_check():
         if (draw_speed * padding > 800) :
             if len(map_loading.warp_block_list) > 0:
                 for i in range(0, len(map_loading.warp_block_list)):
-                    if map_loading.warp_block_list[i][3] == "stage2":
+                    if map_loading.warp_block_list[i][3] == map_loading.stagename:
                         real_game.warp_working_count = 1
                         player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
-                        real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1], map_loading.warp_block_list[i][2] - 200]
+                        real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
+
             else:
                 player.x , player.y, player.z = 100,0,-500
-                real_game.target_camera_pos = [100 ,0, -700]
+                real_game.target_camera_pos = [100 ,-300, -1300]
             real_game.prevent = False
             real_game.angle_x,real_game.angle_y = (0,0)
             player.dy = 0

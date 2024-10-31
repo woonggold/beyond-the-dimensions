@@ -93,62 +93,73 @@ def check_collision():
     result2.append(k)
     return result2
 def check_warp():
-    global warp_working_count, map_loading_count
-    warp_block_list = map_loading.warp_block_list
-    xyz = [player.x,player.y,player.z]
     
-    if warp_working_count == 0:
-        if map_loading_count == 1:
-            for j in range(0, len(warp_block_list)):
-                if warp_block_list[j][3] == "stage2":
-                    warp_working_count = 1
-                    map_loading_count = 0
-                    player.x = warp_block_list[j][0]
-                    player.y = warp_block_list[j][1] - 100
-                    player.z = warp_block_list[j][2]
-                    camera_pos[0] = warp_block_list[j][0]
-                    camera_pos[1] = warp_block_list[j][1]
-                else:
-                    pass
-        else:
-            for block in map_loading.BLOCKS:
-                
-                if abs(xyz[0] - block.x) < 100 and abs(xyz[2] - block.z) < 100 and block.texture_num == 9:
-                    for i in range(0, len(warp_block_list)):
-                        if warp_block_list[i][3] == "stage2":
-                            map_loading.map_load("stage2")
-                            map_loading_count = 1
-                        else:
-                            if (
-                                block.x == warp_block_list[i][0]
-                                and block.y == warp_block_list[i][1]
-                                and block.z == warp_block_list[i][2]
-                            ):
-                                for j in range(0, len(warp_block_list)):
-                                    if warp_block_list[j][3] == warp_block_list[i][3]:
-                                        if j != i:
-                                            warp_working_count = 1
+    global warp_working_count, map_loading_count
+    if z_key_count == 0:
+        warp_block_list = map_loading.warp_block_list
+        xyz = [player.x,player.y,player.z]
 
-                                            player.x = warp_block_list[j][0]
-                                            player.y = warp_block_list[j][1] - 100
-                                            player.z = warp_block_list[j][2]
-                                            camera_pos[0] = warp_block_list[j][0]
-                                            camera_pos[1] = warp_block_list[j][1]
-                                            break
-                                break
-                    break
-    else:
-        for i in range(0, len(warp_block_list)):
-            if (
-                abs(xyz[0] - warp_block_list[i][0]) < 100
-                and abs((xyz[1] - warp_block_list[i][1])) <= 150
-                and abs(xyz[2] - warp_block_list[i][2]) < 100
-            ):
-                warp_working_count = 1
-                break
-                
+        if warp_working_count == 0:
+            if map_loading_count == 1:
+                for j in range(0, len(warp_block_list)):
+                    if warp_block_list[j][3] == map_loading.stagename:
+                        warp_working_count = 1
+                        map_loading_count = 0
+                        player.x = warp_block_list[j][0]
+                        player.y = warp_block_list[j][1] - 100
+                        player.z = warp_block_list[j][2]
+                        camera_pos[0] = warp_block_list[j][0]
+                        camera_pos[1] = warp_block_list[j][1] - 400
+                        camera_pos[2] = warp_block_list[j][1] - 800
+                    else:
+                        pass
+            else:
+                for j in range(0, len(warp_block_list)):
+                    if warp_block_list[j][3] == map_loading.stagename:
+                        pass
+                else:
+                    for block in map_loading.BLOCKS:
+                        
+                        if abs(xyz[0] - block.x) < 100 and abs(xyz[2] - block.z) < 100 and block.texture_num == 9:
+                            for i in range(0, len(warp_block_list)):
+                                modifiyed_map_name = int(map_loading.stagename[5]) + 1
+                                modifiyed_map_name2 = map_loading.stagename[0:5] + str(modifiyed_map_name)
+                                if warp_block_list[i][3] == modifiyed_map_name2:
+                                    map_loading.map_load(modifiyed_map_name2)
+                                    map_loading_count = 1
+                                else:
+                                    if (
+                                        block.x == warp_block_list[i][0]
+                                        and block.y == warp_block_list[i][1]
+                                        and block.z == warp_block_list[i][2]
+                                    ):
+                                        for j in range(0, len(warp_block_list)):
+                                            if warp_block_list[j][3] == warp_block_list[i][3]:
+                                                if j != i:
+                                                    warp_working_count = 1
+
+                                                    player.x = warp_block_list[j][0]
+                                                    player.y = warp_block_list[j][1] - 100
+                                                    player.z = warp_block_list[j][2]
+                                                    camera_pos[0] = warp_block_list[j][0]
+                                                    camera_pos[1] = warp_block_list[j][1] - 400
+                                                    camera_pos[2] = warp_block_list[j][1] - 800
+                                                    
+                                                    break
+                                        break
+                            break
         else:
-            warp_working_count = 0
+            for i in range(0, len(warp_block_list)):
+                if (
+                    abs(xyz[0] - warp_block_list[i][0]) < 100
+                    and abs((xyz[1] - warp_block_list[i][1])) <= 150
+                    and abs(xyz[2] - warp_block_list[i][2]) < 100
+                ):
+                    warp_working_count = 1
+                    break
+                    
+            else:
+                warp_working_count = 0
 
 def adjust(k, i):
     if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0):
@@ -322,8 +333,11 @@ def jump(pressed):
 #     if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
 #         angle_y += mouse_dy * mouse_sensitivity
 
-def event_check():    
-    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num
+def event_check():
+    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
+    if first_map_loading == 0:
+        first_map_loading = 1
+        map_loading.map_load("stage1")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -482,6 +496,7 @@ def block_3D_transition(blockk):
             point = x,y,point[2],z
 
 def rotate_fix():
+    print (camera_pos)
     global angle_x,angle_y
     tan_value = (camera_pos[1] - player.y +100) / (player.z - camera_pos[2])
     angle_radians = math.atan(tan_value)
@@ -534,4 +549,5 @@ def run():
     # mouse_rotate_check()
     rotate_fix()
     camera_move()
+    
     return condition

@@ -23,6 +23,8 @@ map_loading_count  =0
 
 cube_size = 50
 
+first_map_loading = 0
+
 class Showing():
     def __init__(self):
         self.squares_front = []
