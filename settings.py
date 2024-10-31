@@ -69,3 +69,4 @@ z_key_count =0
 blocks = []
 
 prevent = False
+prevent2 = False

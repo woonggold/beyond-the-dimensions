@@ -36,12 +36,6 @@ def blockremove():
         if block.pos == block_to_remove:
             map_loading.BLOCKS.remove(block)
             break
-    
-def aquire_piece():
-    global aquire_piece_count
-    
-    if abs(player.x - piece.pieceblock.x) < 50 and  abs(player.y - piece.pieceblock.y) < 50 and abs(player.z - piece.pieceblock.y) < 50:
-        aquire_piece_count += 1
             
 def check_overlap(block_min, block_max, player_min, player_max):
     return block_min < player_max and block_max > player_min
@@ -140,12 +134,10 @@ def check_warp():
                                             player.z = warp_block_list[j][2]
                                             camera_pos[0] = warp_block_list[j][0]
                                             camera_pos[1] = warp_block_list[j][1]
-                                            print("aaaaa")
                                             break
                                 break
                     break
     else:
-        print(warp_working_count)
         for i in range(0, len(warp_block_list)):
             if (
                 abs(xyz[0] - warp_block_list[i][0]) < 100
@@ -180,12 +172,11 @@ def player_during():
     global delta_time
     player.ani = "stand"
     FPS = 60
-    
     delta_time = clock.tick(FPS)/10
     if z_key_count == 0:
         x_col,y_col,z_col,k = check_collision()
         check_warp()
-        if True not in x_col:
+        if True not in x_col and prevent2 == False:
             player.x += player.dx * delta_time
         elif abs(player.dx) > 0:
             adjust(k, 0)
@@ -201,7 +192,7 @@ def player_during():
             if y_col[0]:
                 player.jump_OK = True
         x_col,y_col,z_col,k = check_collision()
-        if True not in z_col and is_3D:
+        if True not in z_col and is_3D and prevent2 == False:
             player.z += player.dz * delta_time
         elif is_3D:
             adjust(k, 2)
@@ -241,23 +232,7 @@ def player_during():
 
     player.range = (player.fake_x-camera_pos[0])**2 + (player.y-150-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
 
-def draw_real_piece(piece_block):
-    global piece_img,aquire_piece_count
-    x, y, z = piece_block.x, piece_block.y, piece_block.z,
-    dx = abs(x-camera_pos[0])
-    dy = abs(y-camera_pos[1])
-    dz = abs(z-camera_pos[2])
-    piece_range = (dx**2+dy**2+dz**2)**(1/2)
-    result = projection_3D.project_3d_or_2d((x,y,z), camera_pos,angle_x,angle_y)
 
-    piece_img = pygame.image.load(f"{script_dir}//images//차원조각.png").convert_alpha()
-    piece_rect = piece_img.get_rect()
-    piece_width, piece_height = piece_rect.width, piece_rect.height 
-    modified_img = pygame.transform.scale(piece_img, (200*piece_width / piece_range, 200*piece_height / piece_range))
-    modified_rect = modified_img.get_rect()
-    modified_width, modified_height = modified_rect.width, modified_rect.height 
-    if result != None:
-        screen.blit(modified_img, (result[0] - (modified_width / 2), result[1] - (modified_height / 2)))
     
     
 # 큐브의 면을 그리는 함수
@@ -269,7 +244,6 @@ def draw_square(square,color_set):
     global last_update, now
     temp_square = []
     temp = 0
-
 
     for point in square[0:4]:
         temp_square.append(projection_3D.project_3d_or_2d((point[0],point[1],point[3]), camera_pos, angle_x, angle_y))
@@ -336,19 +310,19 @@ def jump(pressed):
                 player.dy = player.jump_power
 
 # 메인 루프
-def mouse_rotate_check():
-    if prevent == True:
-        return
-    global angle_x, angle_y
-    mouse_dx, mouse_dy = pygame.mouse.get_rel()
+# def mouse_rotate_check():
+#     if prevent == True:
+#         return
+#     global angle_x, angle_y
+#     mouse_dx, mouse_dy = pygame.mouse.get_rel()
 
-    # 각도 업데이트 (마우스 이동에 따라)
+#     # 각도 업데이트 (마우스 이동에 따라)
 
-    angle_x += mouse_dx * mouse_sensitivity
-    if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
-        angle_y += mouse_dy * mouse_sensitivity
+#     angle_x += mouse_dx * mouse_sensitivity
+#     if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
+#         angle_y += mouse_dy * mouse_sensitivity
 
-def event_check():
+def event_check():    
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -359,7 +333,7 @@ def event_check():
 
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
-            if event.key == pygame.K_r:
+            if event.key == pygame.K_r and prevent2 == False:
                 # 시점 전환 목표 설정
                 if is_3D:
                     temp = 0
@@ -473,7 +447,7 @@ def camera_move():
     if z_key_count == 0:
         for i in range(3):
             target_camera_pos = player.x,(player.y-300),(player.z - 800)
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * delta_time * 0.1
+            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.3
 
 
 def block_3D_transition(blockk):
@@ -487,7 +461,7 @@ def block_3D_transition(blockk):
         
             x, y = point[0],point[1]
             if(abs(100 - point[3])>10):
-                point[3] += (100 - point[3]) * 0.2
+                point[3] += (100 - point[3]) * 0.3
             else:
                 point[3] = 100
             z = point[3]
@@ -500,33 +474,20 @@ def block_3D_transition(blockk):
         for point in blockk.points:
             x, y = point[0],point[1]
             if(abs(point[2] - point[3])>10):
-                point[3] += (point[2] - point[3]) * 0.2
+                point[3] += (point[2] - point[3]) * 0.3
             else:
                 point[3] = point[2]
             z = point[3]
 
             point = x,y,point[2],z
 
-# def draw_player():
-#     temp = []
-#     for point in player.points:
-#         temp.append(projection_3D.project_3d_or_2d((point[0],point[1],player.fake_z), camera_pos,angle_x,angle_y))
-#     if None not in temp:
-#         animation.draw_quad("player",temp)
-
-    # if (is_3D):
-    #     for i in range(len(showing.squares)):
-    #         if actual_position[0] > i:
-    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
-    #         elif actual_position[0]:
-    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
-    #             animation.anime(0)
-    #         elif actual_position[1] > i > actual_position[0]:
-    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
-    #         elif actual_position[1]:
-    #             animation.anime(1)
-    #         elif i > actual_position[1]:
-    #             draw_square(showing.squares[i][0:4],showing.squares[i][4])
+def rotate_fix():
+    global angle_x,angle_y
+    tan_value = (camera_pos[1] - player.y +100) / (player.z - camera_pos[2])
+    angle_radians = math.atan(tan_value)
+    angle_x = 0
+    angle_y = -angle_radians
+        
 
 def draw_screen():
     global blocks
@@ -545,19 +506,7 @@ def draw_screen():
 
     # 내림차순이므로 위치를 반전하여 실제 위치 계산
     actual_position = len(showing.squares) - position
-    # 블록 그리기
-    # for block in map.BLOCKS:
-    #     draw_cube(projection_3D.project_3d_or_2d(block.points, camera_pos, is_3D, angle_x, angle_y))
 
-    # # 플레이어 그리기
-    # draw_cube(projection_3D.project_3d_or_2d(playerblock.points, camera_pos, is_3D, angle_x, angle_y))
-
-    # # pieceblock 그리기 (카메라 앵글 반영)
-    # piece.pieceblock.update_points(camera_pos, angle_x, angle_y)
-    # draw_real_piece(piece.pieceblock.projected_points)
-
-    # pygame.display.flip()
-    # clock.tick(60)
     if (is_3D):
         for i in range(actual_position):
             if actual_position != 0:
@@ -570,8 +519,7 @@ def draw_screen():
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
         animation.anime()
-    if aquire_piece_count == 0:
-        draw_real_piece(piece.pieceblock)
+    piece.draw_real_piece()
     dead.player_dead_check() 
     pygame.display.flip()
     clock.tick(60)
@@ -583,7 +531,7 @@ def run():
     event_check()
     player_during()  # 플레이어 위치 업데이트 먼저   
     draw_screen()
-    aquire_piece()
-    mouse_rotate_check()
+    # mouse_rotate_check()
+    rotate_fix()
     camera_move()
     return condition
