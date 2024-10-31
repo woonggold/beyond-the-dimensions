@@ -40,10 +40,8 @@ def blockremove():
 def aquire_piece():
     global aquire_piece_count
     
-    if abs(player.x) - abs(piece.pieceblock.x) < 50 and abs(player.x) - abs(piece.pieceblock.x) > -50:
-        if abs(player.y) - abs(piece.pieceblock.y) < 50 and abs(player.y) - abs(piece.pieceblock.y) > -50:
-            if abs(player.z) - abs(piece.pieceblock.y) < 50 and abs(player.y) - abs(piece.pieceblock.y) > -50:
-                aquire_piece_count += 1
+    if abs(player.x - piece.pieceblock.x) < 50 and  abs(player.y - piece.pieceblock.y) < 50 and abs(player.z - piece.pieceblock.y) < 50:
+        aquire_piece_count += 1
             
 def check_overlap(block_min, block_max, player_min, player_max):
     return block_min < player_max and block_max > player_min
@@ -146,18 +144,19 @@ def check_warp():
                                             break
                                 break
                     break
-            else:    
-                for i in range(0, len(warp_block_list)):
-                    if (
-                        abs(xyz[0] - warp_block_list[i][0]) < 100
-                        and abs((xyz[1] - warp_block_list[i][1])) <= 150
-                        and abs(xyz[2] - warp_block_list[i][2]) < 100
-                    ):
-                        warp_working_count = 1
-                        break
-                        
-                else:
-                    warp_working_count = 0
+    else:
+        print(warp_working_count)
+        for i in range(0, len(warp_block_list)):
+            if (
+                abs(xyz[0] - warp_block_list[i][0]) < 100
+                and abs((xyz[1] - warp_block_list[i][1])) <= 150
+                and abs(xyz[2] - warp_block_list[i][2]) < 100
+            ):
+                warp_working_count = 1
+                break
+                
+        else:
+            warp_working_count = 0
 
 def adjust(k, i):
     if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0):
@@ -181,6 +180,7 @@ def player_during():
     global delta_time
     player.ani = "stand"
     FPS = 60
+    
     delta_time = clock.tick(FPS)/10
     if z_key_count == 0:
         x_col,y_col,z_col,k = check_collision()
@@ -583,6 +583,7 @@ def run():
     event_check()
     player_during()  # 플레이어 위치 업데이트 먼저   
     draw_screen()
+    aquire_piece()
     mouse_rotate_check()
     camera_move()
     return condition
