@@ -31,6 +31,10 @@ def player_dead_check():
                         real_game.warp_working_count = 1
                         player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
                         real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1], map_loading.warp_block_list[i][2] - 200]
+                    elif map_loading.warp_block_list[i][3] == "stage3":
+                        real_game.warp_working_count = 1
+                        player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
+                        real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1], map_loading.warp_block_list[i][2] - 200]
             else:
                 print("aa")
                 player.x , player.y, player.z = 100,0,-500
