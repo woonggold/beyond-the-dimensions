@@ -50,11 +50,25 @@ warp_block_x_list = []
 warp_block_y_list = []
 warp_block_z_list = []
 
+
+
 warp_block_data = {
     "x": warp_block_x_list,
     "y": warp_block_y_list,
     "z": warp_block_z_list, 
     "warp_name": warp_name_list, 
+}
+
+event_name_list = []
+event_block_x_list = []
+event_block_y_list = []
+event_block_z_list = []
+
+event_block_data = {
+    "x": event_block_x_list,
+    "y": event_block_y_list,
+    "z": event_block_z_list, 
+    "event_name": event_name_list, 
 }
 
 aquire_piece_count = 0

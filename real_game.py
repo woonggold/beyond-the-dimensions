@@ -22,7 +22,14 @@ def setblock(texture_num):
         warp_block_x_list.append(nearestx_100)
         warp_block_y_list.append(nearesty_100)
         warp_block_z_list.append(nearestz_100)
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+    if texture_num != 8:
+        map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+    if texture_num == 8:
+        eventname = input("일어날 이벤트명을 작성해 주세요: ")
+        event_name_list.append(eventname)
+        event_block_x_list.append(nearestx_100)
+        event_block_y_list.append(nearesty_100)
+        event_block_z_list.append(nearestz_100)
 
 
 def blockremove():
@@ -351,7 +358,7 @@ def event_check():
                 # 시점 전환 목표 설정
                 if is_3D:
                     temp = 0
-                    for block in map_loading.map_test.BLOCKS:
+                    for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
                     if temp == 0:
@@ -360,7 +367,7 @@ def event_check():
                         print ("겹치는 블럭 있음")
                 elif not is_3D:
                     temp = []
-                    for block in map_loading.map_test.BLOCKS:
+                    for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100:
                             temp.append(block.original_z)
                     if not temp:
@@ -496,7 +503,6 @@ def block_3D_transition(blockk):
             point = x,y,point[2],z
 
 def rotate_fix():
-    print (camera_pos)
     global angle_x,angle_y
     tan_value = (camera_pos[1] - player.y +100) / (player.z - camera_pos[2])
     angle_radians = math.atan(tan_value)
