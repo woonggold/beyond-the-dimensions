@@ -149,6 +149,7 @@ def check_warp():
                                                     player.z = warp_block_list[j][2]
                                                     camera_pos[0] = warp_block_list[j][0]
                                                     camera_pos[1] = warp_block_list[j][1]
+                                                    
                                                     break
                                         break
                             break
