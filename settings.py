@@ -12,7 +12,7 @@ is_3D = False
 target_camera_pos = camera_pos # 목표 카메라 위치
 script_dir = os.path.dirname(__file__)
 
-delta_time = clock.tick(40) / 100
+delta_time = clock.tick(60) / 10
 angle_x, angle_y = 0, 0
 
 map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
@@ -72,3 +72,21 @@ blocks = []
 
 prevent = False
 prevent2 = False
+
+#첫번쨰 시작
+firt_count = 0
+
+def player_first_start():
+    global firt_count
+    if firt_count == 0:
+        import map_loading, real_game, player
+        
+        if len(map_loading.warp_block_list) > 0:
+            for i in range(0, len(map_loading.warp_block_list)):
+                if map_loading.warp_block_list[i][3] == map_loading.stagename:
+                    real_game.warp_working_count = 1
+                    player.player.x , player.player.y, player.player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
+                    real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
+        firt_count = 1 
+        
+

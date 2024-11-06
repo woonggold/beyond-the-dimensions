@@ -42,7 +42,7 @@ def map_save():
     blocks_dict_z = []
     blocks_dict_texture = []
     blocks_dict_warp_name = settings.warp_block_data
-    for block in map_test.BLOCKS:
+    for block in BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
         blocks_dict_z.append(block.z)

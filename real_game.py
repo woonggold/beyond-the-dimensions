@@ -12,7 +12,7 @@ import dead
 
 #플레이어 세팅
 
-def setblock(texture_num):    
+def setblock(texture_num):
     nearestx_100 = round(player.x / 100) * 100
     nearesty_100 = round(player.y / 100) * 100 + 100
     nearestz_100 = round(player.z / 100) * 100
@@ -496,13 +496,12 @@ def block_3D_transition(blockk):
             point = x,y,point[2],z
 
 def rotate_fix():
-    print (camera_pos)
     global angle_x,angle_y
     tan_value = (camera_pos[1] - player.y +100) / (player.z - camera_pos[2])
     angle_radians = math.atan(tan_value)
     angle_x = 0
     angle_y = -angle_radians
-        
+
 
 def draw_screen():
     global blocks
@@ -549,5 +548,6 @@ def run():
     # mouse_rotate_check()
     rotate_fix()
     camera_move()
+    player_first_start()
     
     return condition
