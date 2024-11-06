@@ -11,6 +11,9 @@ def player_dead_check():
     import real_game
     real_game.prevent2 = False
     delta_time = stun_time - time.time()
+    if delta_time < 0:
+        real_game.angle_x = 0
+        real_game.angle_y = 0.245
     if delta_time > 0:
         pygame.draw.line(screen, (0,0,0), (0,0), (0,screen_height), int(delta_time * 2400))
         pygame.draw.line(screen, (0,0,0), (screen_width,0), (screen_width,screen_height), int(delta_time * 2400))
