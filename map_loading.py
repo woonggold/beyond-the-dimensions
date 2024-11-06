@@ -63,6 +63,16 @@ def map_load(mapname):
         data = json.load(json_file)
     BLOCKS = []
     warp_block_list = []
+    warp_name_list = []
+    warp_block_x_list = []
+    warp_block_y_list = []
+    warp_block_z_list = []
+    event_name_list = []
+    event_block_x_list = []
+    event_block_y_list = []
+    event_block_z_list = []
+
+
     for i in range(len(data["Blocks"]["x"])):
                 
         BLOCKS.append(Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
@@ -73,14 +83,39 @@ def map_load(mapname):
             tuple1= (data["warp_blocks"]["x"][i], data["warp_blocks"]["y"][i], data["warp_blocks"]["z"][i], data["warp_blocks"]["warp_name"][i])
             warp_block_list.append(tuple1)
             BLOCKS.append(Block((data["warp_blocks"]["x"][i],data["warp_blocks"]["y"][i],data["warp_blocks"]["z"][i]),9))
+            warp_block_x_list.append(data["warp_blocks"]["x"][i])
+            warp_block_y_list.append(data["warp_blocks"]["y"][i])
+            warp_block_z_list.append(data["warp_blocks"]["z"][i])
+            warp_name_list.append(data["warp_blocks"]["warp_name"][i])
+
+
+
+            
     except:
         pass
     try:
         for i in range(0, len(data["event_blocks"]["x"])):
             piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i]))
+            event_block_x_list.append(data["warp_blocks"]["x"][i])
+            event_block_y_list.append(data["warp_blocks"]["y"][i])
+            event_block_z_list.append(data["warp_blocks"]["z"][i])
+            event_name_list.append(data["warp_blocks"]["warp_name"][i])
+    
     except:
         pass
-
+    settings.warp_block_data = {
+            "x": warp_block_x_list,
+            "y": warp_block_y_list,
+            "z": warp_block_z_list, 
+            "warp_name": warp_name_list, 
+        }
+    
+    settings.event_block_data = {
+        "x": event_block_x_list,
+        "y": event_block_y_list,
+        "z": event_block_z_list, 
+        "event_name": event_name_list, 
+    }
 
     print("로드됨")
     

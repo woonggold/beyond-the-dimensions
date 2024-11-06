@@ -545,10 +545,11 @@ def draw_screen():
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
         animation.anime()
-    piece.draw_real_piece()
-    dead.player_dead_check() 
-    draw_dialogue()
+
     screen_effect("normal")
+    piece.draw_real_piece()
+    dead.player_dead_check()
+    draw_dialogue()
     pygame.display.flip()
     clock.tick(60)
         
@@ -564,9 +565,6 @@ def run():
         rotate_fix()
         camera_move()
     draw_screen()
-    # mouse_rotate_check()
-    rotate_fix()
-    camera_move()
     player_first_start()
     
     return condition
