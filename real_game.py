@@ -251,6 +251,7 @@ def player_during():
     ]
 
     player.range = (player.fake_x-camera_pos[0])**2 + (player.y-150-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
+    player.y = round(player.y)
 
 
     
@@ -359,10 +360,14 @@ def event_check():
             if event.key == pygame.K_r and prevent2 == False:
                 # 시점 전환 목표 설정
                 if is_3D:
+                    print (player.x,player.y,player.z)
                     temp = 0
                     for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
+                            print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+                            print (block.x,block.y,block.z)
+                            print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
                     if temp == 0:
                         is_3D = False
                     else :
@@ -507,12 +512,6 @@ def block_3D_transition(blockk):
 
             point = x,y,point[2],z
 
-def rotate_fix():
-    global angle_x,angle_y
-    tan_value = (camera_pos[1] - player.y +100) / (player.z - camera_pos[2])
-    angle_radians = math.atan(tan_value)
-    angle_x = 0
-    angle_y = -angle_radians
 
 
 def draw_screen():
@@ -561,12 +560,11 @@ def run():
     if is_talking == False:
         event_check()
         player_during()  # 플레이어 위치 업데이트
-        rotate_fix()
         camera_move()
     draw_screen()
     # mouse_rotate_check()
-    rotate_fix()
-    camera_move()
+    # rotate_fix()
+    # camera_move()
     player_first_start()
     
     return condition

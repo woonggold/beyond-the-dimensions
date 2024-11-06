@@ -49,11 +49,20 @@ def aquire_piece_check(piece):
         piece_event_check(piece.event)
 
 def piece_event_check(event):
+    import real_game, map_loading
     match event:
-        case "event":
-            print('테스트용')
-        case "test":
-            print('test')
+        case "2D":
+            real_game.is_3D = False
+        case "3D":
+            temp = []
+            for block in map_loading.BLOCKS:
+                if abs(block.x - player.x) < 100:
+                    temp.append(block.original_z)
+            if not temp:
+                player.z = 100
+            else: 
+                player.z = min(temp)
+            real_game.is_3D = True
         case "2":
             print('2')
         case "3":
