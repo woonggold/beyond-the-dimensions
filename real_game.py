@@ -129,7 +129,7 @@ def check_warp():
                 else:
                     for block in map_loading.BLOCKS:
                         
-                        if abs(xyz[0] - block.x) < 100 and abs(xyz[2] - block.z) < 100 and block.texture_num == 9:
+                        if abs(xyz[0] - block.x) < 101 and abs(xyz[2] - block.z) < 50 and -101 < (xyz[1] - block.y) < 201 and block.texture_num == 9:
                             for i in range(0, len(warp_block_list)):
                                 modifiyed_map_name = int(map_loading.stagename[5]) + 1
                                 modifiyed_map_name2 = map_loading.stagename[0:5] + str(modifiyed_map_name)
