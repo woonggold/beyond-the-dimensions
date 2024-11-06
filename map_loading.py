@@ -1,5 +1,6 @@
 import settings
 import json
+import piece
 class Block:
     def __init__(self, pos, texture_num):
         self.pos = pos
@@ -20,28 +21,13 @@ class Block:
 BLOCKS = []
 warp_block_list = []
 
-def load_map(map_name):
-    global BLOCKS
-    if map_name == "test":
-
-        for i in range(1):
-            for j in range(1):
-                BLOCKS.append(Block((i*100-500,500,j*100-500),0))
-        BLOCKS.append(Block((100,400,100),0))
-
-        return BLOCKS
-class Map:
-    def __init__(self, map):
-        self.BLOCKS = load_map(map)
-
-map_test = Map(settings.map_name)
-
 def map_save():
     blocks_dict_x = []
     blocks_dict_y = []
     blocks_dict_z = []
     blocks_dict_texture = []
     blocks_dict_warp_name = settings.warp_block_data
+    blocks_dict_event_name = settings.event_block_data
     for block in BLOCKS:
         blocks_dict_x.append(block.x)
         blocks_dict_y.append(block.y)
@@ -57,7 +43,8 @@ def map_save():
     
     final_data = {
         "Blocks": separated_data, 
-        "warp_blocks": blocks_dict_warp_name
+        "warp_blocks": blocks_dict_warp_name,
+        "event_blocks": blocks_dict_event_name
     }
     mapname = input("저장할 맵 이름을 입력해 주세요: ")
 
@@ -86,6 +73,11 @@ def map_load(mapname):
             tuple1= (data["warp_blocks"]["x"][i], data["warp_blocks"]["y"][i], data["warp_blocks"]["z"][i], data["warp_blocks"]["warp_name"][i])
             warp_block_list.append(tuple1)
             BLOCKS.append(Block((data["warp_blocks"]["x"][i],data["warp_blocks"]["y"][i],data["warp_blocks"]["z"][i]),9))
+    except:
+        pass
+    try:
+        for i in range(0, len(data["event_blocks"]["x"])):
+            piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i]))
     except:
         pass
 

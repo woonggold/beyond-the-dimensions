@@ -9,6 +9,8 @@ import time
 import animation
 import bisect
 import dead
+from dialogue import *
+from screen_effect import *
 
 #플레이어 세팅
 
@@ -22,7 +24,14 @@ def setblock(texture_num):
         warp_block_x_list.append(nearestx_100)
         warp_block_y_list.append(nearesty_100)
         warp_block_z_list.append(nearestz_100)
-    map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+    if texture_num != 8:
+        map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
+    if texture_num == 8:
+        eventname = input("일어날 이벤트명을 작성해 주세요: ")
+        event_name_list.append(eventname)
+        event_block_x_list.append(nearestx_100)
+        event_block_y_list.append(nearesty_100)
+        event_block_z_list.append(nearestz_100)
 
 
 def blockremove():
@@ -351,7 +360,7 @@ def event_check():
                 # 시점 전환 목표 설정
                 if is_3D:
                     temp = 0
-                    for block in map_loading.map_test.BLOCKS:
+                    for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
                     if temp == 0:
@@ -360,7 +369,7 @@ def event_check():
                         print ("겹치는 블럭 있음")
                 elif not is_3D:
                     temp = []
-                    for block in map_loading.map_test.BLOCKS:
+                    for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100:
                             temp.append(block.original_z)
                     if not temp:
@@ -538,6 +547,8 @@ def draw_screen():
         animation.anime()
     piece.draw_real_piece()
     dead.player_dead_check() 
+    draw_dialogue()
+    screen_effect("normal")
     pygame.display.flip()
     clock.tick(60)
         
@@ -545,8 +556,13 @@ def draw_screen():
 def run():
     global condition
     condition = "real_game"
-    event_check()
-    player_during()  # 플레이어 위치 업데이트 먼저   
+    talkcheck()
+    check_player_position()
+    if is_talking == False:
+        event_check()
+        player_during()  # 플레이어 위치 업데이트
+        rotate_fix()
+        camera_move()
     draw_screen()
     # mouse_rotate_check()
     rotate_fix()

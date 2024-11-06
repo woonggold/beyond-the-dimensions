@@ -20,7 +20,7 @@ class MakePiece:
         self.event = event # 무슨 이벤트가 일어나게 할지 이벤트 명 적기
 
 
-Pieces = [MakePiece((300,100,100),"event")]
+Pieces = []
 #def load_piece
 #   return Pieces
 
@@ -44,16 +44,16 @@ def draw_real_piece():
 
 def aquire_piece_check(piece):
     global Pieces
-    if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.y) < 50:
-        piece.display = False
+    if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50:
+        Pieces.remove(piece)
         piece_event_check(piece.event)
 
 def piece_event_check(event):
     match event:
         case "event":
             print('테스트용')
-        case "1":
-            print('1')
+        case "test":
+            print('test')
         case "2":
             print('2')
         case "3":
