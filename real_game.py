@@ -9,6 +9,8 @@ import time
 import animation
 import bisect
 import dead
+from dialogue import *
+from screen_effect import *
 
 #플레이어 세팅
 
@@ -542,6 +544,8 @@ def draw_screen():
         animation.anime()
     piece.draw_real_piece()
     dead.player_dead_check() 
+    draw_dialogue()
+    screen_effect("rotate")
     pygame.display.flip()
     clock.tick(60)
         
@@ -549,11 +553,13 @@ def draw_screen():
 def run():
     global condition
     condition = "real_game"
-    event_check()
-    player_during()  # 플레이어 위치 업데이트 먼저   
+    talkcheck()
+    check_player_position()
+    if is_talking == False:
+        event_check()
+        player_during()  # 플레이어 위치 업데이트
+        rotate_fix()
+        camera_move()
     draw_screen()
-    # mouse_rotate_check()
-    rotate_fix()
-    camera_move()
     
     return condition
