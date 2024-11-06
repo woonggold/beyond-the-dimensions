@@ -392,6 +392,9 @@ def event_check():
                 else:
                     z_key_count = 0
                     color = 0
+            if event.key == pygame.K_k:
+                if z_key_count == 1:
+                    print(player.pos)
             if event.key == pygame.K_p: # 맵 세이브
                 if z_key_count == 1:
                     map_loading.map_save()
