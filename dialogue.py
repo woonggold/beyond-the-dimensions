@@ -45,6 +45,30 @@ def talkcheck():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:  # 스페이스 키로 대화 넘기기
                     current_dialogue_index += 1
+                if event.key == pygame.K_a:
+                    real_game.player.dx -= real_game.player.speed
+
+                if event.key == pygame.K_d:
+                    real_game.player.dx += real_game.player.speed
+
+                if event.key == pygame.K_w:#z축 앞 이동
+                    real_game.player.dz += real_game.player.speed
+
+                if event.key == pygame.K_s: #z축 뒤 이동
+                    real_game.player.dz -= real_game.player.speed
+
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_a:
+                    real_game.player.dx += real_game.player.speed
+                
+                if event.key == pygame.K_d:
+                    real_game.player.dx -= real_game.player.speed
+    
+                if event.key == pygame.K_w:#z축 앞 이동
+                    real_game.player.dz -= real_game.player.speed
+                    
+                if event.key == pygame.K_s: #z축 뒤 이동
+                    real_game.player.dz += real_game.player.speed
 
             # 대화가 끝나면 대화 활성화 상태 해제
             if first_talk == 1:
