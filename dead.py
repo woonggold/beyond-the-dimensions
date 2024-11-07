@@ -45,7 +45,7 @@ def player_dead_check():
         pygame.draw.line(screen, (0,0,0), (screen_width,0), (screen_width,screen_height), draw_speed * int(1.5 * padding))
         pygame.draw.line(screen, (0,0,0), (0,0), (screen_width,0), draw_speed * padding)
         pygame.draw.line(screen, (0,0,0), (0,screen_height), (screen_width,screen_height), draw_speed * padding)
-        if (draw_speed * padding > 800) :
+        if (draw_speed * padding > 800) : #ㄹㅇ 죽음
             if len(map_loading.warp_block_list) > 0:
                 for i in range(0, len(map_loading.warp_block_list)):
                     if map_loading.warp_block_list[i][3] == map_loading.stagename:

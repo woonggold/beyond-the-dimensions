@@ -350,7 +350,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage3")
+        map_loading.map_load("stage1")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -409,7 +409,7 @@ def event_check():
                 if z_key_count == 1:
                     print(player.x , player.y, player.z)
             if event.key == pygame.K_p: # 맵 세이브
-                if z_key_count == 1:
+                if z_key_count == 1 and is_3D:
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
