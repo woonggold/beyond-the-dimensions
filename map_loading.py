@@ -77,7 +77,7 @@ def map_load(mapname):
         pass
     try:
         for i in range(0, len(data["event_blocks"]["x"])):
-            piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i]))
+            piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i],data["event_blocks"]["size"][i]))
     except:
         pass
 
