@@ -52,6 +52,7 @@ def aquire_piece_check(piece):
 
 def piece_event_check(event):
     import real_game, map_loading
+    # print (real_game.scr_effect)
     match event:
         case "2D":
             real_game.is_3D = False
@@ -65,8 +66,8 @@ def piece_event_check(event):
             else: 
                 player.z = min(temp)
             real_game.is_3D = True
-        case "2":
-            print('2')
+        case "rotate":
+            real_game.scr_effect = "rotate"
         case "3":
             print('3')
 

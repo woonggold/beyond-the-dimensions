@@ -56,13 +56,14 @@ def player_dead_check():
                 player.x , player.y, player.z = 100,0,-500
                 real_game.target_camera_pos = [100 ,-300, -1300]
             piece.Pieces = []
-            for i in range(0, len(map_loading.data["event_blocks"]["x"])):
-                piece.Pieces.append(piece.MakePiece((map_loading.data["event_blocks"]["x"][i],map_loading.data["event_blocks"]["y"][i],map_loading.data["event_blocks"]["z"][i]),map_loading.data["event_blocks"]["event_name"][i],map_loading.data["event_blocks"]["size"][i]))
-                event_block_x_list.append(map_loading.data["event_blocks"]["x"][i])
-                event_block_y_list.append(map_loading.data["event_blocks"]["y"][i])
-                event_block_z_list.append(map_loading.data["event_blocks"]["z"][i])
-                event_name_list.append(map_loading.data["event_blocks"]["event_name"][i])
-                event_size_list.append(map_loading.data["event_blocks"]["size"][i])
+            if "event_blocks" in map_loading.data:
+                for i in range(0, len(map_loading.data["event_blocks"]["x"])):
+                    piece.Pieces.append(piece.MakePiece((map_loading.data["event_blocks"]["x"][i],map_loading.data["event_blocks"]["y"][i],map_loading.data["event_blocks"]["z"][i]),map_loading.data["event_blocks"]["event_name"][i],map_loading.data["event_blocks"]["size"][i]))
+                    event_block_x_list.append(map_loading.data["event_blocks"]["x"][i])
+                    event_block_y_list.append(map_loading.data["event_blocks"]["y"][i])
+                    event_block_z_list.append(map_loading.data["event_blocks"]["z"][i])
+                    event_name_list.append(map_loading.data["event_blocks"]["event_name"][i])
+                    event_size_list.append(map_loading.data["event_blocks"]["size"][i])
             real_game.prevent = False
             real_game.angle_x,real_game.angle_y = (0,0)
             player.dy = 0
