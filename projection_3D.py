@@ -21,8 +21,8 @@ def rotate_point(point, angle_x, angle_y):
 
 
 
-def project_3d_or_2d(point, camera_pos,angle_x,angle_y):
-    angle_x,angle_y = angle_y,angle_x
+def project_3d_or_2d(point, camera_pos, angle_x, angle_y):
+    angle_x, angle_y = angle_y, angle_x
     #point[2] = ㄹㅇ 블럭좌표
     #point[3] = 부드러운 전환을 위해 필요
     #z = 최종 계산에 쓰이는 값

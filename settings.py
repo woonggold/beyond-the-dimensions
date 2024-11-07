@@ -60,6 +60,7 @@ warp_block_data = {
 }
 
 event_name_list = []
+event_size_list = []
 event_block_x_list = []
 event_block_y_list = []
 event_block_z_list = []
@@ -69,6 +70,7 @@ event_block_data = {
     "y": event_block_y_list,
     "z": event_block_z_list, 
     "event_name": event_name_list, 
+    "size"  : event_size_list
 }
 
 aquire_piece_count = 0
@@ -104,3 +106,4 @@ def player_first_start():
         firt_count = 1 
         
 
+map_setting = [False, True, True]#순서대로 각 스테이지의 초기 is_3D 값.

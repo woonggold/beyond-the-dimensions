@@ -27,8 +27,10 @@ def setblock(texture_num):
     if texture_num != 8:
         map_loading.BLOCKS.append(map_loading.Block((nearestx_100,nearesty_100,nearestz_100),texture_num))
     if texture_num == 8:
-        eventname = input("일어날 이벤트명을 작성해 주세요: ")
+        eventname = input("일어날 이벤트명을 작성해 주세요 : ")
+        size = input("차원 균열의 크기는 몇배? : ")
         event_name_list.append(eventname)
+        event_size_list.append(size)
         event_block_x_list.append(nearestx_100)
         event_block_y_list.append(nearesty_100)
         event_block_z_list.append(nearestz_100)
@@ -360,14 +362,10 @@ def event_check():
             if event.key == pygame.K_r and prevent2 == False:
                 # 시점 전환 목표 설정
                 if is_3D:
-                    print (player.x,player.y,player.z)
                     temp = 0
                     for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
-                            print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-                            print (block.x,block.y,block.z)
-                            print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
                     if temp == 0:
                         is_3D = False
                     else :
@@ -410,7 +408,7 @@ def event_check():
                 if z_key_count == 1:
                     print(player.x , player.y, player.z)
             if event.key == pygame.K_p: # 맵 세이브
-                if z_key_count == 1:
+                if z_key_count == 1 and is_3D:
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
@@ -477,18 +475,18 @@ def camera_move():
 
     if z_key_count == 0:
         for i in range(3):
-            target_camera_pos = player.x,(player.y-300),(player.z - 800)
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.3
+            target_camera_pos = player.x,(player.y-(800*math.sin(angle_y))),(player.z - (800*math.cos(angle_y)))
+            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.5
 
 
-def block_3D_transition(blockk):
+def block_3D_transition(block):
     global camera_pos
     
     # 부드럽게 이동
     
-    if is_3D == False:
-        blockk.z = 100
-        for point in blockk.points:
+    if is_3D == False: #2D
+        block.z = 100
+        for point in block.points:
         
             x, y = point[0],point[1]
             if(abs(100 - point[3])>10):
@@ -501,8 +499,8 @@ def block_3D_transition(blockk):
 
 
     else:
-        blockk.z = blockk.original_z
-        for point in blockk.points:
+        block.z = block.original_z
+        for point in block.points:
             x, y = point[0],point[1]
             if(abs(point[2] - point[3])>10):
                 point[3] += (point[2] - point[3]) * 0.3
@@ -544,10 +542,10 @@ def draw_screen():
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
         animation.anime()
-
-    screen_effect("normal")
+    piece.piece_3D_transition()
     piece.draw_real_piece()
     dead.player_dead_check()
+    screen_effect("normal")
     draw_dialogue()
     pygame.display.flip()
     clock.tick(60)

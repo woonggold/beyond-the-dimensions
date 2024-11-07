@@ -53,7 +53,7 @@ def map_save():
     print("저장됨")
         
 def map_load(mapname):
-    global BLOCKS, warp_block_list, stagename
+    global BLOCKS, warp_block_list, stagename,data
     stagename = mapname
     if mapname == "":
         mapname = input("불러올 맵 이름을 입력해 주세요: ")
@@ -68,6 +68,7 @@ def map_load(mapname):
     warp_block_y_list = []
     warp_block_z_list = []
     event_name_list = []
+    event_size_list =[]
     event_block_x_list = []
     event_block_y_list = []
     event_block_z_list = []
@@ -95,12 +96,12 @@ def map_load(mapname):
         pass
     try:
         for i in range(0, len(data["event_blocks"]["x"])):
-            piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i]))
-            event_block_x_list.append(data["warp_blocks"]["x"][i])
-            event_block_y_list.append(data["warp_blocks"]["y"][i])
-            event_block_z_list.append(data["warp_blocks"]["z"][i])
-            event_name_list.append(data["warp_blocks"]["warp_name"][i])
-    
+            piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i],data["event_blocks"]["size"][i]))
+            event_block_x_list.append(data["event_blocks"]["x"][i])
+            event_block_y_list.append(data["event_blocks"]["y"][i])
+            event_block_z_list.append(data["event_blocks"]["z"][i])
+            event_name_list.append(data["event_blocks"]["event_name"][i])
+            event_size_list.append(data["event_blocks"]["size"][i])
     except:
         pass
     settings.warp_block_data = {
@@ -115,6 +116,7 @@ def map_load(mapname):
         "y": event_block_y_list,
         "z": event_block_z_list, 
         "event_name": event_name_list, 
+        "size": event_size_list, 
     }
 
     print("로드됨")
