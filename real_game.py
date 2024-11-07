@@ -346,7 +346,6 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    print (player.x,player.y,player.z)
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
     if first_map_loading == 0:
         first_map_loading = 1
@@ -476,8 +475,8 @@ def camera_move():
 
     if z_key_count == 0:
         for i in range(3):
-            target_camera_pos = player.x,(player.y-300),(player.z - 800)
-            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.3
+            target_camera_pos = player.x,(player.y-(800*math.sin(angle_y))),(player.z - (800*math.cos(angle_y)))
+            camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.5
 
 
 def block_3D_transition(block):

@@ -37,12 +37,13 @@ def talkcheck():
                 pygame.quit()
                 exit()
 
-            if event.type == pygame.K_ESCAPE:
-                pygame.quit()
-                exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:  # 대화창 클릭
                 current_dialogue_index += 1
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
                 if event.key == pygame.K_SPACE:  # 스페이스 키로 대화 넘기기
                     current_dialogue_index += 1
                 if event.key == pygame.K_a:
