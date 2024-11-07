@@ -13,7 +13,7 @@ target_camera_pos = camera_pos # 목표 카메라 위치
 script_dir = os.path.dirname(__file__)
 
 delta_time = clock.tick(60) / 10
-angle_x, angle_y = 0, 0
+angle_x, angle_y = 0, 0.245
 
 map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
 
@@ -89,6 +89,8 @@ blocks = []
 prevent = False
 prevent2 = False
 
+scr_effect = "normal"
+
 #첫번쨰 시작
 firt_count = 0
 
@@ -106,4 +108,4 @@ def player_first_start():
         firt_count = 1 
         
 
-map_setting = [False, True, True]#순서대로 각 스테이지의 초기 is_3D 값.
+map_setting = [False, True, True, False]#순서대로 각 스테이지의 초기 is_3D 값.

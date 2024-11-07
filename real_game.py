@@ -349,7 +349,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage1")
+        map_loading.map_load("stage4")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -459,10 +459,6 @@ def event_check():
             if event.button == 3: # 개발자 블록 설치
                 if z_key_count == 1:    
                     setblock(texture_num)
-            elif event.button == 4:  # 휠을 위로 스크롤
-                camera_pos[2] += camera_speed * 2  # 카메라를 앞으로 이동
-            elif event.button == 5:  # 휠을 아래로 스크롤
-                camera_pos[2] -= camera_speed * 2  # 카메라를 뒤로 이동
             elif event.button == 1:
                 if z_key_count == 1:    
                     blockremove()
@@ -545,7 +541,7 @@ def draw_screen():
     piece.piece_3D_transition()
     piece.draw_real_piece()
     dead.player_dead_check()
-    screen_effect("normal")
+    screen_effect(screen_effect)
     draw_dialogue()
     pygame.display.flip()
     clock.tick(60)

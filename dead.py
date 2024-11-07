@@ -12,7 +12,7 @@ def player_dead_check():
     if delta_time < 0:
         real_game.angle_x = 0
         mouse_dy = pygame.mouse.get_rel()[1]
-        if (-math.pi/2<real_game.angle_y + mouse_dy * mouse_sensitivity<math.pi/2) and real_game.prevent2 == False:
+        if (0<real_game.angle_y + mouse_dy * mouse_sensitivity<math.pi/2) and real_game.prevent2 == False:
             real_game.angle_y += mouse_dy * mouse_sensitivity
     real_game.prevent2 = False
         
@@ -23,7 +23,7 @@ def player_dead_check():
         pygame.draw.line(screen, (0,0,0), (0,screen_height), (screen_width,screen_height), int(delta_time * 1600))
         real_game.prevent2 = True
         real_game.angle_x = 0
-        real_game.angle_y = 0
+        real_game.angle_y = 0.245
         
     
     
@@ -56,15 +56,16 @@ def player_dead_check():
                 player.x , player.y, player.z = 100,0,-500
                 real_game.target_camera_pos = [100 ,-300, -1300]
             piece.Pieces = []
-            for i in range(0, len(map_loading.data["event_blocks"]["x"])):
-                piece.Pieces.append(piece.MakePiece((map_loading.data["event_blocks"]["x"][i],map_loading.data["event_blocks"]["y"][i],map_loading.data["event_blocks"]["z"][i]),map_loading.data["event_blocks"]["event_name"][i],map_loading.data["event_blocks"]["size"][i]))
-                event_block_x_list.append(map_loading.data["event_blocks"]["x"][i])
-                event_block_y_list.append(map_loading.data["event_blocks"]["y"][i])
-                event_block_z_list.append(map_loading.data["event_blocks"]["z"][i])
-                event_name_list.append(map_loading.data["event_blocks"]["event_name"][i])
-                event_size_list.append(map_loading.data["event_blocks"]["size"][i])
+            if "event_blocks" in map_loading.data:
+                for i in range(0, len(map_loading.data["event_blocks"]["x"])):
+                    piece.Pieces.append(piece.MakePiece((map_loading.data["event_blocks"]["x"][i],map_loading.data["event_blocks"]["y"][i],map_loading.data["event_blocks"]["z"][i]),map_loading.data["event_blocks"]["event_name"][i],map_loading.data["event_blocks"]["size"][i]))
+                    event_block_x_list.append(map_loading.data["event_blocks"]["x"][i])
+                    event_block_y_list.append(map_loading.data["event_blocks"]["y"][i])
+                    event_block_z_list.append(map_loading.data["event_blocks"]["z"][i])
+                    event_name_list.append(map_loading.data["event_blocks"]["event_name"][i])
+                    event_size_list.append(map_loading.data["event_blocks"]["size"][i])
             real_game.prevent = False
-            real_game.angle_x,real_game.angle_y = (0,0)
+            real_game.angle_x,real_game.angle_y = (0,0.245)
             player.dy = 0
             stun_time = time.time() + 0.5
             real_game.is_3D = map_setting[int(map_loading.stagename[5])-1] #맵의 초기 is_3D값을 초기화해주는 코드임.

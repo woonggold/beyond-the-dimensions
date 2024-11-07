@@ -38,7 +38,7 @@ def draw_real_piece():
         dz = abs(z-real_game.camera_pos[2])
         piece_range = (dx**2+dy**2+dz**2)**(1/2)
         result = projection_3D.project_3d_or_2d((x,y,z), real_game.camera_pos,real_game.angle_x,real_game.angle_y)
-        modified_img = pygame.transform.scale(piece.img, (piece.size * 200*piece.width / piece_range, piece.size * 200*piece.height / piece_range))
+        modified_img = pygame.transform.scale(piece.img, (int(piece.size) * 200*piece.width / piece_range, int(piece.size) * 200*piece.height / piece_range))
         modified_rect = modified_img.get_rect()
         modified_width, modified_height = modified_rect.width, modified_rect.height 
         if result != None:
@@ -52,6 +52,7 @@ def aquire_piece_check(piece):
 
 def piece_event_check(event):
     import real_game, map_loading
+    # print (real_game.scr_effect)
     match event:
         case "2D":
             real_game.is_3D = False
@@ -65,8 +66,8 @@ def piece_event_check(event):
             else: 
                 player.z = min(temp)
             real_game.is_3D = True
-        case "2":
-            print('2')
+        case "rotate":
+            real_game.scr_effect = "rotate"
         case "3":
             print('3')
 
