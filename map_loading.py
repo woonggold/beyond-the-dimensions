@@ -67,7 +67,9 @@ def map_load(mapname):
 
     for i in range(len(data["Blocks"]["x"])):
                 
-        BLOCKS.append(Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
+        if data["Blocks"]["texture"][i] != 9:
+            BLOCKS.append(Block((data["Blocks"]["x"][i],data["Blocks"]["y"][i],data["Blocks"]["z"][i]),data["Blocks"]["texture"][i]))
+            
         
     try:
         for i in range(0, len(data["warp_blocks"]["x"])):
