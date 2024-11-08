@@ -108,4 +108,4 @@ def player_first_start():
         firt_count = 1 
         
 
-map_setting = [False, True, True, False]#순서대로 각 스테이지의 초기 is_3D 값.
+map_setting = [False, True, True, False, True]#순서대로 각 스테이지의 초기 is_3D 값.
