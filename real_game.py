@@ -11,6 +11,7 @@ import bisect
 import dead
 from dialogue import *
 from screen_effect import *
+import settings
 
 #플레이어 세팅
 
@@ -117,7 +118,7 @@ def check_warp():
                         warp_working_count = 1
                         map_loading_count = 0
                         player.x = warp_block_list[j][0]
-                        player.y = warp_block_list[j][1] - 100
+                        player.y = warp_block_list[j][1] +3200
                         player.z = warp_block_list[j][2]
                         camera_pos[0] = warp_block_list[j][0]
                         camera_pos[1] = warp_block_list[j][1] - 400
@@ -541,7 +542,7 @@ def draw_screen():
     piece.piece_3D_transition()
     piece.draw_real_piece()
     dead.player_dead_check()
-    screen_effect(screen_effect)
+    screen_effect(settings.scr_effect)
     draw_dialogue()
     pygame.display.flip()
     clock.tick(60)

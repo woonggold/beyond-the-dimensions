@@ -10,7 +10,7 @@ running = True
 reseted = False
 
 while (running == True):
-    match (condition):
+    match (condition): 
         case "start_menu":
             condition = start_menu.run()
         case "real_game":
