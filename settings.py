@@ -1,5 +1,6 @@
 import pygame   
-import os 
+import os
+import collections
 pygame.init()
 screen_width = 1200
 screen_height = 800
@@ -82,6 +83,12 @@ color = 0
 
 #키 누름 카운트
 z_key_count =0
+m_key_count = 0
+
+#틱
+
+# 각 작업을 저장할 큐 (순차적으로 삭제 및 생성 작업을 처리)
+block_action_queue = collections.deque()
 
 #블록 설치
 blocks = []
@@ -93,6 +100,10 @@ scr_effect = "normal"
 
 #첫번쨰 시작
 firt_count = 0
+
+#보스전 관련
+#during용
+count_second = 0
 
 def player_first_start():
     global firt_count
