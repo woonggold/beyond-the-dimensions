@@ -66,13 +66,19 @@ def piece_event_check(event):
             else: 
                 player.z = min(temp)
             real_game.is_3D = True
+        case "normal":
+            settings.scr_effect = "normal"
         case "rotate":
-            print (1)
-            # settings.scr_effect = "rotate"
+            settings.scr_effect = "rotate"
+        case "rotater":
+            settings.scr_effect = "rotater"
+        case "rotatel":
+            settings.scr_effect = "rotatel"
         case "rotating":
-            pass
-        case "3":
-            print('3')
+            import time
+            global rotate_start
+            rotate_start = time.time()
+            settings.scr_effect = "rotating"
 
 def piece_3D_transition():
     import real_game

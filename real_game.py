@@ -118,7 +118,7 @@ def check_warp():
                         warp_working_count = 1
                         map_loading_count = 0
                         player.x = warp_block_list[j][0]
-                        player.y = warp_block_list[j][1] +5000
+                        player.y = 4000
                         player.z = warp_block_list[j][2]
                         camera_pos[0] = warp_block_list[j][0]
                         camera_pos[1] = warp_block_list[j][1] - 400
@@ -350,7 +350,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage2")
+        map_loading.map_load("stage4")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -553,11 +553,13 @@ def run():
     condition = "real_game"
     talkcheck()
     check_player_position()
+    
     if is_talking == False:
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
-    draw_screen()
     player_first_start()
+    draw_screen()
+
     
     return condition

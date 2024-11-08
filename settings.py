@@ -103,9 +103,10 @@ def player_first_start():
             for i in range(0, len(map_loading.warp_block_list)):
                 if map_loading.warp_block_list[i][3] == map_loading.stagename:
                     real_game.warp_working_count = 1
-                    player.player.x , player.player.y, player.player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
+                    player.player.x , player.player.y, player.player.z = map_loading.warp_block_list[i][0] ,4000, map_loading.warp_block_list[i][2]
                     real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
         firt_count = 1 
+        screen.fill((0, 0, 0))
         
 
 map_setting = [False, True, True, True, True]#순서대로 각 스테이지의 초기 is_3D 값.
