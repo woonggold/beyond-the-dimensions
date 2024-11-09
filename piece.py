@@ -73,6 +73,13 @@ def piece_event_check(event):
             pass
         case "3":
             print('3')
+        case "block_disappear":
+            real_game.m_key_count = 1
+            real_game.last_update = pygame.time.get_ticks()
+            real_game.reset_block_timers()
+            print("m 키 눌림 - 타이머 시작")   
+        case "block_disappear_break":
+            real_game.m_key_count = 0
 
 def piece_3D_transition():
     import real_game

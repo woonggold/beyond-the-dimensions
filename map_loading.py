@@ -18,6 +18,7 @@ class Block:
         self.texture_num = texture_num
         self.texture = settings.block_textures[texture_num]
 
+
 BLOCKS = []
 warp_block_list = []
 

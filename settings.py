@@ -1,6 +1,8 @@
 import pygame   
 import os
 import collections
+import json
+
 pygame.init()
 screen_width = 1200
 screen_height = 800
@@ -34,7 +36,7 @@ class Showing():
 showing = Showing()
 
 block_textures = [[(100,100,100),(255,255,255),(0,0,0),(0,0,0)],\
-                  [(0,255,0),(255,255,255),(0,0,0),(0,0,0)],\
+                  [(255,0,0),(255,255,255),(0,0,0),(0,0,0)],\
                   [(0,255,255),(0,255,255),(0,255,255),(255,255,255)],\
                   [(0,0,0),(0,0,0),(0,0,0),(255,255,255)],\
                   [(0,255,0),(0,0,0),(0,255,0),(0,0,0)],\
@@ -84,14 +86,66 @@ color = 0
 #키 누름 카운트
 z_key_count =0
 m_key_count = 0
+h_key_count = 0
 
 #틱
 
 # 각 작업을 저장할 큐 (순차적으로 삭제 및 생성 작업을 처리)
 block_action_queue = collections.deque()
 
+patten1_action_queue = collections.deque()
+patten2_action_queue = collections.deque()
+patten3_action_queue = collections.deque()
+patten4_action_queue = collections.deque()
+patten5_action_queue = collections.deque()
+
+patten1_block_list = []
+patten2_block_list = []
+patten3_block_list = []
+patten4_block_list = []
+patten5_block_list = []
+
+timer = 0
+
+def make_patten():
+
+    with open('./map/patten1.json', 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+
+    for i in range(len(data["Blocks"]["x"])):
+        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
+        patten1_block_list.append(tuple1)
+        
+    with open('./map/patten2.json', 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+
+    for i in range(len(data["Blocks"]["x"])):
+        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
+        patten2_block_list.append(tuple1)
+        
+    with open('./map/patten3.json', 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+
+    for i in range(len(data["Blocks"]["x"])):
+        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
+        patten3_block_list.append(tuple1)
+        
+    with open('./map/patten4.json', 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+
+    for i in range(len(data["Blocks"]["x"])):
+        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
+        patten4_block_list.append(tuple1)
+        
+    with open('./map/patten5.json', 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+
+    for i in range(len(data["Blocks"]["x"])):
+        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
+        patten5_block_list.append(tuple1)
 #블록 설치
 blocks = []
+make_patten()
 
 prevent = False
 prevent2 = False
@@ -104,6 +158,8 @@ firt_count = 0
 #보스전 관련
 #during용
 count_second = 0
+last_update = 0
+last_update2 = 0
 
 def player_first_start():
     global firt_count

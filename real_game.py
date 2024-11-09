@@ -264,7 +264,6 @@ def player_during():
     
     
 # 큐브의 면을 그리는 함수
-last_update = 0
 
 
 def draw_square(square,color_set):
@@ -350,10 +349,10 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update
+    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage7")
+        map_loading.map_load("stage9")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -385,8 +384,6 @@ def event_check():
                         player.z = min(temp)
                     
                     is_3D = True
-
-
 
             if event.key == pygame.K_a:
                     player.dx -= player.speed
@@ -427,8 +424,10 @@ def event_check():
                     print("m 키 눌림 - 타이머 시작")                  
                 else:
                     m_key_count = 0
-
-                    
+            if event.key == pygame.K_h:
+                h_key_count += 1
+                patten()
+                print(h_key_count)
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a: 
@@ -488,6 +487,236 @@ def camera_move():
 
 
 #보스전 기믹~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# 보스전 기믹 관련 코드
+def patten():
+    global patten1_action_queue, patten2_action_queue, patten3_action_queue, patten4_action_queue, patten5_action_queue
+    nowtime = pygame.time.get_ticks()  # 현재 시간을 갱신
+
+    # 패턴 1 추가
+    if h_key_count == 1:
+        for i in range(len(patten1_block_list)):
+            patten1_action_queue.append({
+                "position": (patten1_block_list[i][0], patten1_block_list[i][1], patten1_block_list[i][2]), 
+                "status": "patten1_start", 
+                "texture_num": 0,
+                "last_update": nowtime  # 각 액션의 시작 시간을 기록
+            })
+
+    # 패턴 2 추가 (h_key_count가 2일 때만 추가)
+    elif h_key_count == 2:
+        for i in range(len(patten2_block_list)):
+            patten2_action_queue.append({
+                "position": (patten2_block_list[i][0], patten2_block_list[i][1], patten2_block_list[i][2]), 
+                "status": "patten2_start", 
+                "texture_num": 0,
+                "last_update": nowtime  # 각 액션의 시작 시간을 기록
+            })
+    elif h_key_count == 3:
+        for i in range(len(patten3_block_list)):
+            patten3_action_queue.append({
+                "position": (patten3_block_list[i][0], patten3_block_list[i][1], patten3_block_list[i][2]), 
+                "status": "patten3_start", 
+                "texture_num": 0,
+                "last_update": nowtime  # 각 액션의 시작 시간을 기록
+            })
+    elif h_key_count == 4:
+        for i in range(len(patten4_block_list)):
+            patten4_action_queue.append({
+                "position": (patten4_block_list[i][0], patten4_block_list[i][1], patten4_block_list[i][2]), 
+                "status": "patten4_start", 
+                "texture_num": 0,
+                "last_update": nowtime  # 각 액션의 시작 시간을 기록
+            })
+    elif h_key_count == 5:
+        for i in range(len(patten5_block_list)):
+            patten5_action_queue.append({
+                "position": (patten5_block_list[i][0], patten5_block_list[i][1], patten5_block_list[i][2]), 
+                "status": "patten5_start", 
+                "texture_num": 0,
+                "last_update": nowtime  # 각 액션의 시작 시간을 기록
+            })
+
+def start_patten():
+    global patten1_action_queue, patten2_action_queue, patten3_action_queue, patten4_action_queue, patten5_action_queue, h_key_count
+    nowtime = pygame.time.get_ticks()
+
+    # 패턴 1에 대한 처리
+    for action in list(patten1_action_queue):
+        time_elapsed = nowtime - action["last_update"]
+
+        if action["status"] == "patten1_start" and time_elapsed >= 50:
+            # 블록 생성 (빨간색 블록)
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "block_origin_appear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "block_origin_appear" and time_elapsed >= 450:
+            # 기존 블록 제거하고 원래 블록 생성
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))  # 원래 블록 생성
+            action["status"] = "re_red_block"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+            # 빨간색 블록 다시 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "disappear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "disappear" and time_elapsed >= 500:
+            # 블록 제거
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            patten1_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+
+    # 패턴 2에 대한 처리
+    for action in list(patten2_action_queue):
+        time_elapsed = nowtime - action["last_update"]
+
+        if action["status"] == "patten2_start" and time_elapsed >= 50:
+            # 패턴 2의 블록 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))  # 다른 색상 혹은 다른 동작
+            action["status"] = "block_origin_appear"
+            action["last_update"] = nowtime
+        elif action["status"] == "block_origin_appear" and time_elapsed >= 450:
+            # 기존 블록 제거하고 원래 블록 생성
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))  # 원래 블록 생성
+            action["status"] = "re_red_block"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+            # 빨간색 블록 다시 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "disappear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "disappear" and time_elapsed >= 500:
+            # 블록 제거
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            patten2_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+    #패턴 3
+        
+    for action in list(patten3_action_queue):
+        time_elapsed = nowtime - action["last_update"]
+
+        if action["status"] == "patten3_start" and time_elapsed >= 50:
+            # 패턴 2의 블록 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))  # 다른 색상 혹은 다른 동작
+            action["status"] = "block_origin_appear"
+            action["last_update"] = nowtime
+        elif action["status"] == "block_origin_appear" and time_elapsed >= 450:
+            # 기존 블록 제거하고 원래 블록 생성
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))  # 원래 블록 생성
+            action["status"] = "re_red_block"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+            # 빨간색 블록 다시 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "disappear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "disappear" and time_elapsed >= 500:
+            # 블록 제거
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            patten3_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+    #패턴 4
+            
+    for action in list(patten4_action_queue):
+        time_elapsed = nowtime - action["last_update"]
+
+        if action["status"] == "patten4_start" and time_elapsed >= 50:
+            # 패턴 2의 블록 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))  # 다른 색상 혹은 다른 동작
+            action["status"] = "block_origin_appear"
+            action["last_update"] = nowtime
+        elif action["status"] == "block_origin_appear" and time_elapsed >= 450:
+            # 기존 블록 제거하고 원래 블록 생성
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))  # 원래 블록 생성
+            action["status"] = "re_red_block"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+            # 빨간색 블록 다시 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "disappear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "disappear" and time_elapsed >= 500:
+            # 블록 제거
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            patten4_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+    #패턴5
+            
+    for action in list(patten5_action_queue):
+        time_elapsed = nowtime - action["last_update"]
+
+        if action["status"] == "patten5_start" and time_elapsed >= 50:
+            # 패턴 2의 블록 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))  # 다른 색상 혹은 다른 동작
+            action["status"] = "block_origin_appear"
+            action["last_update"] = nowtime
+        elif action["status"] == "block_origin_appear" and time_elapsed >= 450:
+            # 기존 블록 제거하고 원래 블록 생성
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))  # 원래 블록 생성
+            action["status"] = "re_red_block"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+            # 빨간색 블록 다시 생성
+            x, y, z = action["position"]
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            action["status"] = "disappear"
+            action["last_update"] = nowtime  # 상태가 변경되었으므로 시간 갱신
+
+        elif action["status"] == "disappear" and time_elapsed >= 500:
+            # 블록 제거
+            x, y, z = action["position"]
+            for block in list(map_loading.BLOCKS):
+                if block.pos == (x, y, z):
+                    map_loading.BLOCKS.remove(block)
+            patten5_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+
 def add_block_action(x, y, z):
     # 동일 위치에서 중복 작업을 추가하지 않도록 하기
     for action in block_action_queue:
@@ -496,8 +725,9 @@ def add_block_action(x, y, z):
     # 각 블록 작업이 독립적인 타이머와 상태를 갖도록 함
     block_action_queue.append({
         "position": (x, y, z), 
-        "status": "pending_removal", 
-        "timer": 0
+        "status": "pending_removal_2", 
+        "timer": 0,
+        "texture_num": 0
     })
     
 def reset_block_timers():
@@ -508,8 +738,6 @@ def reset_block_timers():
 def block_break_and_create():
     global block_action_queue, last_update, nowtime, m_key_count
     
-    if m_key_count == 0:
-        return
     
     nowtime = pygame.time.get_ticks()
     time_delta = nowtime - last_update
@@ -518,25 +746,39 @@ def block_break_and_create():
     for action in list(block_action_queue):
         action["timer"] += time_delta
 
-        # 블록 삭제 처리 (4초 후)
-        if action["status"] == "pending_removal" and action["timer"] >= 1500:
+        # 블록 삭제 처리 (1.5초 후)
+        
+        if action["status"] == "pending_removal" and action["timer"] >= 1000:
             x, y, z = action["position"]
             try:
                 for block in map_loading.BLOCKS:
                     if block.pos == (x, y, z):
                         map_loading.BLOCKS.remove(block)
+                        action["timer"] = 0
                         action["status"] = "removed"
-                        action["timer"] = 0  # 타이머 초기화
-                        break
+                        
             except:
-                print("이미 지워진 블록입니다.")
-
-        # 블록 생성 처리 (4초 추가, 총 8초 후)
+                #이미 지워진 블록임
+                pass
+        elif action["status"] == "pending_removal_2" and action["timer"] >= 500:
+            x, y, z = action["position"]
+            try:
+                for block in map_loading.BLOCKS:
+                    if block.pos == (x, y, z):
+                        map_loading.BLOCKS.remove(block)
+                        map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+                        action["timer"] = 0
+                        action["status"] = "pending_removal"
+                        
+            except:
+                #이미 지워진 블록임
+                pass
+        # 블록 생성 처리 (1.5초 추가, 총 8초 후)
         elif action["status"] == "removed" and action["timer"] >= 1500:
             x, y, z = action["position"]
-            print(f"블록 생성: {x}, {y}, {z}")
+            texture = action["texture_num"]
             try:
-                map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))
+                map_loading.BLOCKS.append(map_loading.Block((x, y, z), texture))
                 block_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
             except:
                 print("이미 생성된 블록입니다.")
@@ -634,7 +876,9 @@ def run():
         camera_move()
     draw_screen()
     player_first_start()
+    block_break_and_create()  # 블록 삭제 및 생성 수행
     if m_key_count == 1:
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
-        block_break_and_create()  # 블록 삭제 및 생성 수행
+    if h_key_count >= 1:
+        start_patten()
     return condition
