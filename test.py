@@ -1,9 +1,13 @@
-from moviepy.editor import *
-import pygame
+import start_menu
 
-pygame.display.set_caption('Hello World!')
+condition = "start_menu"
 
-clip = VideoFileClip('video.mp4')
-clip.preview()
+running = True
+reseted = False
 
-pygame.quit()
+while (running == True):
+    match (condition): 
+        case "start_menu":
+            condition = start_menu.run()
+        case "quit":
+            running = False

@@ -67,6 +67,7 @@ def forced_draw(piece):
 def aquire_piece_check(piece):
     global Pieces,core_in
     if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50 and piece.event != "core":
+        print (piece.size)
         Pieces.remove(piece)
         piece_event_check(piece.event)
     if piece.event == "core":

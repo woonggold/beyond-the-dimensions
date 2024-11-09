@@ -1,13 +1,9 @@
 import pygame
 from pygame.locals import *
 from settings import *
-import button
 from moviepy.editor import *
-import os
 
-
-clip = VideoFileClip(os.path.join(script_dir, "videos", "Beyond the Demension.mp4"))
-start_button = button.button(screen_width/2-181,600,"시작1.png","시작2.png")
+clip = VideoFileClip(f"{script_dir}//videos//start_video.mp4")
 
 def run():
     for frame in clip.iter_frames(fps=24, dtype="uint8"):
@@ -16,16 +12,9 @@ def run():
                 return "quit"
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return "quit"
-            
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         frame_surface = pygame.transform.scale(frame_surface, (screen_width, screen_height))
         screen.blit(frame_surface, (0, 0))
-        
-        if start_button.button_work() == True:
-            pygame.mouse.set_visible(False)
-            pygame.event.set_grab(True)
-            pygame.mouse.get_rel()
-            return "start_video"
-        pygame.display.flip()
-    return "start_menu"
-
+        pygame.display.update()
+        clock.tick(24)
+    return "real_game"
