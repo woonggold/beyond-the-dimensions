@@ -15,6 +15,7 @@ import settings
 
 #플레이어 세팅
 
+
 def setblock(texture_num):
     nearestx_100 = round(player.x / 100) * 100
     nearesty_100 = round(player.y / 100) * 100 + 100
@@ -194,9 +195,12 @@ def adjust(k, i):
 def player_during():
     global delta_time
     player.ani = "stand"
+    
+    
     FPS = 60
     delta_time = clock.tick(FPS)/10
     if z_key_count == 0:
+        
         x_col,y_col,z_col,k = check_collision()
         check_warp()
         if True not in x_col and prevent2 == False:
@@ -262,7 +266,6 @@ def player_during():
 # 큐브의 면을 그리는 함수
 last_update = 0
 
-now = pygame.time.get_ticks()
 
 def draw_square(square,color_set):
     global last_update, now
@@ -347,7 +350,7 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading
+    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update
     if first_map_loading == 0:
         first_map_loading = 1
         map_loading.map_load("stage4")
@@ -416,6 +419,14 @@ def event_check():
                     map_loading.map_load("")
             if event.key == pygame.K_SPACE:
                 player.jump_pressed = True 
+            if event.key == pygame.K_m:
+                if m_key_count == 0:
+                    m_key_count = 1
+                    last_update = pygame.time.get_ticks()
+                    reset_block_timers()
+                    print("m 키 눌림 - 타이머 시작")                  
+                else:
+                    m_key_count = 0
 
                     
 
@@ -474,6 +485,70 @@ def camera_move():
         for i in range(3):
             target_camera_pos = player.x,(player.y-(800*math.sin(angle_y))),(player.z - (800*math.cos(angle_y)))
             camera_pos[i] += (target_camera_pos[i] - camera_pos[i]) * 0.5
+
+
+#보스전 기믹~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def add_block_action(x, y, z):
+    # 동일 위치에서 중복 작업을 추가하지 않도록 하기
+    for action in block_action_queue:
+        if action["position"] == (x, y, z):
+            return  # 이미 해당 위치에 대한 액션이 존재하면 추가하지 않음
+    # 각 블록 작업이 독립적인 타이머와 상태를 갖도록 함
+    block_action_queue.append({
+        "position": (x, y, z), 
+        "status": "pending_removal", 
+        "timer": 0
+    })
+    
+def reset_block_timers():
+    # m 키를 누른 순간 타이머를 초기화하여 새로 시작하게 함
+    for action in block_action_queue:
+        action["timer"] = 0
+
+def block_break_and_create():
+    global block_action_queue, last_update, nowtime, m_key_count
+    
+    if m_key_count == 0:
+        return
+    
+    nowtime = pygame.time.get_ticks()
+    time_delta = nowtime - last_update
+    last_update = nowtime
+    # 각 블록 액션에 대해 독립적으로 타이머를 진행
+    for action in list(block_action_queue):
+        action["timer"] += time_delta
+
+        # 블록 삭제 처리 (4초 후)
+        if action["status"] == "pending_removal" and action["timer"] >= 1500:
+            x, y, z = action["position"]
+            try:
+                for block in map_loading.BLOCKS:
+                    if block.pos == (x, y, z):
+                        map_loading.BLOCKS.remove(block)
+                        action["status"] = "removed"
+                        action["timer"] = 0  # 타이머 초기화
+                        break
+            except:
+                print("이미 지워진 블록입니다.")
+
+        # 블록 생성 처리 (4초 추가, 총 8초 후)
+        elif action["status"] == "removed" and action["timer"] >= 1500:
+            x, y, z = action["position"]
+            print(f"블록 생성: {x}, {y}, {z}")
+            try:
+                map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))
+                block_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
+            except:
+                print("이미 생성된 블록입니다.")
+
+# 플레이어 위치에 따른 블록 액션 추가
+def handle_player_action():
+    nearestx_100 = round(player.x / 100) * 100
+    nearesty_100 = round(player.y / 100) * 100 + 100
+    nearestz_100 = round(player.z / 100) * 100
+
+    # 현재 플레이어 위치에 블록 액션 추가
+    add_block_action(nearestx_100, nearesty_100, nearestz_100)
 
 
 def block_3D_transition(block):
@@ -558,6 +633,9 @@ def run():
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
+    if m_key_count == 1:
+        handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
+        block_break_and_create()  # 블록 삭제 및 생성 수행
     player_first_start()
     draw_screen()
 
