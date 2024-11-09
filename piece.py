@@ -5,6 +5,8 @@ import projection_3D
 from settings import *
 from player import *
 script_dir = os.path.dirname(__file__)
+core_hp = 500
+core_in = False
 
 class MakePiece:
     def __init__(self, pos, event, size):
@@ -20,35 +22,57 @@ class MakePiece:
         self.width, self.height = self.rect.width,self.rect.height
         self.display = True
         self.event = event # 무슨 이벤트가 일어나게 할지 이벤트 명 적기
+        self.range = 1
+        self.drawed = False
 
 
 Pieces = []
 #def load_piece
 #   return Pieces
-
-def draw_real_piece():
-    import real_game
+def cal_range():
     for piece in Pieces:
-        if piece.display == False:
-            return
-        aquire_piece_check(piece)
         x, y, z = piece.x, piece.y, piece.z
         dx = abs(x-real_game.camera_pos[0])
         dy = abs(y-real_game.camera_pos[1])
         dz = abs(z-real_game.camera_pos[2])
-        piece_range = (dx**2+dy**2+dz**2)**(1/2)
-        result = projection_3D.project_3d_or_2d((x,y,z), real_game.camera_pos,real_game.angle_x,real_game.angle_y)
-        modified_img = pygame.transform.scale(piece.img, (int(piece.size) * 200*piece.width / piece_range, int(piece.size) * 200*piece.height / piece_range))
-        modified_rect = modified_img.get_rect()
-        modified_width, modified_height = modified_rect.width, modified_rect.height 
-        if result != None:
-            screen.blit(modified_img, (result[0] - (modified_width / 2), result[1] - (modified_height / 2)))
+        piece.range = (dx**2+dy**2+dz**2)
+
+def draw_real_piece(range):
+    for piece in Pieces:
+        if piece.display == False:
+            return
+        if piece.event == "core":
+            piece.img = pygame.image.load(f"{script_dir}//images//에너지코어.png").convert_alpha()
+        if piece.range > range and piece.drawed == False:
+            forced_draw(piece)
+            
+def forced_draw(piece):
+    import real_game
+    piece.drawed = True
+    aquire_piece_check(piece)
+    result = projection_3D.project_3d_or_2d((piece.x, piece.y, piece.z), real_game.camera_pos, real_game.angle_x, real_game.angle_y)
+
+    # 크기 제한 설정
+    
+    modified_size = int(int(piece.size) * 200 * piece.width / (piece.range**(1/2)))
+    if modified_size > 1000:
+        modified_size = 100
+    modified_img = pygame.transform.scale(piece.img, (modified_size,modified_size))
+    modified_rect = modified_img.get_rect()
+    modified_width, modified_height = modified_rect.width, modified_rect.height
+    if result:
+        screen.blit(modified_img, (result[0] - (modified_width / 2), result[1] - (modified_height / 2)))
+
 
 def aquire_piece_check(piece):
-    global Pieces
-    if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50:
+    global Pieces,core_in
+    if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50 and piece.event != "core":
         Pieces.remove(piece)
         piece_event_check(piece.event)
+    if piece.event == "core":
+        core_in = False
+        if abs(player.x - piece.x) < 200 and 300 > player.y - piece.y > -200 and abs(player.z - piece.z) < 150:
+            core_in = True
 
 def piece_event_check(event):
     import real_game, map_loading, settings
@@ -66,11 +90,19 @@ def piece_event_check(event):
             else: 
                 player.z = min(temp)
             real_game.is_3D = True
+        case "normal":
+            settings.scr_effect = "normal"
         case "rotate":
-            print (1)
-            # settings.scr_effect = "rotate"
+            settings.scr_effect = "rotate"
+        case "rotater":
+            settings.scr_effect = "rotater"
+        case "rotatel":
+            settings.scr_effect = "rotatel"
         case "rotating":
-            pass
+            import time
+            global rotate_start
+            rotate_start = time.time()
+            settings.scr_effect = "rotating"
         case "3":
             print('3')
         case "block_disappear":

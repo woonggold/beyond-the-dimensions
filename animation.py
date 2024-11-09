@@ -15,7 +15,7 @@ current_frame = 0
 img = standing_images  # 처음 상태는 idle 상태로 초기화
 
 
-def anime():
+def anime(updown):
     import real_game
     import projection_3D
     global last_update, current_frame, img
@@ -46,7 +46,7 @@ def anime():
     elif player.ani == "stand":
         if now - last_update > 50:  # 350ms마다 이미지 변경 (idle 상태)
             player.image = standing_images[0]
-    draw_quad(player.image, temp)
+    draw_quad(player.image, temp, updown)
             
 #이중 적분 느낌? 선형 보간
 def lerp( p1, p2, f ):
@@ -55,7 +55,7 @@ def lerp( p1, p2, f ):
 def lerp2d( p1, p2, f ):
     return tuple( lerp( p1[i], p2[i], f ) for i in range(2) )
 
-def draw_quad( image_name, quad ):
+def draw_quad( image_name, quad, updown):
     img = pygame.image.load(f"{script_dir}//images//{image_name}.png").convert_alpha()
 
     points = dict()
@@ -67,8 +67,14 @@ def draw_quad( image_name, quad ):
             a = lerp2d( c, b, u/img.get_size()[0] )
             points[ (u,i) ] = a
 
+
+    if updown == "up":
+        y_range = range(int(img.get_size()[1]/2)+1)
+    if updown == "down":
+        y_range = range(int(img.get_size()[1]/2)-1,img.get_size()[1])
+    
     for x in range( img.get_size()[0] ):
-        for y in range( img.get_size()[1] ):
+        for y in y_range:
             color = img.get_at((x,y))
             if color[3] > 0:  # 알파 값이 0이 아닌 경우만 그리기
                 pygame.draw.polygon(

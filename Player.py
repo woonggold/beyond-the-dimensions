@@ -22,7 +22,8 @@ class Player:
         self.image = f"{script_dir}//images//{image}"
         self.dx, self.dy, self.dz = [0,0,0]
         self.jump_OK = False
-        self.range = 0
+        self.up_range = 0
+        self.down_range = 0
         self.jump_power = -20
         self.ani = "stand"
         self.speed = 12.5

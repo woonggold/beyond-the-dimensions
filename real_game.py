@@ -119,7 +119,7 @@ def check_warp():
                         warp_working_count = 1
                         map_loading_count = 0
                         player.x = warp_block_list[j][0]
-                        player.y = warp_block_list[j][1] +5000
+                        player.y = 4000
                         player.z = warp_block_list[j][2]
                         camera_pos[0] = warp_block_list[j][0]
                         camera_pos[1] = warp_block_list[j][1] - 400
@@ -175,14 +175,14 @@ def check_warp():
                 warp_working_count = 0
 
 def adjust(k, i):
-    if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0):
+    if (0 < abs(k[i][0]) < abs(k[i][1])) or (abs(k[i][1])==0) and prevent2 == False:
         if i == 0:
             player.x -= k[i][0]
         elif i == 1:
             player.y -= k[i][0]
         elif i == 2:
             player.z += k[i][0] -1
-    elif (abs(k[i][0]) > abs(k[i][1]) > 0) or (abs(k[i][0])==0):
+    elif (abs(k[i][0]) > abs(k[i][1]) > 0) or (abs(k[i][0])==0) and prevent2 == False:
         if i == 0:
             player.x -= k[i][1]
         elif i == 1:
@@ -257,7 +257,8 @@ def player_during():
         [player.fake_x + player.size, player.y + player.size], [player.fake_x - player.size, player.y + player.size],
     ]
 
-    player.range = (player.fake_x-camera_pos[0])**2 + (player.y-150-camera_pos[1])**2 + (player.fake_z-camera_pos[2])**2
+    player.up_range = (player.fake_x-camera_pos[0])**2 + (player.y-100-camera_pos[1])**2 + (player.fake_z-10-camera_pos[2])**2
+    player.down_range = (player.fake_x-camera_pos[0])**2 + (player.y-camera_pos[1])**2 + (player.fake_z-10-camera_pos[2])**2
     player.y = round(player.y)
 
 
@@ -352,7 +353,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage9")
+        map_loading.map_load("stage1")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -370,10 +371,14 @@ def event_check():
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
                     if temp == 0:
+                        if piece.core_in:
+                            piece.core_hp -= 1
                         is_3D = False
                     else :
                         print ("겹치는 블럭 있음")
                 elif not is_3D:
+                    if piece.core_in:
+                        piece.core_hp -= 1
                     temp = []
                     for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100:
@@ -824,6 +829,39 @@ def block_3D_transition(block):
 
             point = x,y,point[2],z
 
+def draw_order_cal():
+    if (is_3D):
+        piece.cal_range()
+        for one_piece in piece.Pieces:
+            one_piece.drawed = False
+        global drawed_player_up,drawed_player_down
+        drawed_player_up = False
+        drawed_player_down = False
+        for square in showing.squares:
+            if player.up_range > square[5] and drawed_player_up == False:
+                drawed_player_up = True
+                animation.anime("up")
+            if player.down_range > square[5] and drawed_player_down == False:
+                drawed_player_down = True
+                animation.anime("down")
+                
+            piece.draw_real_piece(square[5])
+            draw_square(square[0:4],square[4])
+        if drawed_player_up == False:
+            animation.anime("up")
+        if drawed_player_down == False:
+            animation.anime("down")
+        for one_piece in piece.Pieces:
+            if one_piece.drawed == False:
+                piece.forced_draw(one_piece)
+    else:
+        for square in showing.squares_front:
+            draw_square(square[0:4],square[4])
+        for one_piece in piece.Pieces:
+            piece.forced_draw(one_piece)
+        animation.anime("up")
+        animation.anime("down")
+
 
 
 def draw_screen():
@@ -835,29 +873,8 @@ def draw_screen():
         block_3D_transition(block)
         check_cube(block.points,block.texture)
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
-    square_5ths = [squares[5] for squares in showing.squares]
-
-    # 내림차순 리스트를 오름차순으로 변환하여 bisect 사용
-    reversed_values = square_5ths[::-1]
-    position = bisect.bisect_left(reversed_values, player.range)
-
-    # 내림차순이므로 위치를 반전하여 실제 위치 계산
-    actual_position = len(showing.squares) - position
-
-    if (is_3D):
-        for i in range(actual_position):
-            if actual_position != 0:
-                draw_square(showing.squares[i][0:4],showing.squares[i][4])
-        animation.anime()
-        for i in range(actual_position,len(showing.squares)):
-            # if actual_position != len(showing.squares):
-            draw_square(showing.squares[i][0:4],showing.squares[i][4])
-    else:
-        for square in showing.squares_front:
-            draw_square(square[0:4],square[4])
-        animation.anime()
     piece.piece_3D_transition()
-    piece.draw_real_piece()
+    draw_order_cal()
     dead.player_dead_check()
     screen_effect(settings.scr_effect)
     draw_dialogue()
@@ -870,6 +887,7 @@ def run():
     condition = "real_game"
     talkcheck()
     check_player_position()
+    
     if is_talking == False:
         event_check()
         player_during()  # 플레이어 위치 업데이트
