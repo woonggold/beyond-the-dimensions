@@ -354,7 +354,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage7")
+        map_loading.map_load("stage4")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -641,7 +641,6 @@ def draw_screen():
         
 
 def run():
-    print (piece.core_hp)
     global condition
     condition = "real_game"
     talkcheck()

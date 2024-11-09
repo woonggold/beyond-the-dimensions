@@ -6,6 +6,7 @@ from settings import *
 from player import *
 script_dir = os.path.dirname(__file__)
 core_hp = 500
+core_in = False
 
 class MakePiece:
     def __init__(self, pos, event, size):
