@@ -6,7 +6,8 @@ import map_loading, piece
 stun_time = 0
 
 def player_dead_check():
-    global stun_time
+    global stun_time, back_color
+    back_color = (255,255,255)
     import real_game
     delta_time = stun_time - time.time()
     if delta_time < 0:
@@ -17,6 +18,7 @@ def player_dead_check():
     real_game.prevent2 = False
         
     if delta_time > 0:
+        back_color = (0,0,0)
         pygame.draw.line(screen, (0,0,0), (0,0), (0,screen_height), int(delta_time * 2400))
         pygame.draw.line(screen, (0,0,0), (screen_width,0), (screen_width,screen_height), int(delta_time * 2400))
         pygame.draw.line(screen, (0,0,0), (0,0), (screen_width,0), int(delta_time * 1600))
@@ -40,6 +42,7 @@ def player_dead_check():
     if player.y > 1500 :
         padding =  int(player.y / 10 - 150)
         draw_speed = 4
+        back_color = (0,0,0)
 
         pygame.draw.line(screen, (0,0,0), (0,0), (0,screen_height), draw_speed * int(1.5 * padding))
         pygame.draw.line(screen, (0,0,0), (screen_width,0), (screen_width,screen_height), draw_speed * int(1.5 * padding))
@@ -56,6 +59,11 @@ def player_dead_check():
                 player.x , player.y, player.z = 100,0,-500
                 real_game.target_camera_pos = [100 ,-300, -1300]
             piece.Pieces = []
+            event_block_x_list = []
+            event_block_y_list = []
+            event_block_z_list = []
+            event_name_list = []
+            event_size_list = []
             if "event_blocks" in map_loading.data:
                 for i in range(0, len(map_loading.data["event_blocks"]["x"])):
                     piece.Pieces.append(piece.MakePiece((map_loading.data["event_blocks"]["x"][i],map_loading.data["event_blocks"]["y"][i],map_loading.data["event_blocks"]["z"][i]),map_loading.data["event_blocks"]["event_name"][i],map_loading.data["event_blocks"]["size"][i]))

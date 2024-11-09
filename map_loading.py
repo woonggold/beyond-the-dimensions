@@ -90,6 +90,11 @@ def map_load(mapname):
     try:
         for i in range(0, len(data["event_blocks"]["x"])):
             piece.Pieces.append(piece.MakePiece((data["event_blocks"]["x"][i],data["event_blocks"]["y"][i],data["event_blocks"]["z"][i]),data["event_blocks"]["event_name"][i],data["event_blocks"]["size"][i]))
+            real_game.event_block_x_list.append(data["event_blocks"]["x"][i])
+            real_game.event_block_y_list.append(data["event_blocks"]["y"][i])
+            real_game.event_block_z_list.append(data["event_blocks"]["z"][i])
+            real_game.event_name_list.append(data["event_blocks"]["event_name"][i])
+            real_game.event_size_list.append(data["event_blocks"]["size"][i])
     except:
         pass
 
