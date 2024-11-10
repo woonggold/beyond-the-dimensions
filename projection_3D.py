@@ -2,6 +2,7 @@ import math
 from settings import *
 
 
+
 def rotate_point(point, angle_x, angle_y):
     """3D 점을 주어진 각도만큼 회전시킨 좌표를 반환"""
     x, y, z = point

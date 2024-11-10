@@ -52,9 +52,14 @@ def player_dead_check():
             if len(map_loading.warp_block_list) > 0:
                 for i in range(0, len(map_loading.warp_block_list)):
                     if map_loading.warp_block_list[i][3] == map_loading.stagename:
-                        real_game.warp_working_count = 1
-                        player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
-                        real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
+                        if map_loading.stagename == "stage7":
+                            real_game.warp_working_count = 1
+                            player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -1100, map_loading.warp_block_list[i][2]
+                            real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-1400, map_loading.warp_block_list[i][2] - 800]
+                        else:
+                            real_game.warp_working_count = 1
+                            player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]
+                            real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
             else:
                 player.x , player.y, player.z = 100,0,-500
                 real_game.target_camera_pos = [100 ,-300, -1300]

@@ -1,45 +1,32 @@
-import pygame
-import sys
+import multiprocessing
+import time
 
-# Pygame 초기화
-pygame.init()
+def intensive_task():
+    # 무거운 계산 작업을 반복하여 CPU를 많이 사용하게 함
+    while True:
+        result = 0
+        for i in range(1000000):
+            result += i ** 2
 
-# 화면 크기 설정
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("키보드로 조작 가능한 사각형")
+if __name__ == "__main__":
+    # 시스템의 CPU 코어 수를 가져옴
+    num_cores = multiprocessing.cpu_count()
 
-# 색상 정의
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
+    # 각 코어에 프로세스를 하나씩 할당
+    processes = []
+    for _ in range(num_cores):
+        process = multiprocessing.Process(target=intensive_task)
+        processes.append(process)
+        process.start()
 
-# 사각형 속성
-rect_x, rect_y = WIDTH // 2, HEIGHT // 2
-rect_size = 50
-speed = 5
+    # 프로세스가 잘 동작하고 있는지 확인을 위해 잠시 대기
+    time.sleep(10)
 
-# 게임 루프
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    # 프로세스 중지
+    for process in processes:
+        process.terminate()
 
-    # 키 상태 확인
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        rect_x -= speed
-    if keys[pygame.K_RIGHT]:
-        rect_x += speed
-    if keys[pygame.K_UP]:
-        rect_y -= speed
-    if keys[pygame.K_DOWN]:
-        rect_y += speed
+    for process in processes:
+        process.join()
 
-    # 화면 업데이트
-    screen.fill(WHITE)  # 배경 색상
-    pygame.draw.rect(screen, BLUE, (rect_x, rect_y, rect_size, rect_size))  # 사각형 그리기
-    pygame.display.flip()  # 화면에 그리기
-
-    # 프레임 속도 조절
-    pygame.time.Clock().tick(60)
+    print("All processes have been terminated.")

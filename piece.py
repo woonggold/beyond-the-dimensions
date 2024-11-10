@@ -16,8 +16,9 @@ class MakePiece:
         self.z = pos[2]
         self.original_z = pos[2]
         self.size = size
-
         self.img = pygame.image.load(f"{script_dir}//images//차원조각.png").convert_alpha()
+        if event == "core":
+            self.img = pygame.image.load(f"{script_dir}//images//에너지코어.png").convert_alpha()
         self.rect = self.img.get_rect()
         self.width, self.height = self.rect.width,self.rect.height
         self.display = True
@@ -41,8 +42,7 @@ def draw_real_piece(range):
     for piece in Pieces:
         if piece.display == False:
             return
-        if piece.event == "core":
-            piece.img = pygame.image.load(f"{script_dir}//images//에너지코어.png").convert_alpha()
+        
         if piece.range > range and piece.drawed == False:
             forced_draw(piece)
             

@@ -353,7 +353,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage1")
+        map_loading.map_load("stage7")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -881,13 +881,15 @@ def draw_screen():
     pygame.display.flip()
     clock.tick(60)
         
+# FRAME_SKIP = 1000  # 2 프레임마다 한 번 실행
+# frame_count = 0
 
 def run():
-    global condition
+    global condition   
     condition = "real_game"
     talkcheck()
     check_player_position()
-    
+
     if is_talking == False:
         event_check()
         player_during()  # 플레이어 위치 업데이트

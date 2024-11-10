@@ -9,6 +9,7 @@ screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 
+
 camera_pos = [100, 0, -700]
 camera_speed = 25  # 카메라 이동 속도
 is_3D = False
