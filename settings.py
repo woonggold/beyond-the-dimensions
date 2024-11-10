@@ -8,6 +8,7 @@ screen_width = 1200
 screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
+pygame.display.set_caption('Beyond the Dimensions')
 
 
 camera_pos = [100, 0, -700]

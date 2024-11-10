@@ -1,10 +1,9 @@
 import start_menu #파일 이름임
 import real_game #파일 이름임
 import pygame
-from settings import *
+import start_video
 
-pygame.init()
-condition = "start_menu"
+condition = "real_game"
 
 running = True
 reseted = False
@@ -13,9 +12,12 @@ while (running == True):
     match (condition): 
         case "start_menu":
             condition = start_menu.run()
+        case "start_video":
+            condition = start_video.run()
         case "real_game":
             condition = real_game.run()
         case "quit":
             running = False
+            
 
 pygame.quit()
