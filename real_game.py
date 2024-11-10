@@ -353,7 +353,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage4")
+        map_loading.map_load("stage7")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -829,6 +829,19 @@ def block_3D_transition(block):
 
             point = x,y,point[2],z
 
+def patten_looping():
+    global last_time, cur_patten
+    if (time.time() - last_time) > patten_loop[cur_patten][1]:
+        last_time = time.time()
+        cur_patten += 1
+        if cur_patten >= len(patten_loop):
+            cur_patten = 1
+            
+        patten_order = patten_loop[cur_patten][0]
+        print(patten_order,patten_loop[cur_patten][1])
+
+    
+
 def draw_order_cal():
     if (is_3D):
         piece.cal_range()
@@ -838,22 +851,21 @@ def draw_order_cal():
         drawed_player_up = False
         drawed_player_down = False
         for square in showing.squares:
+            piece.draw_real_piece(square[5])
             if player.up_range > square[5] and drawed_player_up == False:
                 drawed_player_up = True
                 animation.anime("up")
             if player.down_range > square[5] and drawed_player_down == False:
                 drawed_player_down = True
                 animation.anime("down")
-                
-            piece.draw_real_piece(square[5])
             draw_square(square[0:4],square[4])
+        for one_piece in piece.Pieces:
+            if one_piece.drawed == False:
+                piece.forced_draw(one_piece)
         if drawed_player_up == False:
             animation.anime("up")
         if drawed_player_down == False:
             animation.anime("down")
-        for one_piece in piece.Pieces:
-            if one_piece.drawed == False:
-                piece.forced_draw(one_piece)
     else:
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
@@ -890,10 +902,14 @@ def run():
     talkcheck()
     check_player_position()
 
+
     if is_talking == False:
+        if map_loading.stagename == "stage7":
+            patten_looping()
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
+    
     draw_screen()
     player_first_start()
     block_break_and_create()  # 블록 삭제 및 생성 수행

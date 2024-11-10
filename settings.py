@@ -111,28 +111,28 @@ timer = 0
 
 def make_patten():
 
-    with open('./map/patten1.json', 'r', encoding='utf-8') as json_file:
+    with open('./map/patten11.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     for i in range(len(data["Blocks"]["x"])):
         tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
         patten1_block_list.append(tuple1)
         
-    with open('./map/patten2.json', 'r', encoding='utf-8') as json_file:
+    with open('./map/patten12.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     for i in range(len(data["Blocks"]["x"])):
         tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
         patten2_block_list.append(tuple1)
         
-    with open('./map/patten3.json', 'r', encoding='utf-8') as json_file:
+    with open('./map/patten13.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     for i in range(len(data["Blocks"]["x"])):
         tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
         patten3_block_list.append(tuple1)
         
-    with open('./map/patten4.json', 'r', encoding='utf-8') as json_file:
+    with open('./map/patten14.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     for i in range(len(data["Blocks"]["x"])):
@@ -179,3 +179,15 @@ def player_first_start():
         
 
 map_setting = [False, True, True, True, True, True, True]#순서대로 각 스테이지의 초기 is_3D 값.
+
+patten_loop = [
+    [0, 1],#작동 안함
+    [1, 1],
+    [2, 3],
+    [3, 1],
+    [4, 1],
+    [5, 1],
+    [6, 1]
+]
+cur_patten = 0
+last_time = 0

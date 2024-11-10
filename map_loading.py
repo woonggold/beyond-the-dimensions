@@ -1,6 +1,7 @@
 import settings
 import json
 import piece
+stagename = "stage7"#테스트 끝나면 지우기
 class Block:
     def __init__(self, pos, texture_num):
         self.pos = pos
