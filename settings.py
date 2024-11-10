@@ -94,59 +94,12 @@ h_key_count = 0
 # 각 작업을 저장할 큐 (순차적으로 삭제 및 생성 작업을 처리)
 block_action_queue = collections.deque()
 
-patten1_action_queue = collections.deque()
-patten2_action_queue = collections.deque()
-patten3_action_queue = collections.deque()
-patten4_action_queue = collections.deque()
-patten5_action_queue = collections.deque()
 
-patten1_block_list = []
-patten2_block_list = []
-patten3_block_list = []
-patten4_block_list = []
-patten5_block_list = []
 
 timer = 0
 
-def make_patten():
-
-    with open('./map/patten1.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-    for i in range(len(data["Blocks"]["x"])):
-        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
-        patten1_block_list.append(tuple1)
-        
-    with open('./map/patten2.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-    for i in range(len(data["Blocks"]["x"])):
-        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
-        patten2_block_list.append(tuple1)
-        
-    with open('./map/patten3.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-    for i in range(len(data["Blocks"]["x"])):
-        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
-        patten3_block_list.append(tuple1)
-        
-    with open('./map/patten4.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-    for i in range(len(data["Blocks"]["x"])):
-        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
-        patten4_block_list.append(tuple1)
-        
-    with open('./map/patten5.json', 'r', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-    for i in range(len(data["Blocks"]["x"])):
-        tuple1= (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
-        patten5_block_list.append(tuple1)
 #블록 설치
 blocks = []
-make_patten()
 
 prevent = False
 prevent2 = False
@@ -161,6 +114,9 @@ firt_count = 0
 count_second = 0
 last_update = 0
 last_update2 = 0
+
+pattens = []
+
 
 def player_first_start():
     global firt_count
