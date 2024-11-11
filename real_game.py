@@ -12,7 +12,6 @@ import dead
 from dialogue import *
 from screen_effect import *
 import settings
-import patten
 
 #플레이어 세팅
 
@@ -430,9 +429,9 @@ def event_check():
                     print("m 키 눌림 - 타이머 시작")                  
                 else:
                     m_key_count = 0
-            if event.key == pygame.K_h:
-                h_key_count +=1
-                pattens.append(patten.Patten(f"patten{h_key_count}"))
+            # if event.key == pygame.K_h:
+            #     h_key_count +=1
+            #     pattens.append(patten.Patten(f"patten{h_key_count}"))
                 
                 
 
@@ -517,10 +516,8 @@ def reset_block_timers():
         action["timer"] = 0
 
 def block_break_and_create():
-    global block_action_queue, last_update, nowtime, m_key_count
+    global block_action_queue, last_update, m_key_count
     
-    
-    nowtime = pygame.time.get_ticks()
     time_delta = nowtime - last_update
     last_update = nowtime
     # 각 블록 액션에 대해 독립적으로 타이머를 진행
@@ -675,7 +672,8 @@ def draw_screen():
 # frame_count = 0
 
 def run():
-    global condition, pattens
+    global condition, pattens, nowtime
+    nowtime = pygame.time.get_ticks()
     condition = "real_game"
     talkcheck()
     check_player_position()
@@ -695,6 +693,6 @@ def run():
   # 블록 삭제 및 생성 수행
     if m_key_count == 1:
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
-    for patten_instance in pattens:
-        patten.start_patten(patten_instance)
+    # for patten_instance in pattens:
+    #     patten.start_patten(patten_instance)
     return condition
