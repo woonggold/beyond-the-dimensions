@@ -609,7 +609,7 @@ def patten_looping():
         cur_patten += 1
         if cur_patten >= len(patten.patten_loop):
             cur_patten = 1
-            
+        print (cur_patten)
         # pattens = []
         pattens.append(patten.patten_loop[cur_patten][0])
 

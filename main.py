@@ -5,7 +5,7 @@ import start_video
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage4")
+map_loading.map_load("stage7")
 
 running = True
 reseted = False
