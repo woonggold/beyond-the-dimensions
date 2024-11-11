@@ -4,6 +4,7 @@ import os
 import projection_3D
 from settings import *
 from player import *
+import real_game
 script_dir = os.path.dirname(__file__)
 core_hp = 500
 core_in = False
@@ -67,6 +68,7 @@ def forced_draw(piece):
 def aquire_piece_check(piece):
     global Pieces,core_in
     if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50 and piece.event != "core":
+        print (piece.size)
         Pieces.remove(piece)
         piece_event_check(piece.event)
     if piece.event == "core":

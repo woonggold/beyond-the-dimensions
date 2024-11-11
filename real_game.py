@@ -432,7 +432,7 @@ def event_check():
                     m_key_count = 0
             if event.key == pygame.K_h:
                 h_key_count +=1
-                pattens.append(patten.Patten(f"patten{h_key_count}"))
+                pattens.append(patten.Patten(f"{h_key_count}"))
                 
                 
 
@@ -605,6 +605,21 @@ def block_3D_transition(block):
 
             point = x,y,point[2],z
 
+
+def patten_looping():
+    import patten
+    global last_time, cur_patten
+    if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
+        last_time = time.time()
+        cur_patten += 1
+        if cur_patten >= len(patten.patten_loop):
+            cur_patten = 1
+            
+        patten.start_patten(patten.patten_loop[cur_patten][0])
+
+
+    
+
 def draw_order_cal():
     if (is_3D):
         piece.cal_range()
@@ -614,22 +629,21 @@ def draw_order_cal():
         drawed_player_up = False
         drawed_player_down = False
         for square in showing.squares:
+            piece.draw_real_piece(square[5])
             if player.up_range > square[5] and drawed_player_up == False:
                 drawed_player_up = True
                 animation.anime("up")
             if player.down_range > square[5] and drawed_player_down == False:
                 drawed_player_down = True
                 animation.anime("down")
-                
-            piece.draw_real_piece(square[5])
             draw_square(square[0:4],square[4])
+        for one_piece in piece.Pieces:
+            if one_piece.drawed == False:
+                piece.forced_draw(one_piece)
         if drawed_player_up == False:
             animation.anime("up")
         if drawed_player_down == False:
             animation.anime("down")
-        for one_piece in piece.Pieces:
-            if one_piece.drawed == False:
-                piece.forced_draw(one_piece)
     else:
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
@@ -663,18 +677,24 @@ def draw_screen():
 def run():
     global condition, pattens
     condition = "real_game"
-    for patten_instance in pattens:
-        patten.start_patten(patten_instance)
     talkcheck()
     check_player_position()
 
+
     if is_talking == False:
+        block_break_and_create()
+        if map_loading.stagename == "stage7":
+            patten_looping()
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
+    
+    for patten_instance in pattens:
+        patten.start_patten(patten_instance)
     draw_screen()
     player_first_start()
-    block_break_and_create()  # 블록 삭제 및 생성 수행
+
+  # 블록 삭제 및 생성 수행
     if m_key_count == 1:
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
     return condition

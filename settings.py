@@ -8,6 +8,7 @@ screen_width = 1200
 screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
+pygame.display.set_caption('Beyond the Dimensions')
 
 
 camera_pos = [100, 0, -700]
@@ -114,6 +115,7 @@ firt_count = 0
 count_second = 0
 last_update = 0
 last_update2 = 0
+waitbool = False
 
 pattens = []
 
@@ -134,3 +136,8 @@ def player_first_start():
         
 
 map_setting = [False, True, True, True, True, True, True]#순서대로 각 스테이지의 초기 is_3D 값.
+
+
+
+cur_patten = 0
+last_time = 0
