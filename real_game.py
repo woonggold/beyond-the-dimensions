@@ -663,6 +663,8 @@ def draw_screen():
 def run():
     global condition, pattens
     condition = "real_game"
+    for patten_instance in pattens:
+        patten.start_patten(patten_instance)
     talkcheck()
     check_player_position()
 
@@ -675,6 +677,4 @@ def run():
     block_break_and_create()  # 블록 삭제 및 생성 수행
     if m_key_count == 1:
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
-    for patten_instance in pattens:
-        patten.start_patten(patten_instance)
     return condition
