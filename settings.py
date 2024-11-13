@@ -141,3 +141,4 @@ map_setting = [False, True, True, True, True, True, True]#순서대로 각 스�
 
 cur_patten = 0
 last_time = 0
+flag = False

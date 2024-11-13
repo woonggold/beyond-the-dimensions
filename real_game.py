@@ -12,7 +12,6 @@ import dead
 from dialogue import *
 from screen_effect import *
 import settings
-import patten
 
 #플레이어 세팅
 
@@ -354,7 +353,7 @@ def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, last_update, h_key_count, pattens
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage7")
+        map_loading.map_load("stage5")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -430,9 +429,9 @@ def event_check():
                     print("m 키 눌림 - 타이머 시작")                  
                 else:
                     m_key_count = 0
-            if event.key == pygame.K_h:
-                h_key_count +=1
-                pattens.append(patten.Patten(f"{h_key_count}"))
+            # if event.key == pygame.K_h:
+            #     h_key_count +=1
+            #     pattens.append(patten.Patten(f"patten{h_key_count}"))
                 
                 
 
@@ -517,10 +516,8 @@ def reset_block_timers():
         action["timer"] = 0
 
 def block_break_and_create():
-    global block_action_queue, last_update, nowtime, m_key_count
+    global block_action_queue, last_update, m_key_count
     
-    
-    nowtime = pygame.time.get_ticks()
     time_delta = nowtime - last_update
     last_update = nowtime
     # 각 블록 액션에 대해 독립적으로 타이머를 진행
@@ -608,14 +605,14 @@ def block_3D_transition(block):
 
 def patten_looping():
     import patten
-    global last_time, cur_patten
+    global last_time, cur_patten, pattens, flag
+    
     if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
         last_time = time.time()
         cur_patten += 1
-        if cur_patten >= len(patten.patten_loop):
+        if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
-            
-        patten.start_patten(patten.patten_loop[cur_patten][0])
+        pattens.append(patten.patten_loop[cur_patten][0])
 
 
     
@@ -675,7 +672,8 @@ def draw_screen():
 # frame_count = 0
 
 def run():
-    global condition, pattens
+    global condition, pattens, nowtime
+    nowtime = pygame.time.get_ticks()
     condition = "real_game"
     talkcheck()
     check_player_position()
@@ -688,13 +686,15 @@ def run():
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
-    
-    for patten_instance in pattens:
-        patten.start_patten(patten_instance)
     draw_screen()
     player_first_start()
 
   # 블록 삭제 및 생성 수행
     if m_key_count == 1:
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
+    for patten_instance in pattens:
+        import patten
+        
+        patten.start_patten(patten_instance)
+         
     return condition
