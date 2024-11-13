@@ -53,6 +53,8 @@ def player_dead_check():
                 for i in range(0, len(map_loading.warp_block_list)):
                     if map_loading.warp_block_list[i][3] == map_loading.stagename:
                         if map_loading.stagename == "stage7":
+                            real_game.cur_patten = 0
+                            real_game.pattens = []
                             real_game.warp_working_count = 1
                             player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -1100, map_loading.warp_block_list[i][2]
                             real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-1400, map_loading.warp_block_list[i][2] - 800]

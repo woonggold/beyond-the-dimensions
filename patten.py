@@ -32,7 +32,6 @@ def start_patten(patten):
     
     for action in list(patten.action_queue):  # deque를 리스트로 복사하여 순회
         time_elapsed = real_game.nowtime - action["last_update"]
-        print(patten.patten_name)
         if action["status"] == patten.patten_name and time_elapsed >= 50:
             x, y, z = action["position"]
             map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))

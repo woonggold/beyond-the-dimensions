@@ -609,7 +609,7 @@ def block_3D_transition(block):
 def patten_looping():
     import patten
     global last_time, cur_patten, pattens, flag
-    
+    print (pattens)
     if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
         last_time = time.time()
         cur_patten += 1
