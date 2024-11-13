@@ -615,11 +615,6 @@ def patten_looping():
         cur_patten += 1
         if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
-<<<<<<< HEAD
-        print (cur_patten)
-        # pattens = []
-=======
->>>>>>> origin/임시
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
@@ -714,10 +709,7 @@ def run():
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
-<<<<<<< HEAD
         stage6_puzzle()
-=======
->>>>>>> origin/임시
     draw_screen()
     player_first_start()
 
