@@ -31,7 +31,6 @@ Pieces = []
 #def load_piece
 #   return Pieces
 def cal_range():
-    import real_game
     for piece in Pieces:
         x, y, z = piece.x, piece.y, piece.z
         dx = abs(x-real_game.camera_pos[0])

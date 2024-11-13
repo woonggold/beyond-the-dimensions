@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 from settings import *
 from moviepy.editor import *
-import map_loading
 
 clip = VideoFileClip(f"{script_dir}//videos//start_video.mp4")
 
@@ -18,5 +17,4 @@ def run():
         screen.blit(frame_surface, (0, 0))
         pygame.display.update()
         clock.tick(24)
-    map_loading.map_load("stage1")
     return "real_game"

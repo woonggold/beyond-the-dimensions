@@ -1,4 +1,7 @@
+import pygame
+import math
 import os
+import real_game
 from settings import *
 script_dir = os.path.dirname(__file__)
 
