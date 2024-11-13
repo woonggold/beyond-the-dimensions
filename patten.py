@@ -25,6 +25,10 @@ class Patten:
                 "texture_num": 0,
                 "last_update": real_game.nowtime  # 각 액션의 시작 시간을 기록
             })
+    def __str__(patten):
+        return f"{patten.patten_name}"       
+    
+     
 def start_patten(patten):
     import real_game
     # 모든 action을 순회하며 업데이트
@@ -34,6 +38,7 @@ def start_patten(patten):
         time_elapsed = real_game.nowtime - action["last_update"]
         if action["status"] == patten.patten_name and time_elapsed >= 50:
             x, y, z = action["position"]
+            
             map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
             action["status"] = "block_origin_appear"
             action["last_update"] = real_game.nowtime
@@ -58,26 +63,28 @@ def start_patten(patten):
             for block in list(map_loading.BLOCKS):
                 if block.pos == (x, y, z):
                     map_loading.BLOCKS.remove(block)
+            action["last_update"] = real_game.nowtime
             # 액션을 완료했으므로 큐에서 제거
             patten.action_queue.remove(action)
             # if patten.patten_name == 14:
             #     real_game.pattens = []
             
-
-patten_loop = [
-    [0, 1],#작동 안함
-    [Patten(1), 2],
-    [Patten(2), 2],
-    [Patten(3), 2],
-    [Patten(4), 2],
-    [Patten(5), 2],
-    [Patten(6), 2],
-    [Patten(7), 2],
-    [Patten(8), 2],
-    [Patten(9), 2],
-    [Patten(10), 2],
-    [Patten(11), 2],
-    [Patten(12), 2],
-    [Patten(13), 2],
-    [Patten(14), 2],
-]
+def reloadpatten():
+    global patten_loop
+    patten_loop = [
+        [0, 1],#작동 안함
+        [Patten(1), 2],
+        [Patten(2), 2],
+        [Patten(3), 2],
+        [Patten(4), 2],
+        [Patten(5), 2],
+        [Patten(6), 2],
+        [Patten(7), 2],
+        [Patten(8), 2],
+        [Patten(9), 2],
+        [Patten(10), 2],
+        [Patten(11), 2],
+        [Patten(12), 2],
+        [Patten(13), 2],
+        [Patten(14), 2],
+    ]

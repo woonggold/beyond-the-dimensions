@@ -609,12 +609,15 @@ def block_3D_transition(block):
 def patten_looping():
     import patten
     global last_time, cur_patten, pattens, flag
-    print (pattens)
+    if flag == True:
+        patten.reloadpatten()
+        flag = False
     if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
         last_time = time.time()
         cur_patten += 1
         if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
+            patten.reloadpatten()
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
@@ -718,6 +721,7 @@ def run():
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
     for patten_instance in pattens:
         import patten
+        # print(patten_instance)
         
         patten.start_patten(patten_instance)
          
