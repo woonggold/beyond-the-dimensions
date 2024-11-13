@@ -608,14 +608,18 @@ def block_3D_transition(block):
 
 def patten_looping():
     import patten
-    global last_time, cur_patten, pattens
+    global last_time, cur_patten, pattens, flag
+    
     if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
         last_time = time.time()
         cur_patten += 1
-        if cur_patten >= len(patten.patten_loop):
+        if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
+<<<<<<< HEAD
         print (cur_patten)
         # pattens = []
+=======
+>>>>>>> origin/임시
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
@@ -704,13 +708,16 @@ def run():
 
 
     if is_talking == False:
+        block_break_and_create()
         if map_loading.stagename == "stage7":
             patten_looping()
-        block_break_and_create()
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
+<<<<<<< HEAD
         stage6_puzzle()
+=======
+>>>>>>> origin/임시
     draw_screen()
     player_first_start()
 
@@ -719,5 +726,7 @@ def run():
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
     for patten_instance in pattens:
         import patten
+        
         patten.start_patten(patten_instance)
+         
     return condition

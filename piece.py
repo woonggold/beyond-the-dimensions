@@ -4,6 +4,7 @@ import os
 import projection_3D
 from settings import *
 from player import *
+import real_game
 script_dir = os.path.dirname(__file__)
 core_hp = 500
 core_in = False

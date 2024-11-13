@@ -113,6 +113,7 @@ firt_count = 0
 count_second = 0
 last_update = 0
 last_update2 = 0
+waitbool = False
 
 pattens = []
 
@@ -138,3 +139,4 @@ map_setting = [False, True, True, True, True, False, True]#순서대로 각 스�
 
 cur_patten = 0
 last_time = 0
+flag = False
