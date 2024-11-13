@@ -1,5 +1,6 @@
 import start_menu #파일 이름임
 import real_game #파일 이름임
+import ending #파일 이름임
 import pygame
 import start_video
 
@@ -16,6 +17,8 @@ while (running == True):
             condition = start_video.run()
         case "real_game":
             condition = real_game.run()
+        case "ending":
+            condition = ending.run()
         case "quit":
             running = False
             

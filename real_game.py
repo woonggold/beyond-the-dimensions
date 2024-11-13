@@ -14,7 +14,12 @@ from screen_effect import *
 import settings
 
 #플레이어 세팅
-
+pygame.mixer.music.load("music/게임 시작!.mp3")
+# 반복 재생 (0으로 두면 1번만 함)
+pygame.mixer.music.play(-1)
+# 볼륨 조절
+pygame.mixer.music.set_volume(0.5)
+overlap_message_timer = 0
 
 def setblock(texture_num):
     nearestx_100 = round(player.x / 100) * 100
@@ -133,7 +138,7 @@ def check_warp():
                 else:
                     for block in map_loading.BLOCKS:
                         
-                        if abs(xyz[0] - block.x) < 101 and abs(xyz[2] - block.z) < 50 and -101 < (xyz[1] - block.y) < 201 and block.texture_num == 9:
+                        if abs(xyz[0] - block.x) < 100 and abs(xyz[2] - block.z) < 50 and -101 < (xyz[1] - block.y) < 201 and block.texture_num == 9:
                             for i in range(0, len(warp_block_list)):
                                 modifiyed_map_name = int(map_loading.stagename[5]) + 1
                                 modifiyed_map_name2 = map_loading.stagename[0:5] + str(modifiyed_map_name)
@@ -350,10 +355,10 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
+    global condition, is_3D, overlap_message_timer, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, nowtime, last_update, h_key_count
     if first_map_loading == 0:
         first_map_loading = 1
-        map_loading.map_load("stage7")
+        map_loading.map_load("stage4")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -375,7 +380,7 @@ def event_check():
                             piece.core_hp -= 1
                         is_3D = False
                     else :
-                        print ("겹치는 블럭 있음")
+                        overlap_message_timer = 60
                 elif not is_3D:
                     if piece.core_in:
                         piece.core_hp -= 1
@@ -436,12 +441,12 @@ def event_check():
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a: 
-                player.dx += player.speed
+                player.dx = 0
                 if z_key_count == 1:
                     player.x -= 100
                     camera_pos[0] -= 100
             if event.key == pygame.K_w:
-                player.dz -= player.speed
+                player.dz = 0
                 if z_key_count == 1:
                     player.z += 100
                     camera_pos[2] += 100
@@ -874,13 +879,32 @@ def draw_order_cal():
         animation.anime("up")
         animation.anime("down")
 
+puzzle = 0
+
+def stage6_puzzle():
+    global puzzle
+    if map_loading.stagename == "stage6":
+        if 150 < player.x < 250 and player.y == -400 and puzzle == 0:
+            map_loading.show_saveblocks()
+            puzzle += 1
+def error404():
+    global overlap_message_timer
+    if overlap_message_timer > 0:
+        font = pygame.font.Font("fonts/BMDOHYEON_otf.otf", 36)
+        # Calculate alpha based on remaining frames
+        alpha = int(255 * (overlap_message_timer / 60))
+        text_surface = font.render("겹치는 블록 있음!", True, (255, 0, 0))
+        text_surface.set_alpha(alpha)  # Set alpha for fade-out effect
+        screen.blit(text_surface, (1200 - text_surface.get_width() - 10, 10))
+        overlap_message_timer -= 1  # Decrease timer each frame
 
 
 def draw_screen():
-    global blocks
+    global block
     screen.fill((255, 255, 255))
     showing.squares = []
     showing.squares_front = []
+
     for block in map_loading.BLOCKS:
         block_3D_transition(block)
         check_cube(block.points,block.texture)
@@ -890,6 +914,7 @@ def draw_screen():
     dead.player_dead_check()
     screen_effect(settings.scr_effect)
     draw_dialogue()
+    error404()
     pygame.display.flip()
     clock.tick(60)
         
@@ -909,7 +934,7 @@ def run():
         event_check()
         player_during()  # 플레이어 위치 업데이트
         camera_move()
-    
+        stage6_puzzle()
     draw_screen()
     player_first_start()
     block_break_and_create()  # 블록 삭제 및 생성 수행
