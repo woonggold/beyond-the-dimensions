@@ -1,11 +1,12 @@
 import start_menu #파일 이름임
 import real_game #파일 이름임
+import ending #파일 이름임
 import pygame
 import start_video
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage7")
+map_loading.map_load("stage6")
 
 running = True
 reseted = False
@@ -18,6 +19,8 @@ while (running == True):
             condition = start_video.run()
         case "real_game":
             condition = real_game.run()
+        case "ending":
+            condition = ending.run()
         case "quit":
             running = False
             
