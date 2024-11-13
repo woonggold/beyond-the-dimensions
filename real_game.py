@@ -200,7 +200,7 @@ def adjust(k, i):
 def player_during():
     global delta_time
     player.ani = "stand"
-    
+    keys = pygame.key.get_pressed()
     
     FPS = 60
     delta_time = clock.tick(FPS)/10
@@ -208,10 +208,16 @@ def player_during():
         
         x_col,y_col,z_col,k = check_collision()
         check_warp()
-        if True not in x_col and prevent2 == False:
-            player.x += player.dx * delta_time
-        elif abs(player.dx) > 0:
-            adjust(k, 0)
+        if keys[pygame.K_a]:
+            if True not in x_col and prevent2 == False:
+                player.x -= player.speed * delta_time
+            elif abs(player.speed) > 0:
+                adjust(k, 0)
+        if keys[pygame.K_d]:
+            if True not in x_col and prevent2 == False:
+                player.x += player.speed * delta_time
+            elif abs(player.speed) > 0:
+                adjust(k, 0)
         x_col,y_col,z_col,k = check_collision()
         if True not in y_col:
             player.ani = "jump"
@@ -224,15 +230,26 @@ def player_during():
             if y_col[0]:
                 player.jump_OK = True
         x_col,y_col,z_col,k = check_collision()
-        if True not in z_col and is_3D and prevent2 == False:
-            player.z += player.dz * delta_time
-        elif is_3D:
-            adjust(k, 2)
-        elif not is_3D:
-            player.z = 100
-        elif False not in z_col:
-            adjust(k, 0)
-            adjust(k, 1)
+        if keys[pygame.K_w]:
+            if True not in z_col and is_3D and prevent2 == False:
+                player.z += player.speed * delta_time
+            elif is_3D:
+                adjust(k, 2)
+            elif not is_3D:
+                player.z = 100
+            elif False not in z_col:
+                adjust(k, 0)
+                adjust(k, 1)
+        if keys[pygame.K_s]:
+            if True not in z_col and is_3D and prevent2 == False:
+                player.z -= player.speed * delta_time
+            elif is_3D:
+                adjust(k, 2)
+            elif not is_3D:
+                player.z = 100
+            elif False not in z_col:
+                adjust(k, 0)
+                adjust(k, 1)
         if abs(player.z - player.fake_z) >= 5:
             if player.ani != "jump":
                 player.ani = "walk"
@@ -393,17 +410,17 @@ def event_check():
                     
                     is_3D = True
 
-            if event.key == pygame.K_a:
-                    player.dx -= player.speed
+            # if event.key == pygame.K_a:
+            #         player.dx -= player.speed
             
-            if event.key == pygame.K_d:
-                    player.dx += player.speed
+            # if event.key == pygame.K_d:
+            #         player.dx += player.speed
 
-            if event.key == pygame.K_w:#z축 앞 이동
-                    player.dz += player.speed
+            # if event.key == pygame.K_w:#z축 앞 이동
+            #         player.dz += player.speed
                 
-            if event.key == pygame.K_s: #z축 뒤 이동
-                    player.dz -= player.speed
+            # if event.key == pygame.K_s: #z축 뒤 이동
+            #         player.dz -= player.speed
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -440,12 +457,12 @@ def event_check():
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a: 
-                player.dx = 0
+                # player.dx = 0
                 if z_key_count == 1:
                     player.x -= 100
                     camera_pos[0] -= 100
             if event.key == pygame.K_w:
-                player.dz = 0
+                # player.dz = 0
                 if z_key_count == 1:
                     player.z += 100
                     camera_pos[2] += 100
@@ -453,12 +470,12 @@ def event_check():
 
                 pass
             if event.key == pygame.K_d: 
-                player.dx -= player.speed
+                # player.dx -= player.speed
                 if z_key_count == 1:
                     player.x += 100
                     camera_pos[0] += 100
             if event.key == pygame.K_s: 
-                player.dz += player.speed
+                # player.dz += player.speed
                 if z_key_count == 1:
                     player.z -= 100
                     camera_pos[2] -= 100
