@@ -4,6 +4,8 @@ import pygame
 import start_video
 
 condition = "real_game"
+import map_loading
+map_loading.map_load("stage1")
 
 running = True
 reseted = False

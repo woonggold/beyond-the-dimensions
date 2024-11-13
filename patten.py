@@ -48,7 +48,7 @@ def start_patten(patten):
             action["status"] = "re_red_block"
             action["last_update"] = real_game.nowtime
 
-        elif action["status"] == "re_red_block" and time_elapsed >= 1500:
+        elif action["status"] == "re_red_block" and time_elapsed >= 2500:
             x, y, z = action["position"]
             map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
             action["status"] = "disappear"
@@ -67,18 +67,18 @@ def start_patten(patten):
 
 patten_loop = [
     [0, 1],#작동 안함
-    [Patten(1), 1],
-    [Patten(2), 1],
-    [Patten(3), 1],
-    [Patten(4), 1],
-    [Patten(5), 1],
-    [Patten(6), 1],
-    [Patten(7), 1],
-    [Patten(8), 1],
-    [Patten(9), 1],
-    [Patten(10), 1],
-    [Patten(11), 1],
-    [Patten(12), 1],
-    [Patten(13), 1],
-    [Patten(14), 1],
+    [Patten(1), 2],
+    [Patten(2), 2],
+    [Patten(3), 2],
+    [Patten(4), 2],
+    [Patten(5), 2],
+    [Patten(6), 2],
+    [Patten(7), 2],
+    [Patten(8), 2],
+    [Patten(9), 2],
+    [Patten(10), 2],
+    [Patten(11), 2],
+    [Patten(12), 2],
+    [Patten(13), 2],
+    [Patten(14), 2],
 ]

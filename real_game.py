@@ -351,9 +351,7 @@ def jump(pressed):
 
 def event_check():
     global condition, is_3D, target_camera_pos, color, z_key_count, texture_num, first_map_loading, m_key_count, last_update, h_key_count, pattens
-    if first_map_loading == 0:
-        first_map_loading = 1
-        map_loading.map_load("stage2")
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition =  "quit"
@@ -612,6 +610,7 @@ def patten_looping():
         cur_patten += 1
         if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
+        # pattens = []
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
