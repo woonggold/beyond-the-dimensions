@@ -1,13 +1,12 @@
-import start_menu #파일 이름임
-import real_game #파일 이름임
-import ending #파일 이름임
+import start_menu
+import real_game
+import ending
 import pygame
 import start_video
-import patten
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage4")
+map_loading.map_load("stage6")
 
 running = True
 reseted = False

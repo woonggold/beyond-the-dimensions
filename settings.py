@@ -134,7 +134,7 @@ def player_first_start():
         screen.fill((0, 0, 0))
         
 
-map_setting = [False, True, True, True, True, False, True]#순서대로 각 스테이지의 초기 is_3D 값.
+map_setting = [False, False, True, True, True, False, True]#순서대로 각 스테이지의 초기 is_3D 값.
 
 
 

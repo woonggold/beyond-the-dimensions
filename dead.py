@@ -44,7 +44,10 @@ def player_dead_check():
         padding =  int(player.y / 10 - 150)
         draw_speed = 4
         back_color = (0,0,0)
-
+        piece.core_hp = 0
+        die_sound = pygame.mixer.Sound("music/die.mp3")
+        die_sound.set_volume(0.5)
+        die_sound.play()
         pygame.draw.line(screen, (0,0,0), (0,0), (0,screen_height), draw_speed * int(1.5 * padding))
         pygame.draw.line(screen, (0,0,0), (screen_width,0), (screen_width,screen_height), draw_speed * int(1.5 * padding))
         pygame.draw.line(screen, (0,0,0), (0,0), (screen_width,0), draw_speed * padding)

@@ -1,13 +1,14 @@
 import pygame
 from map_loading import *
 import time
+import piece
 
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (100,100,255)
 DIALOGUE_BOX_COLOR = (50, 50, 50)
-
+current_dialogue_key = None
 target_bar_height = 50
 animation_speed = target_bar_height / (0.5 * 12) 
 inform_space = False
@@ -16,7 +17,7 @@ top_bar_height = 0
 bottom_bar_height = 0
 last_dialogue_key = None
 start_time = None
-
+fade_opacity = None
 fadestart = None
 fade_duration = 3 #페이드 초를 이걸로 바꾸기
 
@@ -75,7 +76,7 @@ talking = {
     },
     "2-3": {
         "lines": ["일단.. 들어가 봐야겠지..?"],
-        "position": (-2950, -2750, 50, 150),
+        "position": (1250, 1350, -2350, -2250),
         "stage": "stage2"
     },
     "3-1": {
@@ -123,7 +124,7 @@ talking = {
     },
     "6-1": {
         "lines": [
-                "(사실 2D로도 지나갈 수 있게 보인다...)"],
+                "(사실 2D로도 지나갈 수 있어 보인다...)"],
         "position": (550, 650, -50, 50),
         "stage": "stage6"
     },
@@ -133,22 +134,65 @@ talking = {
                 "좋아 저 위에 있는 파란 블록을 밟아야겠군"],
         "position": (550, 650, 50, 150),
         "stage": "stage6"
+    },
+    "6-4": {
+        "lines": [
+                "어…",
+                "어라...?",
+                "[blue]뛰어!!!!"],
+        "position": (-650, -550, 50, 150),
+        "stage": "stage6"
+    },
+    "6-5": {
+        "lines": [
+                "헉…",
+                "헉…",
+                "죽는줄 알았네…",
+                "이젠.. 끝난건가…?",
+                "...",
+                "잠깐… ",
+                "좀 이상한데…?",
+                "차원균열이 이렇게 컸었나…?"],
+        "position": (-7550, -7350, 50, 150),
+        "stage": "stage6"
+    },
+    "6-6": {
+        "lines": [
+                "어…",
+                "어…!",
+                "어...!?"],
+        "position": (-7650, -7550, 50, 150),
+        "stage": "stage6"
+    },
+    "7-1": {
+        "lines": [
+            "[blue]드디어..!!!", "[blue]우리가 차원 붕괴를 해결했어…!!!", "[blue]세계를 지켜낸 거라고!!",
+            "드디어…..!!", "…", "그런데….", "나도 차원 붕괴의 산물…인 거 아니야..?", "차원 문제를 해결하면..", "……나는 어떻게 되는 거야..?"
+        ],
+        "position": (5000, 5000, 0, 0),
+        "stage": "stage7"
     }
 }
 
 
 def check_player_position():
     import real_game, map_loading
-    global is_talking, current_dialogue_key, stagename
-
-    is_talking = False
+    global is_talking, current_dialogue_key, stagename, piece, fade_opacity
     for key, dialogue in talking.items():
         x_min, x_max, z_min, z_max = dialogue["position"]
-        if x_min < real_game.player.x < x_max and z_min < real_game.player.z < z_max and dialogue["stage"] == map_loading.stagename:
-            if dialogue.get("completed", False) is not True:  #이미 실행된 대본은 안나오게 하기
+        
+        if key == "7-1" and piece.core_hp >= 30:
+            if dialogue.get("completed", False) is not True:  
                 is_talking = True
                 current_dialogue_key = key
+                fade_opacity = 0
                 return
+        elif key != "7-1":
+            if x_min < real_game.player.x < x_max and z_min < real_game.player.z < z_max and dialogue["stage"] == map_loading.stagename:
+                if dialogue.get("completed", False) is not True:
+                    is_talking = True
+                    current_dialogue_key = key
+                    return
             
 def talkcheck():
     import real_game
@@ -257,9 +301,9 @@ def draw_dialogue():
             return
 
         if inform_space:
-            instruction_text = font.render("SPACE로 점프", True, (0, 0, 0))
+            instruction_text = font.render("SPACE키를 눌러 점프", True, (0, 0, 0))
         elif inform_R:
-            instruction_text = font.render("R로 차원변환", True, (0, 0, 0))
+            instruction_text = font.render("좌클릭으로 차원변환", True, (0, 0, 0))
         instruction_text.set_alpha(alpha)  # 알파 값 설정
         text_rect = instruction_text.get_rect(center=(real_game.screen_width // 2, real_game.screen_height - 50))
 
