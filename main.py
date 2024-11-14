@@ -7,7 +7,7 @@ import patten
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage2")
+map_loading.map_load("stage7")
 
 
 running = True

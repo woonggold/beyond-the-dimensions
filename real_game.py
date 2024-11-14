@@ -541,6 +541,7 @@ def block_break_and_create():
 
         # 블록 삭제 처리 (1.5초 후)
         
+        
         if action["status"] == "pending_removal" and action["timer"] >= 1000:
             x, y, z = action["position"]
             try:
@@ -575,7 +576,9 @@ def block_break_and_create():
                 block_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
             except:
                 print("이미 생성된 블록입니다.")
-
+                
+                
+    
 # 플레이어 위치에 따른 블록 액션 추가
 def handle_player_action():
     nearestx_100 = round(player.x / 100) * 100
