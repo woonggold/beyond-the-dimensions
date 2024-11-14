@@ -7,7 +7,6 @@ blue = (0, 0, 255)
 white = (255, 255, 255)
 black = (0, 0, 0)
 
-
 dialogues = [
     "그렇게 그들의 차원은 평화를 되찾았다… 아마도…",
     "꼼짝없이 죽을 줄 알았지만 다행히 나도 내 차원으로 돌아올 수 있었고..",
@@ -65,6 +64,8 @@ def run():
 
     screen.fill(white)
     pygame.display.update()
+    pygame.mixer.music.load("music/게임 시작!.mp3")
+    pygame.mixer.music.play(-1)
 
     for i, text in enumerate(dialogues):
         if event_check():

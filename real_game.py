@@ -12,13 +12,8 @@ import dead
 from dialogue import *
 from screen_effect import *
 import settings
+import dialogue
 
-#플레이어 세팅
-pygame.mixer.music.load("music/게임 시작!.mp3")
-# 반복 재생 (0으로 두면 1번만 함)
-pygame.mixer.music.play(-1)
-# 볼륨 조절
-pygame.mixer.music.set_volume(0.5)
 overlap_message_timer = 0
 
 def setblock(texture_num):
@@ -356,7 +351,6 @@ def jump(pressed):
 
 def event_check():
     global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime
-    print (piece.core_hp)
     keys = pygame.key.get_pressed()
     
     
@@ -379,10 +373,10 @@ def event_check():
 
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
-            if event.key == pygame.K_r and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
+            if event.key == pygame.K_r and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7] and piece.cantR == 0:
                 if int(map_loading.stagename[5]) == 7:
                     if piece.core_in:
-                        piece.core_hp -= 1
+                        piece.core_hp += 1
                     return
                         
                 # 시점 전환 목표 설정
@@ -393,7 +387,7 @@ def event_check():
                             temp += 1
                     if temp == 0:
                         if piece.core_in:
-                            piece.core_hp -= 1
+                            piece.core_hp += 1
                         is_3D = False
                     else :
                         overlap_message_timer = 60
@@ -534,17 +528,42 @@ def reset_block_timers():
     for action in block_action_queue:
         action["timer"] = 0
 
+def disable_block_timers():
+    global m_key_count, block_action_queue
+    m_key_count = 0
+    for action in block_action_queue:
+        if action["status"] == "removed":
+            x, y, z = action["position"]
+            try:
+                map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))
+            except:
+                print("블록을 다시 생성하는 중 오류가 발생했습니다.")
+        elif action["status"] == "pending_removal":
+            x, y, z = action["position"]
+            try:
+                for block in map_loading.BLOCKS:
+                    if block.pos == (x, y, z) and block.texture_num == 1:
+                        map_loading.BLOCKS.remove(block)
+                        break
+                map_loading.BLOCKS.append(map_loading.Block((x, y, z), 0))
+            except:
+                print("블록을 다시 생성하는 중 오류가 발생했습니다.")
+    
+    block_action_queue.clear()
+
 def block_break_and_create():
     global block_action_queue, last_update, m_key_count
-    
     time_delta = nowtime - last_update
     last_update = nowtime
-    # 각 블록 액션에 대해 독립적으로 타이머를 진행
+    
+    if prevent:
+        disable_block_timers()
+        
     for action in list(block_action_queue):
-        action["timer"] += time_delta
+        if m_key_count == 1 and is_talking == False:
+            action["timer"] += time_delta
 
         # 블록 삭제 처리 (1.5초 후)
-        
         if action["status"] == "pending_removal" and action["timer"] >= 1000:
             x, y, z = action["position"]
             try:
@@ -553,9 +572,8 @@ def block_break_and_create():
                         map_loading.BLOCKS.remove(block)
                         action["timer"] = 0
                         action["status"] = "removed"
-                        
             except:
-                #이미 지워진 블록임
+                # 이미 지워진 블록임
                 pass
         elif action["status"] == "pending_removal_2" and action["timer"] >= 500:
             x, y, z = action["position"]
@@ -566,19 +584,8 @@ def block_break_and_create():
                         map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
                         action["timer"] = 0
                         action["status"] = "pending_removal"
-                        
             except:
-                #이미 지워진 블록임
                 pass
-        # 블록 생성 처리 (1.5초 추가, 총 8초 후)
-        elif action["status"] == "removed" and action["timer"] >= 1500:
-            x, y, z = action["position"]
-            texture = action["texture_num"]
-            try:
-                map_loading.BLOCKS.append(map_loading.Block((x, y, z), texture))
-                block_action_queue.remove(action)  # 작업 완료되면 큐에서 제거
-            except:
-                print("이미 생성된 블록입니다.")
 
 # 플레이어 위치에 따른 블록 액션 추가
 def handle_player_action():
@@ -637,6 +644,34 @@ def patten_looping():
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
+def draw_health_bar():
+    bar_width = 200
+    bar_height = 30
+    bar_x = (1200 - bar_width) // 2
+    bar_y = 50
+    
+    # 배경 바 그리기
+    pygame.draw.rect(screen, (169, 169, 169), (bar_x, bar_y, bar_width, bar_height))
+
+    # 체력에 해당하는 빨간색 바 채우기
+    filled_width = int((piece.core_hp / 200) * bar_width)
+    pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, filled_width, bar_height))
+
+    # 줄어든 부분을 검은색으로 표시
+    if filled_width < bar_width:
+        pygame.draw.rect(screen, BLACK, (bar_x + filled_width, bar_y, bar_width - filled_width, bar_height))
+
+    # 텍스트 표시
+    font = pygame.font.Font('fonts/BMDOHYEON_otf.otf', 24)
+    text = font.render(f"{piece.core_hp} / 200", True, WHITE)
+    text_rect = text.get_rect(center=(bar_x + bar_width // 2, bar_y + bar_height // 2))
+    screen.blit(text, text_rect)
+
+    # '에너지 코어' 텍스트 표시
+    title_font = pygame.font.Font('fonts/BMDOHYEON_otf.otf', 28)  # 제목 크기 더 크게 설정
+    title_text = title_font.render("에너지 코어", True, BLACK)
+    title_text_rect = title_text.get_rect(center=(bar_x + bar_width // 2, bar_y - 20))  # 바 위쪽에 위치
+    screen.blit(title_text, title_text_rect)
     
 
 def draw_order_cal():
@@ -687,7 +722,31 @@ def draw_order_cal():
             screen.blit(modified_img, (piece.extend_piece_pos[0] - (modified_width / 2), piece.extend_piece_pos[1] - (modified_height / 2)))
         else:
             screen.fill((10, 10, 10))
-        
+
+current_music = None    
+def play_stage_music(stagename):
+    global current_music
+    
+    # stage 삭제후 정수만 넣기
+    try:
+        stage_number = int(stagename.replace("stage", ""))
+    except ValueError:
+        return 
+
+    if stage_number in [1, 2, 3]:
+        music_file = "music/123.mp3"
+    elif stage_number in [4, 5, 6]:
+        music_file = "music/456.mp3"
+    elif stage_number == 7:
+        music_file = "music/보스전.mp3"
+    if dialogue.current_dialogue_key == "7-1":
+        pygame.mixer.music.stop()
+    
+    if music_file and music_file != current_music:
+        pygame.mixer.music.load(music_file)
+        pygame.mixer.music.play(-1)  # -1은 무한 반복
+        current_music = music_file  
+
 
 puzzle = 0
 
@@ -704,59 +763,73 @@ def error404():
         # Calculate alpha based on remaining frames
         alpha = int(255 * (overlap_message_timer / 60))
         text_surface = font.render("겹치는 블록 있음!", True, (255, 0, 0))
-        text_surface.set_alpha(alpha)  # Set alpha for fade-out effect
+        text_surface.set_alpha(alpha)
         screen.blit(text_surface, (1200 - text_surface.get_width() - 10, 10))
-        overlap_message_timer -= 1  # Decrease timer each frame
+        overlap_message_timer -= 1 
 
 
 def draw_screen():
-    global block
+    global block, fade_opacity
     screen.fill((255, 255, 255))
+
     showing.squares = []
     showing.squares_front = []
 
     for block in map_loading.BLOCKS:
         block_3D_transition(block)
-        check_cube(block.points,block.texture)
+        check_cube(block.points, block.texture)
+    
     showing.squares = sorted(showing.squares, key=lambda square: -square[5])
     piece.piece_3D_transition()
     draw_order_cal()
+    if map_loading.stagename == "stage7":
+        draw_health_bar()
     dead.player_dead_check()
     screen_effect(settings.scr_effect)
     draw_dialogue()
     error404()
+
+    if dialogue.current_dialogue_key == "7-1":
+        fade_surface = pygame.Surface((screen.get_width(), screen.get_height()))
+        fade_surface.fill((255, 255, 255))
+        fade_surface.set_alpha(dialogue.fade_opacity)
+        screen.blit(fade_surface, (0, 0))  
+
     pygame.display.flip()
     clock.tick(60)
-        
-# FRAME_SKIP = 1000  # 2 프레임마다 한 번 실행
-# frame_count = 0
 
 def run():
-    global condition, pattens, nowtime
+    global condition, pattens, nowtime, fade_opacity
     nowtime = pygame.time.get_ticks()
     condition = "real_game"
     talkcheck()
     check_player_position()
-
-
-    if is_talking == False and (extend_piece and map_loading.stagename == "stage6") == False:
+    if dialogue.is_talking == False:
         block_break_and_create()
+    if (extend_piece and map_loading.stagename == "stage6") == False:
         if map_loading.stagename == "stage7":
             patten_looping()
         event_check()
-        player_during()  # 플레이어 위치 업데이트
+        player_during()  
         camera_move()
-        stage6_puzzle()
+        if map_loading.stagename == "stage6":
+            stage6_puzzle()
+
     draw_screen()
     player_first_start()
+    play_stage_music(map_loading.stagename)
 
-  # 블록 삭제 및 생성 수행
     if m_key_count == 1:
-        handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
+        handle_player_action()
+
     for patten_instance in pattens:
         import patten
-        # print(patten_instance)
-        
-        patten.start_patten(patten_instance)
-         
+        if piece.core_hp < 30:
+            patten.start_patten(patten_instance)
+
+    if dialogue.current_dialogue_key == "7-1" and dialogue.fade_opacity < 255:
+        dialogue.fade_opacity += 5 
+        if dialogue.fade_opacity >= 255:
+            condition = "ending" 
+
     return condition
