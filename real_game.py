@@ -355,71 +355,24 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime
+    global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime, next_time
+    # nowtime = pygame.time.get_ticks()
+    # if ( nowtime > next_time ):
+    #     next_time = nowtime  # future time next change allowed
     print (piece.core_hp)
-    keys = pygame.key.get_pressed()
-    
-    
-    if keys[pygame.K_w]:
-        player.dz = player.speed
-    if keys[pygame.K_a]:
-        player.dx = -player.speed
-    if keys[pygame.K_s]:
-        player.dz = -player.speed
-    if keys[pygame.K_d]:
-        player.dx = player.speed
-    
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            condition =  "quit"
+            pygame.quit()
+            exit()
         elif event.type == pygame.KEYDOWN:
             if pygame.K_0 <= event.key <= pygame.K_9:
                 texture_num = event.key - pygame.K_0
 
             if event.key == pygame.K_ESCAPE:
-                condition =  "quit"
-            if event.key == pygame.K_r and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
-                if int(map_loading.stagename[5]) == 7:
-                    if piece.core_in:
-                        piece.core_hp -= 1
-                    return
-                        
-                # 시점 전환 목표 설정
-                if is_3D:
-                    temp = 0
-                    for block in map_loading.BLOCKS:
-                        if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
-                            temp += 1
-                    if temp == 0:
-                        if piece.core_in:
-                            piece.core_hp -= 1
-                        is_3D = False
-                    else :
-                        overlap_message_timer = 60
-                elif not is_3D:
-                    temp = []
-                    for block in map_loading.BLOCKS:
-                        if abs(block.x - player.x) < 100:
-                            temp.append(block.original_z)
-                    if not temp:
-                        player.z = 100
-                    else: 
-                        player.z = min(temp)
-                    
-                    is_3D = True
+                pygame.quit()
+                exit()
 
-            # if event.key == pygame.K_a:
-            #         player.dx -= player.speed
-            
-            # if event.key == pygame.K_d:
-            #         player.dx += player.speed
 
-            # if event.key == pygame.K_w:#z축 앞 이동
-            #         player.dz += player.speed
-                
-            # if event.key == pygame.K_s: #z축 뒤 이동
-            #         player.dz -= player.speed
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -491,14 +444,68 @@ def event_check():
                     camera_pos[1] += 100
 
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 휠 클릭을 감지
-            if event.button == 3: # 개발자 블록 설치
+        elif event.type == pygame.MOUSEBUTTONDOWN: 
+            if event.button == 3:
                 if z_key_count == 1:    
                     setblock(texture_num)
-            elif event.button == 1:
+                
+            elif event.button == 2:
                 if z_key_count == 1:    
                     blockremove()
+            elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
+                if int(map_loading.stagename[5]) == 7:
+                    if piece.core_in:
+                        piece.core_hp -= 1
+                    return
+                        
+                # 시점 전환 목표 설정
+                if is_3D:
+                    temp = 0
+                    for block in map_loading.BLOCKS:
+                        if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
+                            temp += 1
+                    if temp == 0:
+                        if piece.core_in:
+                            piece.core_hp -= 1
+                        is_3D = False
+                    else :
+                        overlap_message_timer = 60
+                elif not is_3D:
+                    temp = []
+                    for block in map_loading.BLOCKS:
+                        if abs(block.x - player.x) < 100:
+                            temp.append(block.original_z)
+                    if not temp:
+                        player.z = 100
+                    else: 
+                        player.z = min(temp)
+                    
+                    is_3D = True
+
     jump(player.jump_pressed)
+
+    pygame.event.clear()
+    keys = pygame.key.get_pressed()
+    player.dz = 0
+    player.dx = 0
+    
+    if keys[pygame.K_w]:
+        player.dz = player.speed
+    if keys[pygame.K_a]:
+        player.dx = -player.speed
+    if keys[pygame.K_s]:
+        player.dz = -player.speed
+    if keys[pygame.K_d]:
+        player.dx = player.speed
+    if keys[pygame.K_a] and keys[pygame.K_d]:
+        player.dx = 0
+    if keys[pygame.K_w] and keys[pygame.K_s]:
+        player.dz = 0
+    if keys[pygame.K_ESCAPE]:
+        pygame.quit()
+    
+    
+    
 def camera_move():
     if prevent == True:
         return
