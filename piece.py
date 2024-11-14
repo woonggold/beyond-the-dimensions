@@ -71,8 +71,9 @@ def forced_draw(piece):
 def aquire_piece_check(piece):
     global Pieces,core_in
     if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50 and piece.event != "core":
-        Pieces.remove(piece)
         piece_event_check(piece.event)
+        if piece.event not in ["stage_per1","stage_per2"]:
+            Pieces.remove(piece)
     if piece.event == "core":
         core_in = False
         if abs(player.x - piece.x) < 200 and 300 > player.y - piece.y > -200 and abs(player.z - piece.z) < 150:
@@ -108,8 +109,6 @@ def piece_event_check(event):
             global rotate_start
             rotate_start = time.time()
             settings.scr_effect = "rotating"
-        case "3":
-            print('3')
         case "block_disappear":
             real_game.m_key_count = 1
             real_game.last_update = pygame.time.get_ticks()
@@ -123,6 +122,21 @@ def piece_event_check(event):
                 if piece.event == "stage7":
                     extend_piece_pos = projection_3D.project_3d_or_2d((piece.x, piece.y, piece.z), real_game.camera_pos, real_game.angle_x, real_game.angle_y)
                     extend_modified_size = int(piece.size * 200 * piece.width / (piece.range**(1/2)))
+        case "stage":
+            for piece in Pieces:
+                if piece.event == "stage":
+                    player.x,player.y,player.z = piece.x,piece.y+100,piece.z
+        case "stage_per1":
+            for piece in Pieces:
+                if piece.event == "stage_per1":
+                    player.y = piece.y+100
+                    player.jump_pressed = False
+        case "stage_per2":
+            for piece in Pieces:
+                if piece.event == "stage_per2":
+                    player.y = piece.y+100
+                    player.jump_pressed = False
+
 
 
 

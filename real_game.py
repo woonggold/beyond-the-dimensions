@@ -420,7 +420,7 @@ def event_check():
                 if z_key_count == 1:
                     print(player.x , player.y, player.z)
             if event.key == pygame.K_p: # 맵 세이브
-                if z_key_count == 1 and is_3D:
+                if (z_key_count == 1 and is_3D) or map_loading.stagename == "stage1":
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
