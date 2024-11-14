@@ -62,8 +62,8 @@ def player_dead_check():
                             patten.reloadpatten()
                             #-----------------------
                             real_game.warp_working_count = 1
-                            player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -1100, map_loading.warp_block_list[i][2]
-                            real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-1400, map_loading.warp_block_list[i][2] - 800]
+                            player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -2200, map_loading.warp_block_list[i][2]
+                            real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-2500, map_loading.warp_block_list[i][2] - 800]
                         else:
                             real_game.warp_working_count = 1
                             player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -100, map_loading.warp_block_list[i][2]

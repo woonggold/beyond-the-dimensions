@@ -155,24 +155,49 @@ def talkcheck():
     global current_dialogue_index, is_talking, current_dialogue_key, blue_font, inform_space, inform_R
     
     if is_talking and current_dialogue_key:
-        real_game.player.dx = 0
-        real_game.player.dz = 0
-
-        # Handle dialogue input
+        real_game.player.jump_pressed = False
+        real_game.prevent2 = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    current_dialogue_index += 1
+            elif event.type == pygame.KEYDOWN:
+                
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
+                    exit()
+                if event.key == pygame.K_SPACE:  # 스페이스 키로 대화 넘기기
+                    current_dialogue_index += 1
+                if event.key == pygame.K_a:
+                    real_game.player.dx -= real_game.player.speed
+
+                if event.key == pygame.K_d:
+                    real_game.player.dx += real_game.player.speed
+
+                if event.key == pygame.K_w:#z축 앞 이동
+                    real_game.player.dz += real_game.player.speed
+
+                if event.key == pygame.K_s: #z축 뒤 이동
+                    real_game.player.dz -= real_game.player.speed
+
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_a:
+                    real_game.player.dx += real_game.player.speed
+                
+                if event.key == pygame.K_d:
+                    real_game.player.dx -= real_game.player.speed
+    
+                if event.key == pygame.K_w:#z축 앞 이동
+                    real_game.player.dz -= real_game.player.speed
+                    
+                if event.key == pygame.K_s: #z축 뒤 이동
+                    real_game.player.dz += real_game.player.speed
 
         dialogue_lines = talking[current_dialogue_key]["lines"]
 
         # 대화가 끝났을 때 조건문 추가
         if current_dialogue_index >= len(dialogue_lines): 
+            real_game.prevent2 = False
             if current_dialogue_key == "1-2": 
                 inform_space = True
             elif current_dialogue_key == "5-1": 

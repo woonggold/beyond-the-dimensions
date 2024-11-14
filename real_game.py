@@ -356,6 +356,7 @@ def jump(pressed):
 
 def event_check():
     global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime
+    print (piece.core_hp)
     keys = pygame.key.get_pressed()
     
     
@@ -378,7 +379,12 @@ def event_check():
 
             if event.key == pygame.K_ESCAPE:
                 condition =  "quit"
-            if event.key == pygame.K_r and prevent2 == False:
+            if event.key == pygame.K_r and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
+                if int(map_loading.stagename[5]) == 7:
+                    if piece.core_in:
+                        piece.core_hp -= 1
+                    return
+                        
                 # 시점 전환 목표 설정
                 if is_3D:
                     temp = 0
@@ -392,8 +398,6 @@ def event_check():
                     else :
                         overlap_message_timer = 60
                 elif not is_3D:
-                    if piece.core_in:
-                        piece.core_hp -= 1
                     temp = []
                     for block in map_loading.BLOCKS:
                         if abs(block.x - player.x) < 100:
@@ -429,7 +433,7 @@ def event_check():
                 if z_key_count == 1:
                     print(player.x , player.y, player.z)
             if event.key == pygame.K_p: # 맵 세이브
-                if z_key_count == 1 and is_3D:
+                if (z_key_count == 1 and is_3D) or map_loading.stagename == "stage1":
                     map_loading.map_save()
             if event.key == pygame.K_l: # 맵 로딩
                 if z_key_count == 1:
@@ -663,12 +667,30 @@ def draw_order_cal():
         if drawed_player_down == False:
             animation.anime("down")
     else:
+        piece.cal_range()
         for square in showing.squares_front:
             draw_square(square[0:4],square[4])
         for one_piece in piece.Pieces:
             piece.forced_draw(one_piece)
         animation.anime("up")
         animation.anime("down")
+    if extend_piece and map_loading.stagename == "stage6":
+        for piece1 in piece.Pieces:
+            if piece1.event == "stage7":
+                piece1.size = 0
+        if piece.extend_modified_size < 8000:
+            piece.extend_modified_size *= 1.03
+            piece.extend_piece_pos[0] += 0.01 * (600 - piece.extend_piece_pos[0])
+            piece.extend_piece_pos[1] += 0.01 * (400 - piece.extend_piece_pos[1])
+            print (piece.extend_modified_size)
+            modified_img = pygame.transform.scale(piece.Pieces[0].img, (piece.extend_modified_size,piece.extend_modified_size))
+            modified_rect = modified_img.get_rect()
+            modified_width, modified_height = modified_rect.width, modified_rect.height
+
+            screen.blit(modified_img, (piece.extend_piece_pos[0] - (modified_width / 2), piece.extend_piece_pos[1] - (modified_height / 2)))
+        else:
+            screen.fill((10, 10, 10))
+        
 
 puzzle = 0
 
@@ -720,7 +742,7 @@ def run():
     check_player_position()
 
 
-    if is_talking == False:
+    if is_talking == False and (extend_piece and map_loading.stagename == "stage6") == False:
         block_break_and_create()
         if map_loading.stagename == "stage7":
             patten_looping()

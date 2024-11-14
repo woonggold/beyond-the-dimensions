@@ -44,7 +44,7 @@ def start_patten(patten):
         if action["status"] == patten.patten_name and time_elapsed >= 50:
             x, y, z = action["position"]
             
-            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 1))
+            map_loading.BLOCKS.append(map_loading.Block((x, y, z), 3))
             action["status"] = "block_origin_appear"
             action["last_update"] = real_game.nowtime
         #빨간색이였던 블록을 다시 0번째 블록으로 바꾸는 코드

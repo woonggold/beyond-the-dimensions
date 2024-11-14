@@ -73,7 +73,7 @@ def map_load(mapname):
         block_texture = data["Blocks"]["texture"][i]
         
         # Check if map is "stage6" and texture is 1, store in SAVEBLOCKS
-        if mapname == "stage6" and block_texture == 1:
+        if mapname == "stage6" and block_texture == 3:
             SAVEBLOCKS.append(Block(block_position, block_texture))
         else:
             BLOCKS.append(Block(block_position, block_texture))

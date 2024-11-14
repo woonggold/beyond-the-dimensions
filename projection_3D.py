@@ -45,4 +45,4 @@ def project_3d_or_2d(point, camera_pos, angle_x, angle_y):
         factor = camera_distance / z
         x_2d = x * factor + screen_width/2
         y_2d = y * factor + screen_height/2
-        return (int(x_2d), int(y_2d))
+        return [int(x_2d), int(y_2d)]

@@ -6,8 +6,9 @@ from settings import *
 from player import *
 import real_game
 script_dir = os.path.dirname(__file__)
-core_hp = 500
+core_hp = 30
 core_in = False
+extend_modified_size = 0
 
 class MakePiece:
     def __init__(self, pos, event, size):
@@ -16,7 +17,7 @@ class MakePiece:
         self.y = pos[1]
         self.z = pos[2]
         self.original_z = pos[2]
-        self.size = size
+        self.size = int(size)
         self.img = pygame.image.load(f"{script_dir}//images//차원조각.png").convert_alpha()
         if event == "core":
             self.img = pygame.image.load(f"{script_dir}//images//에너지코어.png").convert_alpha()
@@ -26,6 +27,7 @@ class MakePiece:
         self.event = event # 무슨 이벤트가 일어나게 할지 이벤트 명 적기
         self.range = 1
         self.drawed = False
+
 
 
 Pieces = []
@@ -56,9 +58,9 @@ def forced_draw(piece):
 
     # 크기 제한 설정
     
-    modified_size = int(int(piece.size) * 200 * piece.width / (piece.range**(1/2)))
-    if modified_size > 1000:
-        modified_size = 100
+    modified_size = int(piece.size * 200 * piece.width / (piece.range**(1/2)))
+    if modified_size > 10000:
+        modified_size = 10000
     modified_img = pygame.transform.scale(piece.img, (modified_size,modified_size))
     modified_rect = modified_img.get_rect()
     modified_width, modified_height = modified_rect.width, modified_rect.height
@@ -69,15 +71,16 @@ def forced_draw(piece):
 def aquire_piece_check(piece):
     global Pieces,core_in
     if abs(player.x - piece.x) < 100 and 200 > player.y - piece.y > -100 and abs(player.z - piece.z) < 50 and piece.event != "core":
-        print (piece.size)
-        Pieces.remove(piece)
         piece_event_check(piece.event)
+        if piece.event not in ["stage_per1","stage_per2"]:
+            Pieces.remove(piece)
     if piece.event == "core":
         core_in = False
         if abs(player.x - piece.x) < 200 and 300 > player.y - piece.y > -200 and abs(player.z - piece.z) < 150:
             core_in = True
 
 def piece_event_check(event):
+    global extend_piece_pos, extend_modified_size
     import real_game, map_loading, settings
     # print (real_game.scr_effect)
     match event:
@@ -106,8 +109,6 @@ def piece_event_check(event):
             global rotate_start
             rotate_start = time.time()
             settings.scr_effect = "rotating"
-        case "3":
-            print('3')
         case "block_disappear":
             real_game.m_key_count = 1
             real_game.last_update = pygame.time.get_ticks()
@@ -115,6 +116,29 @@ def piece_event_check(event):
             print("m 키 눌림 - 타이머 시작")   
         case "block_disappear_break":
             real_game.m_key_count = 0
+        case "extend":
+            real_game.extend_piece = True
+            for piece in Pieces:
+                if piece.event == "stage7":
+                    extend_piece_pos = projection_3D.project_3d_or_2d((piece.x, piece.y, piece.z), real_game.camera_pos, real_game.angle_x, real_game.angle_y)
+                    extend_modified_size = int(piece.size * 200 * piece.width / (piece.range**(1/2)))
+        case "stage":
+            for piece in Pieces:
+                if piece.event == "stage":
+                    player.x,player.y,player.z = piece.x,piece.y+100,piece.z
+        case "stage_per1":
+            for piece in Pieces:
+                if piece.event == "stage_per1":
+                    player.y = piece.y+100
+                    player.jump_pressed = False
+        case "stage_per2":
+            for piece in Pieces:
+                if piece.event == "stage_per2":
+                    player.y = piece.y+100
+                    player.jump_pressed = False
+
+
+
 
 def piece_3D_transition():
     import real_game
