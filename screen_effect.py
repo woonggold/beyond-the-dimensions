@@ -37,7 +37,7 @@ def screen_effect(effect):
         screen_copy = screen_surface.copy().convert_alpha()  # 원본을 복사해 둡니다.
 
         # 회전 적용하기
-        rotated_surface = pygame.transform.rotate(screen_copy, (((time.time()-piece.rotate_start)%360))*100).convert_alpha()
+        rotated_surface = pygame.transform.rotate(screen_copy, (((time.time()-piece.rotate_start)%360))*50).convert_alpha()
         surface_rect = rotated_surface.get_rect(center=(settings.screen_width / 2, settings.screen_height / 2))
         # 화면을 채우고 변형된 Surface 그리기
         screen_surface.fill(dead.back_color)  # 기존 화면 지우기

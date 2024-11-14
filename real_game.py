@@ -359,7 +359,6 @@ def event_check():
     # nowtime = pygame.time.get_ticks()
     # if ( nowtime > next_time ):
     #     next_time = nowtime  # future time next change allowed
-    print (piece.core_hp)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
