@@ -2,3 +2,6 @@
 ✔Track - 게임 시작!
 ✔Music by 부금
 ✔Watch : https://youtu.be/0aLKEeltie8
+
+📢start_menu, start_video의 노이즈 사운드
+✔by. DayDreamSound

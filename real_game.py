@@ -14,11 +14,11 @@ from screen_effect import *
 import settings
 
 #플레이어 세팅
-pygame.mixer.music.load("music/게임 시작!.mp3")
-# 반복 재생 (0으로 두면 1번만 함)
-pygame.mixer.music.play(-1)
-# 볼륨 조절
-pygame.mixer.music.set_volume(0.5)
+# pygame.mixer.music.load("music/게임 시작!.mp3")
+# # 반복 재생 (0으로 두면 1번만 함)
+# pygame.mixer.music.play(-1)
+# # 볼륨 조절
+# pygame.mixer.music.set_volume(0.5)
 overlap_message_timer = 0
 
 def setblock(texture_num):
