@@ -3,10 +3,11 @@ import real_game #파일 이름임
 import ending #파일 이름임
 import pygame
 import start_video
+import patten
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage6")
+map_loading.map_load("stage7")
 
 running = True
 reseted = False

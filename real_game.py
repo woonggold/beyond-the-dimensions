@@ -356,6 +356,19 @@ def jump(pressed):
 
 def event_check():
     global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime
+    print (piece.core_hp)
+    keys = pygame.key.get_pressed()
+    
+    
+    if keys[pygame.K_w]:
+        player.dz = player.speed
+    if keys[pygame.K_a]:
+        player.dx = -player.speed
+    if keys[pygame.K_s]:
+        player.dz = -player.speed
+    if keys[pygame.K_d]:
+        player.dx = player.speed
+    
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -396,17 +409,17 @@ def event_check():
                     
                     is_3D = True
 
-            if event.key == pygame.K_a:
-                    player.dx -= player.speed
+            # if event.key == pygame.K_a:
+            #         player.dx -= player.speed
             
-            if event.key == pygame.K_d:
-                    player.dx += player.speed
+            # if event.key == pygame.K_d:
+            #         player.dx += player.speed
 
-            if event.key == pygame.K_w:#z축 앞 이동
-                    player.dz += player.speed
+            # if event.key == pygame.K_w:#z축 앞 이동
+            #         player.dz += player.speed
                 
-            if event.key == pygame.K_s: #z축 뒤 이동
-                    player.dz -= player.speed
+            # if event.key == pygame.K_s: #z축 뒤 이동
+            #         player.dz -= player.speed
             
 
             if event.key == pygame.K_z: #개발자 모드 실행
@@ -456,12 +469,12 @@ def event_check():
 
                 pass
             if event.key == pygame.K_d: 
-                player.dx -= player.speed
+                player.dx = 0
                 if z_key_count == 1:
                     player.x += 100
                     camera_pos[0] += 100
             if event.key == pygame.K_s: 
-                player.dz += player.speed
+                player.dz = 0
                 if z_key_count == 1:
                     player.z -= 100
                     camera_pos[2] -= 100
@@ -612,11 +625,15 @@ def block_3D_transition(block):
 def patten_looping():
     import patten
     global last_time, cur_patten, pattens, flag
+    if flag == True:
+        patten.reloadpatten()
+        flag = False
     if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
         last_time = time.time()
         cur_patten += 1
         if cur_patten >= len(patten.patten_loop ):
             cur_patten = 1
+            patten.reloadpatten()
         pattens.append(patten.patten_loop[cur_patten][0])
 
 
@@ -738,6 +755,7 @@ def run():
         handle_player_action()  # 플레이어 위치에 따른 블록 액션 추가
     for patten_instance in pattens:
         import patten
+        # print(patten_instance)
         
         patten.start_patten(patten_instance)
          
