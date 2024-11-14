@@ -5,9 +5,9 @@ import pygame
 import start_video
 import patten
 
-condition = "start_menu"
-# import map_loading
-# map_loading.map_load("stage1")
+condition = "real_game"
+import map_loading
+map_loading.map_load("stage5")
 
 running = True
 reseted = False

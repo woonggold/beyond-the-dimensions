@@ -6,7 +6,7 @@ from settings import *
 from player import *
 import real_game
 script_dir = os.path.dirname(__file__)
-core_hp = 500
+core_hp = 30
 core_in = False
 extend_modified_size = 0
 
