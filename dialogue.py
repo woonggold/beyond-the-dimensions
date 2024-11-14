@@ -20,6 +20,8 @@ start_time = None
 fade_opacity = None
 fadestart = None
 fade_duration = 3 #페이드 초를 이걸로 바꾸기
+once = False
+
 
 # Font
 font = pygame.font.Font('fonts/BMDOHYEON_otf.otf', 36)
@@ -194,7 +196,20 @@ def check_player_position():
                     current_dialogue_key = key
                     return
             
+def extend_check():
+    import real_game
+    import piece
+    import projection_3D
+    global extend_piece_pos, extend_modified_size, once
+    if current_dialogue_key == "6-6" and once == False:
+        once = True
+        real_game.extend_piece = True
+        for piece1 in piece.Pieces:
+            if piece1.event == "stage7":
+                extend_piece_pos = projection_3D.project_3d_or_2d((piece1.x, piece1.y, piece1.z), real_game.camera_pos, real_game.angle_x, real_game.angle_y)
+                extend_modified_size = int(piece1.size * 200 * piece1.width / (piece1.range**(1/2)))
 def talkcheck():
+    extend_check()
     import real_game
     global current_dialogue_index, is_talking, current_dialogue_key, blue_font, inform_space, inform_R
     
@@ -222,6 +237,10 @@ def talkcheck():
                 inform_space = True
             elif current_dialogue_key == "5-1": 
                 inform_R = True
+            elif current_dialogue_key == "6-6": 
+                import player
+                map_load("stage7")
+                player.player.y = 4000
             current_dialogue_index = 0
             is_talking = False
             talking[current_dialogue_key]["completed"] = True

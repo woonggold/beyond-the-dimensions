@@ -727,16 +727,16 @@ def draw_order_cal():
         for piece1 in piece.Pieces:
             if piece1.event == "stage7":
                 piece1.size = 0
-        if piece.extend_modified_size < 8000:
-            piece.extend_modified_size *= 1.03
-            piece.extend_piece_pos[0] += 0.01 * (600 - piece.extend_piece_pos[0])
-            piece.extend_piece_pos[1] += 0.01 * (400 - piece.extend_piece_pos[1])
-            print (piece.extend_modified_size)
-            modified_img = pygame.transform.scale(piece.Pieces[0].img, (piece.extend_modified_size,piece.extend_modified_size))
+        if dialogue.extend_modified_size < 8000:
+            dialogue.extend_modified_size *= 1.03
+            dialogue.extend_piece_pos[0] += 0.01 * (600 - dialogue.extend_piece_pos[0])
+            dialogue.extend_piece_pos[1] += 0.01 * (400 - dialogue.extend_piece_pos[1])
+            print (dialogue.extend_modified_size)
+            modified_img = pygame.transform.scale(piece.Pieces[0].img, (dialogue.extend_modified_size,dialogue.extend_modified_size))
             modified_rect = modified_img.get_rect()
             modified_width, modified_height = modified_rect.width, modified_rect.height
 
-            screen.blit(modified_img, (piece.extend_piece_pos[0] - (modified_width / 2), piece.extend_piece_pos[1] - (modified_height / 2)))
+            screen.blit(modified_img, (dialogue.extend_piece_pos[0] - (modified_width / 2), dialogue.extend_piece_pos[1] - (modified_height / 2)))
         else:
             screen.fill((10, 10, 10))
 
@@ -828,7 +828,7 @@ def run():
         if map_loading.stagename == "stage7":
             patten_looping()
         event_check()
-        player_during()  
+        player_during()
         camera_move()
         if map_loading.stagename == "stage6":
             stage6_puzzle()

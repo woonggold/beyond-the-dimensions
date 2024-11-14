@@ -8,7 +8,6 @@ import real_game
 script_dir = os.path.dirname(__file__)
 core_hp = 0
 core_in = False
-extend_modified_size = 0
 cantR = 0
 
 class MakePiece:
@@ -81,7 +80,7 @@ def aquire_piece_check(piece):
             core_in = True
 
 def piece_event_check(event):
-    global extend_piece_pos, extend_modified_size, cantR
+    global cantR
     import real_game, map_loading, settings
     # print (real_game.scr_effect)
     match event:
@@ -117,12 +116,6 @@ def piece_event_check(event):
             print("m 키 눌림 - 타이머 시작")   
         case "block_disappear_break":
             real_game.m_key_count = 0
-        case "extend":
-            real_game.extend_piece = True
-            for piece in Pieces:
-                if piece.event == "stage7":
-                    extend_piece_pos = projection_3D.project_3d_or_2d((piece.x, piece.y, piece.z), real_game.camera_pos, real_game.angle_x, real_game.angle_y)
-                    extend_modified_size = int(piece.size * 200 * piece.width / (piece.range**(1/2)))
         case "stage":
             for piece in Pieces:
                 if piece.event == "stage":
