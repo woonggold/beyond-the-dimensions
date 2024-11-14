@@ -142,3 +142,5 @@ cur_patten = 0
 last_time = 0
 patten_loop = []
 flag = True
+start_looping_bool = False
+

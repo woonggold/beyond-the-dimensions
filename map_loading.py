@@ -67,6 +67,10 @@ def map_load(mapname):
     BLOCKS = []
     warp_block_list = []
     SAVEBLOCKS = []
+    
+    # if stagename == "stage7":
+    #     settings.start_looping_bool = True
+    #     print(settings.start_looping_bool)
 
     for i in range(len(data["Blocks"]["x"])):
         block_position = (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
@@ -100,6 +104,10 @@ def map_load(mapname):
             real_game.event_size_list.append(data["event_blocks"]["size"][i])
     except KeyError:
         pass
+
+        
+    
+        
 
     print("로드됨")
     

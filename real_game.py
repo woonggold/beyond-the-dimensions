@@ -120,6 +120,7 @@ def check_warp():
                         map_loading_count = 0
                         player.x = warp_block_list[j][0]
                         player.y = 4000
+                        
                         player.z = warp_block_list[j][2]
                         camera_pos[0] = warp_block_list[j][0]
                         camera_pos[1] = warp_block_list[j][1] - 400
@@ -138,8 +139,9 @@ def check_warp():
                                 modifiyed_map_name = int(map_loading.stagename[5]) + 1
                                 modifiyed_map_name2 = map_loading.stagename[0:5] + str(modifiyed_map_name)
                                 if warp_block_list[i][3] == modifiyed_map_name2:
+                                    
                                     map_loading.map_load(modifiyed_map_name2)
-                                    map_loading_count = 1
+                                    map_loading_count = 1                                    
                                 else:
                                     if (
                                         block.x == warp_block_list[i][0]
@@ -242,9 +244,6 @@ def player_during():
             player.fake_x = player.x
 
 
-        
-        
-        
     elif z_key_count == 1:
         check_warp()
         player.dy = 1
@@ -405,8 +404,9 @@ def event_check():
             if event.key == pygame.K_a: 
                 player.dx = 0
                 if z_key_count == 1:
-                    player.x -= 100
-                    camera_pos[0] -= 100
+                    #임시로 500으로 바꿈
+                    player.x -= 500
+                    camera_pos[0] -= 500
             if event.key == pygame.K_w:
                 player.dz = 0
                 if z_key_count == 1:
@@ -821,12 +821,15 @@ def run():
     nowtime = pygame.time.get_ticks()
     condition = "real_game"
     talkcheck()
+    # print(start_looping_bool)
+    if settings.start_looping_bool == True:
+        patten_looping()
+        
     check_player_position()
     if dialogue.is_talking == False:
         block_break_and_create()
     if (extend_piece and map_loading.stagename == "stage6") == False:
-        if map_loading.stagename == "stage7":
-            patten_looping()
+        
         event_check()
         player_during()
         camera_move()

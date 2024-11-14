@@ -238,9 +238,12 @@ def talkcheck():
             elif current_dialogue_key == "5-1": 
                 inform_R = True
             elif current_dialogue_key == "6-6": 
+                settings.start_looping_bool = True
                 import player
                 map_load("stage7")
-                player.player.y = 4000
+                player.player.y = 0
+                player.player.x = 100
+                player.player.z = 100
             current_dialogue_index = 0
             is_talking = False
             talking[current_dialogue_key]["completed"] = True
