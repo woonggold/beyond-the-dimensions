@@ -350,7 +350,7 @@ def jump(pressed):
 #         angle_y += mouse_dy * mouse_sensitivity
 
 def event_check():
-    global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime, next_time
+    global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, patterns, nowtime, next_time
     # nowtime = pygame.time.get_ticks()
     # if ( nowtime > next_time ):
     #     next_time = nowtime  # future time next change allowed
@@ -397,7 +397,7 @@ def event_check():
                     m_key_count = 0
             # if event.key == pygame.K_h:
             #     h_key_count +=1
-            #     pattens.append(patten.Patten(f"patten{h_key_count}"))
+            #     patterns.append(pattern.Pattern(f"pattern{h_key_count}"))
                 
                 
 
@@ -646,19 +646,19 @@ def block_3D_transition(block):
             point = x,y,point[2],z
 
 
-def patten_looping():
-    import patten
-    global last_time, cur_patten, pattens, flag
+def pattern_looping():
+    import pattern
+    global last_time, cur_pattern, patterns, flag
     if flag == True:
-        patten.reloadpatten()
+        pattern.reloadpattern()
         flag = False
-    if (time.time() - last_time) > patten.patten_loop[cur_patten][1]:
+    if (time.time() - last_time) > pattern.pattern_loop[cur_pattern][1]:
         last_time = time.time()
-        cur_patten += 1
-        if cur_patten >= len(patten.patten_loop ):
-            cur_patten = 1
-            patten.reloadpatten()
-        pattens.append(patten.patten_loop[cur_patten][0])
+        cur_pattern += 1
+        if cur_pattern >= len(pattern.pattern_loop ):
+            cur_pattern = 1
+            pattern.reloadpattern()
+        patterns.append(pattern.pattern_loop[cur_pattern][0])
 
 
 def draw_health_bar():
@@ -817,7 +817,7 @@ def draw_screen():
     clock.tick(60)
 
 def run():
-    global condition, pattens, nowtime, fade_opacity
+    global condition, patterns, nowtime, fade_opacity
     nowtime = pygame.time.get_ticks()
     condition = "real_game"
     talkcheck()
@@ -826,7 +826,7 @@ def run():
         block_break_and_create()
     if (extend_piece and map_loading.stagename == "stage6") == False:
         if map_loading.stagename == "stage7":
-            patten_looping()
+            pattern_looping()
         event_check()
         player_during()
         camera_move()
@@ -840,10 +840,10 @@ def run():
     if m_key_count == 1:
         handle_player_action()
 
-    for patten_instance in pattens:
-        import patten
+    for pattern_instance in patterns:
+        import pattern
         if piece.core_hp < 30:
-            patten.start_patten(patten_instance)
+            pattern.start_pattern(pattern_instance)
 
     if dialogue.current_dialogue_key == "7-1" and dialogue.fade_opacity < 255:
         dialogue.fade_opacity += 5 

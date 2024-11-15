@@ -15,7 +15,7 @@ def run():
 
     for frame in clip.iter_frames(fps=24, dtype="uint8"):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # 창 닫기 이벤트
+            if event.type == pygame.QUIT:
                 pygame.mixer.music.stop()
                 return "quit"
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:

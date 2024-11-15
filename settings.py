@@ -1,7 +1,6 @@
 import pygame   
 import os
 import collections
-import json
 
 pygame.init()
 screen_width = 1200
@@ -19,8 +18,6 @@ script_dir = os.path.dirname(__file__)
 
 delta_time = clock.tick(60) / 10
 angle_x, angle_y = 0, 0.245
-
-map_name = "test"#이 map name을 변경해서 맵을 변경할 수 있음
 
 mouse_sensitivity = 0.003
 
@@ -116,7 +113,7 @@ last_update = 0
 last_update2 = 0
 waitbool = False
 
-pattens = []
+patterns = []
 
 
 def player_first_start():
@@ -138,7 +135,7 @@ map_setting = [False, False, True, True, True, False, True]#순서대로 각 스
 
 
 
-cur_patten = 0
+cur_pattern = 0
 last_time = 0
-patten_loop = []
+pattern_loop = []
 flag = True
