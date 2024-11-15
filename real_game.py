@@ -364,9 +364,6 @@ def jump(pressed):
 wheep_sound = pygame.mixer.Sound("music/차원변환.mp3")
 def event_check():
     global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, patterns, nowtime, next_time
-    # nowtime = pygame.time.get_ticks()
-    # if ( nowtime > next_time ):
-    #     next_time = nowtime  # future time next change allowed
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -374,14 +371,9 @@ def event_check():
         elif event.type == pygame.KEYDOWN:
             if pygame.K_0 <= event.key <= pygame.K_9:
                 texture_num = event.key - pygame.K_0
-
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 exit()
-
-
-            
-
             if event.key == pygame.K_z: #개발자 모드 실행
                 if z_key_count == 0:
                     z_key_count = 1
