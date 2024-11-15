@@ -1,32 +1,41 @@
-import multiprocessing
-import time
+import seaborn as sns  
+from sklearn.model_selection import train_test_split  
+from sklearn.preprocessing import StandardScaler  
+from sklearn.svm import SVC  
+import numpy as np
 
-def intensive_task():
-    # 무거운 계산 작업을 반복하여 CPU를 많이 사용하게 함
-    while True:
-        result = 0
-        for i in range(1000000):
-            result += i ** 2
+# Titanic 데이터셋 로드 및 전처리
+passengers = sns.load_dataset('titanic')  
+passengers['sex'] = passengers['sex'].map({'female': 1, 'male': 0})
+passengers['age'].fillna(value=passengers['age'].mean(), inplace=True)
+passengers['FirstClass'] = passengers['pclass'].apply(lambda x: 1 if x == 1 else 0)  
+passengers['SecondClass'] = passengers['pclass'].apply(lambda x: 1 if x == 2 else 0)
 
-if __name__ == "__main__":
-    # 시스템의 CPU 코어 수를 가져옴
-    num_cores = multiprocessing.cpu_count()
+# 특성 및 레이블 정의
+features = passengers[['sex', 'age', 'FirstClass', 'SecondClass']]  
+survival = passengers['survived']
 
-    # 각 코어에 프로세스를 하나씩 할당
-    processes = []
-    for _ in range(num_cores):
-        process = multiprocessing.Process(target=intensive_task)
-        processes.append(process)
-        process.start()
+# 학습용 데이터와 테스트용 데이터로 분할
+train_features, test_features, train_labels, test_labels = train_test_split(features, survival)
 
-    # 프로세스가 잘 동작하고 있는지 확인을 위해 잠시 대기
-    time.sleep(10)
+# 데이터 표준화
+scaler = StandardScaler()  
+train_features = scaler.fit_transform(train_features)  
+test_features = scaler.transform(test_features)
 
-    # 프로세스 중지
-    for process in processes:
-        process.terminate()
+# SVM 모델 생성 및 학습
+model = SVC(probability=True)  
+model.fit(train_features, train_labels)
 
-    for process in processes:
-        process.join()
+# 샘플 데이터 정의
+man_1 = np.array([0.0, 20.0, 0.0, 0.0])  
+woman_1 = np.array([1.0, 17.0, 1.0, 0.0])  
+man_2 = np.array([0.0, 32.0, 1.0, 0.0])
 
-    print("All processes have been terminated.")
+sample_passengers = np.array([man_1, woman_1, man_2])
+
+# 샘플 데이터 표준화
+sample_passengers = scaler.transform(sample_passengers)
+
+# 클래스 확률 예측
+print(model.predict_proba(sample_passengers))

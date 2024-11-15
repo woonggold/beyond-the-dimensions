@@ -249,13 +249,17 @@ def talkcheck():
                 pygame.quit()
                 exit()
             elif event.type == pygame.KEYDOWN:
-                
+                if event.key == pygame.K_RETURN:
+                    current_dialogue_index += 1
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     exit()
+                
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
                     current_dialogue_index += 1
+                    
+            
 
         dialogue_lines = talking[current_dialogue_key]["lines"]
 

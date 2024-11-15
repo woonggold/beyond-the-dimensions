@@ -391,7 +391,8 @@ def event_check():
                 if z_key_count == 1:
                     map_loading.map_load("")
             if event.key == pygame.K_SPACE:
-                player.jump_pressed = True 
+                # player.jump_pressed = True 
+                pass
             if event.key == pygame.K_m:
                 if m_key_count == 0:
                     m_key_count = 1
@@ -498,6 +499,8 @@ def event_check():
         player.dx = -player.speed
     if keys[pygame.K_s]:
         player.dz = -player.speed
+    if keys[pygame.K_SPACE]:
+        player.jump_pressed = True 
     if keys[pygame.K_d]:
         player.dx = player.speed
     if keys[pygame.K_a] and keys[pygame.K_d]:
