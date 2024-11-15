@@ -7,7 +7,7 @@ import pattern
 
 condition = "real_game"
 import map_loading
-map_loading.map_load("stage1")
+map_loading.map_load("stage6")
 
 running = True
 reseted = False
