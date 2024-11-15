@@ -13,6 +13,7 @@ from dialogue import *
 from screen_effect import *
 import settings
 import dialogue
+import random
 
 overlap_message_timer = 0
 
@@ -37,6 +38,20 @@ def setblock(texture_num):
         event_block_y_list.append(nearesty_100)
         event_block_z_list.append(nearestz_100)
 
+camera_shake_offset = [0, 0]
+
+def swing():
+    global camera_shake_offset
+    if map_loading.stagename == "stage6":
+        if piece.swinging == 1:
+            shake_intensity = 20  # 흔들림 강도
+            camera_shake_offset[0] = random.randint(-shake_intensity, shake_intensity)
+            camera_shake_offset[1] = random.randint(-shake_intensity, shake_intensity)
+        else:
+            # 범위를 벗어나면 흔들림이 끝나고 오프셋 초기화
+            camera_shake_offset = [0, 0]
+        camera_pos[0] += camera_shake_offset[0]
+        camera_pos[2] += camera_shake_offset[1]
 
 def blockremove():
     nearestx_100 = round(player.x / 100) * 100
@@ -229,8 +244,7 @@ def player_during():
             adjust(k, 0)
             adjust(k, 1)
         if abs(player.z - player.fake_z) >= 5:
-            if player.ani != "jump":
-                player.ani = "walk"
+            player.ani = "zwalk"
             player.fake_z += 0.3 * delta_time * (player.z - player.fake_z)
         else:
             player.fake_z = player.z
@@ -348,7 +362,7 @@ def jump(pressed):
 #     angle_x += mouse_dx * mouse_sensitivity
 #     if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
 #         angle_y += mouse_dy * mouse_sensitivity
-
+wheep_sound = pygame.mixer.Sound("music/차원변환.mp3")
 def event_check():
     global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, pattens, nowtime, next_time
     # nowtime = pygame.time.get_ticks()
@@ -446,7 +460,7 @@ def event_check():
             elif event.button == 2:
                 if z_key_count == 1:    
                     blockremove()
-            elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
+            elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7] and piece.cantR == 0:
                 if int(map_loading.stagename[5]) == 7:
                     if piece.core_in:
                         piece.core_hp += 1
@@ -460,8 +474,10 @@ def event_check():
                             temp += 1
                     if temp == 0:
                         if piece.core_in:
-                            piece.core_hp -= 1
+                            piece.core_hp += 1
                         is_3D = False
+                        wheep_sound.set_volume(2)
+                        wheep_sound.play()
                     else :
                         overlap_message_timer = 60
                 elif not is_3D:
@@ -475,6 +491,8 @@ def event_check():
                         player.z = min(temp)
                     
                     is_3D = True
+                    wheep_sound.set_volume(2)
+                    wheep_sound.play()
 
     jump(player.jump_pressed)
 
@@ -822,6 +840,7 @@ def run():
     condition = "real_game"
     talkcheck()
     check_player_position()
+    swing()
     if dialogue.is_talking == False:
         block_break_and_create()
     if (extend_piece and map_loading.stagename == "stage6") == False:

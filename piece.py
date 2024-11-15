@@ -10,6 +10,7 @@ core_hp = 0
 core_in = False
 extend_modified_size = 0
 cantR = 0
+swinging = 0
 
 class MakePiece:
     def __init__(self, pos, event, size):
@@ -81,7 +82,7 @@ def aquire_piece_check(piece):
             core_in = True
 
 def piece_event_check(event):
-    global extend_piece_pos, extend_modified_size, cantR
+    global extend_piece_pos, extend_modified_size, cantR, swinging
     import real_game, map_loading, settings
     # print (real_game.scr_effect)
     match event:
@@ -138,13 +139,15 @@ def piece_event_check(event):
                     player.y = piece.y+100
                     player.jump_pressed = False
         case "distort":
+            cantR = 1
+            swinging = 1
             temp = []
             for block in map_loading.BLOCKS:
                 if abs(block.x - player.x) < 100:
                     temp.append(block.original_z)
             if not temp:
                 player.z = 100
-            else: 
+            else:
                 player.z = min(temp)
             real_game.is_3D = True
             cantR = 1
@@ -153,6 +156,7 @@ def piece_event_check(event):
                 real_game.last_update = pygame.time.get_ticks()
                 real_game.reset_block_timers()
         case "fin6":
+            swinging = 0
             real_game.m_key_count = 0
 
 
