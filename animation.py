@@ -56,7 +56,7 @@ def anime(updown):
     elif player.ani == "jump":
         walk_sound.stop()
         walk_sound_played = False
-        if now - last_update > 200:  # 200ms마다 이미지 변경
+        if now - last_update > 100:  # 점프는 100ms정도
             last_update = now
             current_frame = (current_frame + 1) % len(jump_images)
             player.image = jump_images[current_frame]
