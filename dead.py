@@ -45,6 +45,7 @@ def player_dead_check():
         draw_speed = 4
         back_color = (0,0,0)
         piece.core_hp = 0
+        piece.swinging = 0
         die_sound = pygame.mixer.Sound("music/die.mp3")
         die_sound.set_volume(0.5)
         die_sound.play()
