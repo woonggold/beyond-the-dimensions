@@ -124,6 +124,12 @@ talking = {
         "position": (750, 850, 50, 150),
         "stage": "stage5"
     },
+    "5-2": {
+        "lines": [
+                "(다른 길을 찾아봐야 할 것 같다)"],
+        "position": (5000, 5050, 50, 250),
+        "stage": "stage5"
+    },
     "6-1": {
         "lines": [
                 "(사실 2D로도 지나갈 수 있어 보인다...)"],
@@ -135,6 +141,13 @@ talking = {
                 "[blue]파란색 블록을 밟으면 우리가 넘어가도록 블록을 생성시킬 수 있어",
                 "좋아 저 위에 있는 파란 블록을 밟아야겠군"],
         "position": (550, 650, 50, 150),
+        "stage": "stage6"
+    },
+    "6-3": {
+        "lines": [
+                "차원 붕괴라기에 걱정했는데..",
+                "생각보다 별일은 없네"],
+        "position": (150, 250, 50, 150),
         "stage": "stage6"
     },
     "6-4": {
@@ -176,10 +189,10 @@ talking = {
     }
 }
 
-
 def check_player_position():
     import real_game, map_loading
     global is_talking, current_dialogue_key, stagename, piece, fade_opacity
+    
     for key, dialogue in talking.items():
         x_min, x_max, z_min, z_max = dialogue["position"]
         
@@ -189,8 +202,23 @@ def check_player_position():
                 current_dialogue_key = key
                 fade_opacity = 0
                 return
+        
+        elif key == "5-2":
+            if (x_min < real_game.player.x < x_max and
+                z_min < real_game.player.z < z_max and
+                dialogue["stage"] == map_loading.stagename and
+                real_game.player.y == -1000):
+                
+                if dialogue.get("completed", False) is not True:
+                    is_talking = True
+                    current_dialogue_key = key
+                    return
+
         elif key != "7-1":
-            if x_min < real_game.player.x < x_max and z_min < real_game.player.z < z_max and dialogue["stage"] == map_loading.stagename:
+            if (x_min < real_game.player.x < x_max and 
+                z_min < real_game.player.z < z_max and 
+                dialogue["stage"] == map_loading.stagename):
+                
                 if dialogue.get("completed", False) is not True:
                     is_talking = True
                     current_dialogue_key = key
@@ -225,7 +253,8 @@ def talkcheck():
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     exit()
-                if event.key == pygame.K_SPACE:  # 스페이스 키로 대화 넘기기
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1: 
                     current_dialogue_index += 1
 
         dialogue_lines = talking[current_dialogue_key]["lines"]
