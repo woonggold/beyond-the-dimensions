@@ -1,8 +1,9 @@
-import start_menu
-import real_game
-import ending
+import start_menu #파일 이름임
+import real_game #파일 이름임
+import ending #파일 이름임
 import pygame
 import start_video
+import pattern
 
 condition = "real_game"
 import map_loading

@@ -139,3 +139,5 @@ cur_pattern = 0
 last_time = 0
 pattern_loop = []
 flag = True
+start_looping_bool = False
+

@@ -4,15 +4,13 @@ from player import *
 import pygame
 import os
 
-# 이미지 폴더에서 이미지들을 불러옴
 walk_images = [f"walkanime/walk_{i}" for i in range(1, 4)]
 jump_images = [f"jumpanime/jump_{i}" for i in range(1, 4)]
 standing_images = ["standinganime//player"]
 
-# 애니메이션 상태 변수 초기화
 last_update = 0
 current_frame = 0
-img = standing_images  # 처음 상태는 idle 상태로 초기화
+img = standing_images
 walk_sound = pygame.mixer.Sound("music/walking.mp3")
 walk_sound.set_volume(2)
 walk_sound_played = False
@@ -32,21 +30,19 @@ def anime(updown):
 
 
 
-
-    # 상태에 따른 이미지 변경
     if player.ani == "walk":
         global walk_sound_played
-        if not walk_sound_played:  # 효과음이 아직 재생되지 않은 경우
+        if not walk_sound_played:
             walk_sound.play()
             walk_sound_played = True
-        if now - last_update > 200:  # 200ms마다 이미지 변경
+        if now - last_update > 200:
             last_update = now
             current_frame = (current_frame + 1) % len(walk_images)
             player.image = walk_images[current_frame]
     elif player.ani == "jump":
         walk_sound.stop()
         walk_sound_played = False
-        if now - last_update > 200:  # 200ms마다 이미지 변경
+        if now - last_update > 200:
             last_update = now
             current_frame = (current_frame + 1) % len(jump_images)
             player.image = jump_images[current_frame]
@@ -54,7 +50,7 @@ def anime(updown):
     elif player.ani == "stand":
         walk_sound.stop()
         walk_sound_played = False
-        if now - last_update > 50:  # 350ms마다 이미지 변경 (idle 상태)
+        if now - last_update > 50:
             player.image = standing_images[0]
     draw_quad(player.image, temp, updown)
             

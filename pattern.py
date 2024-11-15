@@ -41,7 +41,7 @@ def start_pattern(pattern):
     for action in list(pattern.action_queue):
         time_elapsed = real_game.nowtime - action["last_update"]
         #처음 빨간생 블록을 0.05가 지나면 생성하는 코드
-        if action["status"] == pattern.pattern_name and time_elapsed >= 50:
+        if action["status"] == pattern.pattern_name and time_elapsed >= 1:
             x, y, z = action["position"]
             
             map_loading.BLOCKS.append(map_loading.Block((x, y, z), 3))

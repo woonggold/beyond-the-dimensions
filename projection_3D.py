@@ -4,17 +4,15 @@ from settings import *
 
 
 def rotate_point(point, angle_x, angle_y):
-    """3D 점을 주어진 각도만큼 회전시킨 좌표를 반환"""
+    #3D 점을 주어진 각도만큼 회전시킨 좌표를 출력
     x, y, z = point
     angle_x = angle_x
     angle_y = -angle_y
 
-    # y축 회전
     cos_theta = math.cos(angle_y)
     sin_theta = math.sin(angle_y)
     x, z = cos_theta * x + sin_theta * z, -sin_theta * x + cos_theta * z
 
-    # x축 회전
     cos_theta = math.cos(angle_x)
     sin_theta = math.sin(angle_x)
     y, z = cos_theta * y - sin_theta * z, sin_theta * y + cos_theta * z

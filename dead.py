@@ -2,7 +2,7 @@ import math, time
 from player import *
 from settings import *
 import map_loading, piece
-import patten
+import pattern
 
 stun_time = 0
 
@@ -58,11 +58,11 @@ def player_dead_check():
                     if map_loading.warp_block_list[i][3] == map_loading.stagename:
                         if map_loading.stagename == "stage7":
                             #패턴 초기화 하는 코드
-                            real_game.cur_patten = 0
-                            real_game.pattens = []
+                            real_game.cur_pattern = 0
+                            real_game.patterns = []
                             for block in list(map_loading.BLOCKS):
                                 map_loading.BLOCKS.remove(block)
-                            patten.reloadpatten()
+                            pattern.reloadpattern()
                             #-----------------------
                             real_game.warp_working_count = 1
                             player.x , player.y, player.z = map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1] -2200, map_loading.warp_block_list[i][2]
