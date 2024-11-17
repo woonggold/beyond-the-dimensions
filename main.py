@@ -5,9 +5,9 @@ import pygame
 import start_video
 import pattern
 
-condition = "real_game"
+condition = "ending"
 import map_loading
-map_loading.map_load("stage5")
+map_loading.map_load("stage1")
 
 running = True
 reseted = False

@@ -72,6 +72,7 @@ def map_load(mapname):
     #     settings.start_looping_bool = True
     #     print(settings.start_looping_bool)
 
+
     for i in range(len(data["Blocks"]["x"])):
         block_position = (data["Blocks"]["x"][i], data["Blocks"]["y"][i], data["Blocks"]["z"][i])
         block_texture = data["Blocks"]["texture"][i]
