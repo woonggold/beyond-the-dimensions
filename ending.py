@@ -43,16 +43,13 @@ credits = [
     "✔Watch : https://youtu.be/0aLKEeltie8"
 ]
 
+
 def event_check():
     global condition
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             condition = "quit"
             return True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                condition = "quit"
-                return True
     return False
 
 def run():
@@ -65,16 +62,24 @@ def run():
     screen.fill(white)
     pygame.display.update()
     pygame.mixer.music.load("music/게임 시작!.mp3")
-    pygame.mixer.music.play(-1)
+    pygame.mixer.music.play()
 
     for i, text in enumerate(dialogues):
         if event_check():
             return condition
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            break
 
-        fade_color = blue if i >= blue_fade_start else black
+        if text == "어...?":
+            fade_color = black
+        elif i >= blue_fade_start:
+            fade_color = blue
+        else:
+            fade_color = black
 
         for alpha in range(0, 256, 5):
-            if event_check():  # ESC키가 눌리면 즉시 종료
+            if event_check():
                 return condition
             screen.fill(white)
             render_text = font.render(text, True, fade_color)
@@ -85,6 +90,23 @@ def run():
             pygame.time.delay(int(fade_duration * 1000 / 51))
 
         pygame.time.delay(int(fade_delay * 1000))
+
+        if text == "들리니?":
+            for alpha in range(0, 256, 5):
+                if event_check():
+                    return condition
+                screen.fill(white)
+                render_text = font.render(text, True, blue)
+                render_text.set_alpha(255 - alpha)
+                text_rect = render_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+                screen.blit(render_text, text_rect)
+                overlay = pygame.Surface(screen.get_size())
+                overlay.fill(white)
+                overlay.set_alpha(alpha)
+                screen.blit(overlay, (0, 0))
+                pygame.display.update()
+                pygame.time.delay(int(fade_duration * 1000 / 51))
+            break
 
     pygame.display.update()
     screen.fill(black)
@@ -104,6 +126,9 @@ def run():
         pygame.display.update()
         pygame.time.delay(20)
         y_offset -= 1
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            y_offset -= 5
 
     condition = "start_menu"
     return condition

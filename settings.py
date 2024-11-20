@@ -1,6 +1,7 @@
 import pygame   
 import os
 import collections
+script_dir = os.path.dirname(__file__)
 
 pygame.init()
 screen_width = 1200
@@ -8,6 +9,7 @@ screen_height = 800
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 pygame.display.set_caption('Beyond the Dimensions')
+pygame.display.set_icon(pygame.image.load(f'{script_dir}/images/002.png'))
 
 next_time = 0
 camera_pos = [100, 0, -700]

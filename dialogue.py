@@ -13,18 +13,25 @@ target_bar_height = 50
 animation_speed = target_bar_height / (0.5 * 12) 
 inform_space = False
 inform_R = False
+inform_boss = False
 top_bar_height = 0
 bottom_bar_height = 0
 last_dialogue_key = None
 start_time = None
 fade_opacity = None
 fadestart = None
+talkstart = None
 fade_duration = 3 #페이드 초를 이걸로 바꾸기
+text_duration = 0.025
+text_ended = False
 once = False
+esc_timer = 0
+esc_start = 0
 
 
 # Font
 font = pygame.font.Font('fonts/BMDOHYEON_otf.otf', 36)
+smallfont = pygame.font.Font('fonts/BMDOHYEON_otf.otf', 12)
 blue_font = pygame.font.Font('fonts/BMEULJIRO.otf', 36)
 current_dialogue_index = 0
 is_talking = False
@@ -120,7 +127,12 @@ talking = {
                 "[blue]ㅏㅏ", 
                 "[blue]차원 붕괴 때문에 차원 간의 경계가 점점 줄어들고 있어..!!",
                 "[blue]이러다간… 어떻게 될지…",
-                "[blue]일단 아마 차원 이동이 더 쉬워졌을 거야..!"],
+                "[blue]일단 아마 차원 이동이 더 쉬워졌을 거야..!",
+                "뭐..?", 
+                "여보세요….?", 
+                "…", 
+                "..일단 할 수 있는 걸 하자"
+            ],
         "position": (750, 850, 50, 150),
         "stage": "stage5"
     },
@@ -196,7 +208,7 @@ def check_player_position():
     for key, dialogue in talking.items():
         x_min, x_max, z_min, z_max = dialogue["position"]
         
-        if key == "7-1" and piece.core_hp >= 30:
+        if key == "7-1" and piece.core_hp >= 200:
             if dialogue.get("completed", False) is not True:  
                 is_talking = True
                 current_dialogue_key = key
@@ -239,7 +251,7 @@ def extend_check():
 def talkcheck():
     extend_check()
     import real_game
-    global current_dialogue_index, is_talking, current_dialogue_key, blue_font, inform_space, inform_R
+    global current_dialogue_index, is_talking, current_dialogue_key, blue_font, inform_space, inform_R, inform_boss, talkstart, smallfont, text_ended, talkstart, esc_start, esc_timer
     
     if is_talking and current_dialogue_key:
         real_game.player.jump_pressed = False
@@ -249,13 +261,30 @@ def talkcheck():
                 pygame.quit()
                 exit()
             elif event.type == pygame.KEYDOWN:
-                
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    exit()
+                if event.key == pygame.K_RETURN:
+                    if text_ended:
+                        current_dialogue_index += 1
+                        talkstart = None
+                    else:
+                        talkstart = 0
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1: 
-                    current_dialogue_index += 1
+                if event.button == 1:
+                    if text_ended:
+                        current_dialogue_index += 1
+                        talkstart = None
+                    else:
+                        talkstart = 0
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            if esc_timer == 0:
+                esc_start = time.time()
+            esc_timer = time.time() - esc_start + 0.01
+            if esc_timer >= 1:
+                pygame.quit()
+                exit()
+        else:
+            esc_timer = 0
+
 
         dialogue_lines = talking[current_dialogue_key]["lines"]
 
@@ -273,14 +302,14 @@ def talkcheck():
                 player.player.y = 0
                 player.player.x = 100
                 player.player.z = 100
+                inform_boss = True
             current_dialogue_index = 0
             is_talking = False
             talking[current_dialogue_key]["completed"] = True
 
 def draw_dialogue():
-    global top_bar_height, bottom_bar_height, last_dialogue_key, start_time, fadestart, inform_space, inform_R
-    
-    import real_game
+    import map_loading, real_game
+    global top_bar_height, bottom_bar_height, last_dialogue_key, start_time, fadestart, inform_space, inform_R, inform_boss, talkstart, text_ended, stagename
     
     if is_talking and current_dialogue_key:
         if current_dialogue_key != last_dialogue_key:
@@ -308,15 +337,31 @@ def draw_dialogue():
         dialogue_box_rect = pygame.Rect(
             50, real_game.screen_height - bottom_bar_height - 150, real_game.screen_width - 100, 100
         )
-        pygame.draw.rect(real_game.screen, DIALOGUE_BOX_COLOR, dialogue_box_rect)
+        pygame.draw.rect(real_game.screen, DIALOGUE_BOX_COLOR, dialogue_box_rect, 0, 10)
 
         #대사 가져오고 dialogue_lines에 저장
         dialogue_lines = talking[current_dialogue_key]["lines"]
         if current_dialogue_index < len(dialogue_lines):
+            if talkstart is None:
+                talkstart = time.time()
+            
+            elapsed_time = time.time() - talkstart
+            index = max(0, int(elapsed_time / text_duration))
             line = dialogue_lines[current_dialogue_index]
 
             #블루 태그 확인
+            text_ended = False
             parts = line.split("[blue]")
+            max_index0 = len(list(parts[0]))
+            parts[0] = "".join(list(parts[0])[:index])
+            if len(parts) > 1:
+                max_index1 = len(list(parts[1]))
+                parts[1] = "".join(list(parts[1])[:index])
+                if index >= max_index1:
+                    text_ended = True
+            else:
+                if index >= max_index0:
+                    text_ended = True
             rendered_parts = []  # List to hold each rendered part
 
             for i, part in enumerate(parts):
@@ -337,7 +382,12 @@ def draw_dialogue():
                 text_rect = part.get_rect(topleft=(x_offset, y_offset))
                 real_game.screen.blit(part, text_rect)
                 x_offset += part.get_width() + 10
-    if inform_space or inform_R:
+            if text_ended and current_dialogue_index == 0 and map_loading.stagename == "stage1":
+                next = smallfont.render("Enter로 대사 넘기기", True, (128, 128, 128))
+                real_game.screen.blit(next, (60, real_game.screen_height - bottom_bar_height - 140))
+
+
+    if inform_space or inform_R or inform_boss:
         if fadestart is None:
             fadestart = time.time()  # 시작 시간 기록
         
@@ -349,12 +399,15 @@ def draw_dialogue():
             fadestart = None
             inform_space = False
             inform_R = False
+            inform_boss = False
             return
 
         if inform_space:
             instruction_text = font.render("SPACE키를 눌러 점프", True, (0, 0, 0))
         elif inform_R:
             instruction_text = font.render("좌클릭으로 차원변환", True, (0, 0, 0))
+        elif inform_boss:
+            instruction_text = font.render("좌클릭으로 에너지 코어 충전", True, (0, 0, 0))
         instruction_text.set_alpha(alpha)  # 알파 값 설정
         text_rect = instruction_text.get_rect(center=(real_game.screen_width // 2, real_game.screen_height - 50))
 
