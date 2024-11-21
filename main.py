@@ -5,7 +5,7 @@ import pygame
 import start_video
 import pattern
 
-condition = "ending"
+condition = "start_video"
 import map_loading
 map_loading.map_load("stage1")
 

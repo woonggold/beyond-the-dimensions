@@ -541,7 +541,7 @@ def add_block_action(x, y, z):
         "timer": 0,
         "texture_num": 0
     })
-    
+
 def reset_block_timers():
     # m 키를 누른 순간 타이머를 초기화하여 새로 시작하게 함
     for action in block_action_queue:
