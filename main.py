@@ -5,9 +5,9 @@ import pygame
 import start_video
 import pattern
 
-condition = "start_menu"
+condition = "real_game"
 import map_loading
-map_loading.map_load("stage5")
+map_loading.map_load("stage6")
 
 running = True
 reseted = False
@@ -19,6 +19,8 @@ while (running == True):
         case "start_video":
             condition = start_video.run()
         case "real_game":
+            pygame.mouse.set_visible(False)
+            pygame.event.set_grab(True)
             condition = real_game.run()
         case "ending":
             condition = ending.run()

@@ -8,11 +8,16 @@ import time
 
 clip = VideoFileClip(f"{script_dir}//videos//beyond_the_dimension.mp4")
 pygame.mixer.init()
-pygame.mixer.music.load(f"{script_dir}//music//noise_short.wav")
-pygame.mixer.music.play()
 start_button = button.button(screen_width/2-181,600,"시작1.png","시작2.png")
 
 def run():
+    esc_timer = 0
+    esc_start = 0
+    pygame.mouse.set_visible(True)
+    pygame.event.set_grab(False)
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(f"{script_dir}//music//noise_short.wav")
+    pygame.mixer.music.play()
     pygame.display.set_caption('Beyond the Dimensions')
     for frame in clip.iter_frames(fps=24, dtype="uint8"):
         for event in pygame.event.get():
@@ -25,8 +30,11 @@ def run():
                 esc_start = time.time()
             esc_timer = time.time() - esc_start + 0.01
             if esc_timer >= 1:
+                pygame.mouse.set_visible(False)
+                pygame.event.set_grab(True)
+                pygame.mouse.get_rel()
                 pygame.mixer.music.stop()
-                return "quit"
+                return "start_video"
         else:
             esc_timer = 0
             

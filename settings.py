@@ -118,8 +118,16 @@ waitbool = False
 patterns = []
 
 
+cur_pattern = 0
+last_time = 0
+pattern_loop = []
+flag = True
+start_looping_bool = False
+
+map_setting = [False, False, True, True, True, False, True]#순서대로 각 스테이지의 초기 is_3D 값.
+
 def player_first_start():
-    global firt_count
+    global firt_count, patterns
     if firt_count == 0:
         import map_loading, real_game, player
         
@@ -130,16 +138,6 @@ def player_first_start():
                     player.player.x , player.player.y, player.player.z = map_loading.warp_block_list[i][0] ,4000, map_loading.warp_block_list[i][2]
                     real_game.target_camera_pos = [map_loading.warp_block_list[i][0] ,map_loading.warp_block_list[i][1]-400, map_loading.warp_block_list[i][2] - 800]
         firt_count = 1 
+        # real_game.cur_pattern = 0
+        # patterns = []
         screen.fill((0, 0, 0))
-        
-
-map_setting = [False, False, True, True, True, False, True]#순서대로 각 스테이지의 초기 is_3D 값.
-
-
-
-cur_pattern = 0
-last_time = 0
-pattern_loop = []
-flag = True
-start_looping_bool = False
-

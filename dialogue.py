@@ -73,7 +73,7 @@ talking = {
             "[blue]방금 너가 그 균열을 지나온 거야.", "[blue]그니까 지금 더 높은 차원으로 넘어왔다고 생각하면 돼.",
             "[blue]그러니까…한마디로...", "[blue]너는 앞에 있는 벽을 지나갈 수 있을 거야.",
             "왜 딴소리야.. 내 목소리가 안 들리는 건가..?", "그나저나 내가 이 벽을 지나갈 수 있다고?",
-            "막혀있는데..?", "...?"
+            "막혀있는데..?"
         ],
         "position": (650, 750, 50, 150),
         "stage": "stage2"
@@ -280,8 +280,7 @@ def talkcheck():
                 esc_start = time.time()
             esc_timer = time.time() - esc_start + 0.01
             if esc_timer >= 1:
-                pygame.quit()
-                exit()
+                return True
         else:
             esc_timer = 0
 
@@ -306,6 +305,7 @@ def talkcheck():
             current_dialogue_index = 0
             is_talking = False
             talking[current_dialogue_key]["completed"] = True
+    return False
 
 def draw_dialogue():
     import map_loading, real_game
@@ -383,7 +383,7 @@ def draw_dialogue():
                 real_game.screen.blit(part, text_rect)
                 x_offset += part.get_width() + 10
             if text_ended and current_dialogue_index == 0 and map_loading.stagename == "stage1":
-                next = smallfont.render("Enter로 대사 넘기기", True, (128, 128, 128))
+                next = smallfont.render("ENTER로 대사 넘기기", True, (128, 128, 128))
                 real_game.screen.blit(next, (60, real_game.screen_height - bottom_bar_height - 140))
 
 

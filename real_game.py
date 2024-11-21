@@ -162,7 +162,7 @@ def check_warp():
                                     
                                     map_loading.map_load(modifiyed_map_name2)
                                     map_loading_count = 1        
-                                elif modifiyed_map_name2 == "stage3":
+                                elif modifiyed_map_name2 == "stage3" and warp_block_list[i][3] == "stage5":
                                     map_loading.map_load("stage5")
                                     map_loading_count = 1                          
                                 else:
@@ -373,6 +373,7 @@ def jump(pressed):
 #     if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
 #         angle_y += mouse_dy * mouse_sensitivity
 wheep_sound = pygame.mixer.Sound("music/차원변환.mp3")
+charge_sound = pygame.mixer.Sound("music/energy_charge.mp3")
 def event_check():
     global condition, is_3D, nowA, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, patterns, nowtime, next_time, esc_start, esc_timer, pictime, picstart
     # nowtime = pygame.time.get_ticks()
@@ -468,9 +469,11 @@ def event_check():
             elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
                 if int(map_loading.stagename[5]) == 7:
                     if piece.core_in:
-                        if pictime >= 1:
+                        if pictime >= 1 and piece.core_hp < 200:
                             picstart = time.time()
-                            piece.core_hp += 10
+                            piece.core_hp += 100
+                            charge_sound.set_volume(5)
+                            charge_sound.play()
                             for pic in piece.Pieces:
                                 if pic.event == "core":
                                     pic.img = pygame.image.load(f"{script_dir}//images//에너지코어_dmg.png").convert_alpha()
@@ -503,7 +506,7 @@ def event_check():
                         player.z = min(temp)
                     if piece.cantR == False:
                         is_3D = True
-                    wheep_sound.set_volume(2)
+                    wheep_sound.set_volume(5)
                     wheep_sound.play()
 
     jump(player.jump_pressed)
@@ -536,8 +539,7 @@ def event_check():
             esc_start = time.time()
         esc_timer = time.time() - esc_start + 0.01
         if esc_timer >= 1:
-            pygame.quit()
-            exit()
+            condition = 'start_menu'
     else:
         esc_timer = 0
     
@@ -859,28 +861,33 @@ def draw_screen():
     clock.tick(60)
 
 def gotoending():
-    global condition
+    global condition, cur_pattern, patterns
     for pattern_instance in patterns:
         import pattern
-        if piece.core_hp < 200:
+        if piece.core_hp < 200 and map_loading.stagename != "stage1":
             pattern.start_pattern(pattern_instance)
 
     if dialogue.current_dialogue_key == "7-1" and dialogue.fade_opacity < 255:
         dialogue.fade_opacity += 5 
         if dialogue.fade_opacity >= 255:
-            condition = "ending" 
+            condition = "ending"
+            cur_pattern = 0
+            patterns = []
+            for block in list(map_loading.BLOCKS):
+                map_loading.BLOCKS.remove(block)
+            start_looping_bool = False
 
 def run():
     global condition, patterns, nowtime, fade_opacity
     nowtime = pygame.time.get_ticks()
     condition = "real_game"
-    talkcheck()
-    if settings.start_looping_bool == True:
+    if talkcheck(): condition = 'start_menu'
+    if settings.start_looping_bool == True and map_loading.stagename == "stage7":
         pattern_looping()
         
     check_player_position()
     swing()
-    if dialogue.is_talking == False:
+    if dialogue.is_talking == False and map_loading.stagename != "stage1":
         block_break_and_create()
     if (extend_piece and map_loading.stagename == "stage6") == False:
         
