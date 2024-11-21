@@ -3,6 +3,7 @@ from player import *
 
 import pygame
 import os
+import real_game
 
 # 이미지 폴더에서 이미지들을 불러옴
 walk_images = [f"walkanime/walkXAxis_{i}" for i in range(1, 7)]
@@ -10,9 +11,10 @@ zwalk_images = [f"walkanime/walkYAxis_{i}" for i in range(1, 6)]
 jump_images = [f"jumpanime/jump_{i}" for i in range(1, 5)]
 standing_images = ["standinganime//player"]
 
+# 애니메이션 상태 변수 초기화
 last_update = 0
 current_frame = 0
-img = standing_images
+img = standing_images  # 처음 상태는 idle 상태로 초기화
 walk_sound = pygame.mixer.Sound("music/walking.mp3")
 walk_sound.set_volume(2)
 walk_sound_played = False
@@ -32,9 +34,11 @@ def anime(updown):
 
 
 
+
+    # 상태에 따른 이미지 변경
     if player.ani == "walk":
         global walk_sound_played
-        if not walk_sound_played:
+        if not walk_sound_played:  # 효과음이 아직 재생되지 않은 경우
             walk_sound.play()
             walk_sound_played = True
         if now - last_update > 50:  # 워크는 좀빨리
@@ -52,7 +56,7 @@ def anime(updown):
     elif player.ani == "jump":
         walk_sound.stop()
         walk_sound_played = False
-        if now - last_update > 200:
+        if now - last_update > 100:  # 점프는 100ms정도
             last_update = now
             current_frame = (current_frame + 1) % len(jump_images)
             player.image = jump_images[current_frame]
@@ -60,7 +64,7 @@ def anime(updown):
     elif player.ani == "stand":
         walk_sound.stop()
         walk_sound_played = False
-        if now - last_update > 50:
+        if now - last_update > 50:  # 350ms마다 이미지 변경 (idle 상태)
             player.image = standing_images[0]
     draw_quad(player.image, temp, updown)
             
@@ -76,9 +80,10 @@ def draw_quad(image_name, quad, updown):
     img = pygame.image.load(f"{script_dir}//images//{image_name}.png").convert_alpha()
 
     # `player.dx`가 음수일 때 이미지를 좌우 반전
-    if player.dx < 0:
+    if player.ani == "walk" and player.dx < 0:
         img = pygame.transform.flip(img, True, False)
-
+    if player.ani == "jump" and real_game.nowA == True:
+        img = pygame.transform.flip(img, True, False)
     # 나머지 코드는 그대로
     points = dict()
 

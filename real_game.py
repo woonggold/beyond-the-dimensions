@@ -16,6 +16,11 @@ import dialogue
 import random
 
 overlap_message_timer = 0
+esc_start = 0
+esc_timer = 0
+pictime = 0
+picstart = 0
+nowA = None
 
 def setblock(texture_num):
     nearestx_100 = round(player.x / 100) * 100
@@ -139,7 +144,7 @@ def check_warp():
                         player.z = warp_block_list[j][2]
                         camera_pos[0] = warp_block_list[j][0]
                         camera_pos[1] = warp_block_list[j][1] - 400
-                        camera_pos[2] = warp_block_list[j][1] - 800
+                        camera_pos[2] = warp_block_list[j][2] - 800
                     else:
                         pass
             else:
@@ -156,7 +161,10 @@ def check_warp():
                                 if warp_block_list[i][3] == modifiyed_map_name2:
                                     
                                     map_loading.map_load(modifiyed_map_name2)
-                                    map_loading_count = 1                                    
+                                    map_loading_count = 1        
+                                elif modifiyed_map_name2 == "stage3" and warp_block_list[i][3] == "stage5":
+                                    map_loading.map_load("stage5")
+                                    map_loading_count = 1                          
                                 else:
                                     if (
                                         block.x == warp_block_list[i][0]
@@ -250,7 +258,7 @@ def player_during():
             player.fake_z += 0.3 * delta_time * (player.z - player.fake_z)
         else:
             player.fake_z = player.z
-        if abs(player.x - player.fake_x) >= 5:
+        if abs(player.x - player.fake_x) >= 5 and player.dx != 0:
             if player.ani != "jump":
                 player.ani = "walk"
             player.fake_x += 0.3 * delta_time * (player.x - player.fake_x)
@@ -258,6 +266,9 @@ def player_during():
             player.fake_x = player.x
 
 
+        
+        
+        
     elif z_key_count == 1:
         check_warp()
         player.dy = 1
@@ -362,8 +373,17 @@ def jump(pressed):
 #     if (-math.pi/2<angle_y + mouse_dy * mouse_sensitivity<math.pi/2):
 #         angle_y += mouse_dy * mouse_sensitivity
 wheep_sound = pygame.mixer.Sound("music/차원변환.mp3")
+charge_sound = pygame.mixer.Sound("music/energy_charge.mp3")
 def event_check():
-    global condition, is_3D, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, patterns, nowtime, next_time
+    global condition, is_3D, nowA, overlap_message_timer,target_camera_pos, color, z_key_count, texture_num, m_key_count, last_update, h_key_count, patterns, nowtime, next_time, esc_start, esc_timer, pictime, picstart
+    # nowtime = pygame.time.get_ticks()
+    # if ( nowtime > next_time ):
+    #     next_time = nowtime  # future time next change allowed
+    pictime = time.time() - picstart
+    if pictime >= 1:
+        for pic in piece.Pieces:
+            if pic.event == "core":
+                pic.img = pygame.image.load(f"{script_dir}//images//에너지코어.png").convert_alpha()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -371,9 +391,7 @@ def event_check():
         elif event.type == pygame.KEYDOWN:
             if pygame.K_0 <= event.key <= pygame.K_9:
                 texture_num = event.key - pygame.K_0
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                exit()
+
             if event.key == pygame.K_z: #개발자 모드 실행
                 if z_key_count == 0:
                     z_key_count = 1
@@ -433,7 +451,6 @@ def event_check():
                     camera_pos[2] -= 100
 
             if event.key == pygame.K_SPACE: 
-                player.jump_pressed = False
                 if z_key_count == 1:
                     player.y -= 100
                     camera_pos[1] -= 100
@@ -452,10 +469,18 @@ def event_check():
             elif event.button == 2:
                 if z_key_count == 1:    
                     blockremove()
-            elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7] and piece.cantR == 0:
+            elif event.button == 1 and prevent2 == False and int(map_loading.stagename[5]) in [5,6,7]:
                 if int(map_loading.stagename[5]) == 7:
                     if piece.core_in:
-                        piece.core_hp += 1
+                        if pictime >= 1 and piece.core_hp < 200:
+                            picstart = time.time()
+                            piece.core_hp += 100
+                            charge_sound.set_volume(5)
+                            charge_sound.play()
+                            for pic in piece.Pieces:
+                                if pic.event == "core":
+                                    pic.img = pygame.image.load(f"{script_dir}//images//에너지코어_dmg.png").convert_alpha()
+
                     return
                         
                 # 시점 전환 목표 설정
@@ -465,9 +490,10 @@ def event_check():
                         if abs(block.x - player.x) < 100 and -100 < (player.y - block.y) < 200:
                             temp += 1
                     if temp == 0:
-                        if piece.core_in:
-                            piece.core_hp += 1
-                        is_3D = False
+                        # if piece.core_in:
+                        #     piece.core_hp += 1
+                        if piece.cantR == 0:
+                            is_3D = False
                         wheep_sound.set_volume(2)
                         wheep_sound.play()
                     else :
@@ -481,9 +507,9 @@ def event_check():
                         player.z = 100
                     else: 
                         player.z = min(temp)
-                    
-                    is_3D = True
-                    wheep_sound.set_volume(2)
+                    if piece.cantR == False:
+                        is_3D = True
+                    wheep_sound.set_volume(5)
                     wheep_sound.play()
 
     jump(player.jump_pressed)
@@ -497,18 +523,30 @@ def event_check():
         player.dz = player.speed
     if keys[pygame.K_a]:
         player.dx = -player.speed
+        nowA = True
     if keys[pygame.K_s]:
         player.dz = -player.speed
     if keys[pygame.K_SPACE]:
         player.jump_pressed = True 
     if keys[pygame.K_d]:
         player.dx = player.speed
+        nowA = False
     if keys[pygame.K_a] and keys[pygame.K_d]:
         player.dx = 0
     if keys[pygame.K_w] and keys[pygame.K_s]:
         player.dz = 0
+    if keys[pygame.K_SPACE]:
+        player.jump_pressed = True
+    else:
+        player.jump_pressed = False
     if keys[pygame.K_ESCAPE]:
-        pygame.quit()
+        if esc_timer == 0:
+            esc_start = time.time()
+        esc_timer = time.time() - esc_start + 0.01
+        if esc_timer >= 1:
+            condition = 'start_menu'
+    else:
+        esc_timer = 0
     
     
     
@@ -661,9 +699,10 @@ def block_3D_transition(block):
 def pattern_looping():
     import pattern
     global last_time, cur_pattern, patterns, flag
-    print (cur_pattern)
     if flag == True:
         pattern.reloadpattern()
+        for block in list(map_loading.BLOCKS):
+            map_loading.BLOCKS.remove(block)
         flag = False
     if (time.time() - last_time) > pattern.pattern_loop[cur_pattern][1]:
         last_time = time.time()
@@ -744,7 +783,6 @@ def draw_order_cal():
             dialogue.extend_modified_size *= 1.03
             dialogue.extend_piece_pos[0] += 0.01 * (600 - dialogue.extend_piece_pos[0])
             dialogue.extend_piece_pos[1] += 0.01 * (400 - dialogue.extend_piece_pos[1])
-            print (dialogue.extend_modified_size)
             modified_img = pygame.transform.scale(piece.Pieces[0].img, (dialogue.extend_modified_size,dialogue.extend_modified_size))
             modified_rect = modified_img.get_rect()
             modified_width, modified_height = modified_rect.width, modified_rect.height
@@ -784,7 +822,7 @@ puzzle = 0
 def stage6_puzzle():
     global puzzle
     if map_loading.stagename == "stage6":
-        if 150 < player.x < 250 and player.y == -400 and puzzle == 0:
+        if 150 < player.x < 250 and player.y == -300 and puzzle == 0:
             map_loading.show_saveblocks()
             puzzle += 1
 def error404():
@@ -829,18 +867,29 @@ def draw_screen():
     pygame.display.flip()
     clock.tick(60)
 
+def gotoending():
+    global condition, cur_pattern, patterns
+
+    if dialogue.current_dialogue_key == "7-1" and dialogue.fade_opacity < 255:
+        dialogue.fade_opacity += 5 
+        if dialogue.fade_opacity >= 255:
+            condition = "ending"
+            cur_pattern = 0
+            patterns = []
+            for block in list(map_loading.BLOCKS):
+                map_loading.BLOCKS.remove(block)
+
 def run():
     global condition, patterns, nowtime, fade_opacity
     nowtime = pygame.time.get_ticks()
     condition = "real_game"
-    talkcheck()
-    # print(start_looping_bool)
-    if settings.start_looping_bool == True:
+    if talkcheck(): condition = 'start_menu'
+    if settings.start_looping_bool == True and map_loading.stagename == "stage7":
         pattern_looping()
         
     check_player_position()
     swing()
-    if dialogue.is_talking == False:
+    if dialogue.is_talking == False and map_loading.stagename != "stage1":
         block_break_and_create()
     if (extend_piece and map_loading.stagename == "stage6") == False:
         
@@ -850,21 +899,18 @@ def run():
         if map_loading.stagename == "stage6":
             stage6_puzzle()
 
+    for pattern_instance in patterns:
+        import pattern
+        if piece.core_hp < 200 and settings.start_looping_bool == True:
+            pattern.start_pattern(pattern_instance)
+        
     draw_screen()
     player_first_start()
     play_stage_music(map_loading.stagename)
+    gotoending()
 
     if m_key_count == 1:
         handle_player_action()
 
-    for pattern_instance in patterns:
-        import pattern
-        if piece.core_hp < 30:
-            pattern.start_pattern(pattern_instance)
-
-    if dialogue.current_dialogue_key == "7-1" and dialogue.fade_opacity < 255:
-        dialogue.fade_opacity += 5 
-        if dialogue.fade_opacity >= 255:
-            condition = "ending" 
 
     return condition

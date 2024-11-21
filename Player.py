@@ -1,4 +1,5 @@
 import os
+import sys
 from settings import *
 script_dir = os.path.dirname(__file__)
 
